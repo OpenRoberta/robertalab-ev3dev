@@ -1,9 +1,6 @@
 # intro #
-A connector for the open roberta lab for the lego mindstroms ev3 running the
-firmware from ev3dev.org and ev3dev-lang-python.
-
-# how to #
-https://mp-devel.iais.fraunhofer.de/wiki/display/ORDevel/Open+Roberta+on+ev3dev
+A connector to use a LEGO Mindstorm ev3 running the ev3dev firmware 
+(http://www.ev3dev.org) from the Open Roberta lab (http://lab.open-roberta.org).
 
 ## prerequisites ##
 python-ev3dev
@@ -11,28 +8,27 @@ python-bluez
 python-dbus
 
 ## dist ##
-``VERSION="1.2.0" python setup.py sdist``
-This is wired to be called from ``mvn install`` where the version is taken from
-the pom.xml.
+``VERSION="1.3.2" python setup.py sdist``
+
+Now you can also build a debian package using:
+``./package-deb.sh dist/openrobertalab-1.3.2.tar.gz``
 
 ## upload to ev3 ##
-``scp -r robertalab.py roberta root@ev3dev.local:/home/user``
-
-This would be using the package but is still not working as intended.
+The easiest is to upload the debian package and install it.
 ``
-scp dist/robertalab-1.3.0-SNAPSHOT.tar.gz root@ev3dev.local:/tmp/
-easy_install --no-deps /tmp/robertalab-1.3.0-SNAPSHOT.tar.gz
-chmod a+r /usr/local/lib/python2.7/dist-packages/robertalab-*_SNAPSHOT-py2.7.egg/EGG-INFO/*.txt
-``
-
-The location of the robertalab-server can be configured by placing a
-.robertalab.json into the homedir, e.g.:
-``
-{
-    "target": "http://localhost:1999"
-}
+scp <temp>/openrobertalab_1.3.2-1_all.deb root@ev3dev.local:/tmp/
+ssh root@ev3dev.local "dpkg --install /tmp/openrobertalab_1.3.2-1_all.deb"
 ``
 
 ## start it ##
-Go to the ``File Browser``, navigate to ``/home/user`` and select robertalab.py.
-Leave the connector with a long press of the ``back`` button.
+As of now, you still need an unreleased version of brickman from git:
+https://github.com/ev3dev/brickman
+
+If the 'openrobertalab' package is installed and the service is running, the
+'Open Roberta' menu item in brickman will allow you to connect to an Open 
+Roberta server.
+
+## configuration ##
+The brickman ui will store configuration data under /etc/openroberta.conf. All
+configuration can be edited from the UI. If there is a need to manully change
+the config, it is adviced to stop brickman.

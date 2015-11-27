@@ -7,3 +7,4 @@ target
 dist
 MANIFEST
 roberta/__version__.py
+*.egg-info
