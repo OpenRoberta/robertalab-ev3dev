@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from bluetooth import *
 import dbus
 import glob
@@ -28,7 +28,7 @@ class Hal(object):
         self.led = ev3dev.Leds
         self.keys = ev3dev.Button()
         self.sound = ev3dev.Sound
-        (self.font_w, self.font_h)=self.lcd.draw.textsize('X', font=self.font_s)
+        (self.font_w, self.font_h) = self.lcd.draw.textsize('X', font=self.font_s)
         self.timers = {}
         self.images = {}
         self.sys_bus = None
@@ -61,11 +61,11 @@ class Hal(object):
 
     # control
     def waitFor(self, ms):
-        time.sleep (ms / 1000.0)
+        time.sleep(ms / 1000.0)
 
     def busyWait(self):
         '''Used as interrupptible busy wait.'''
-        time.sleep (0.0)
+        time.sleep(0.0)
 
     # lcd
     def drawText(self, msg, x, y, font=None):
@@ -73,11 +73,12 @@ class Hal(object):
         self.lcd.draw.text((x*self.font_w, y*self.font_h), msg, font=font)
         self.lcd.update()
 
-    def drawPicture(self,picture,x,y):
+    def drawPicture(self, picture, x, y):
         if not picture in self.images:
-            self.images[picture]=Image.frombytes('1',(178,128),
-                IMAGES[picture], "raw", '1;IR', 0, 1)
-        self.lcd.img.paste(self.images[picture], (x,y))
+            self.images[picture] = Image.frombytes('1', (178, 128),
+                                                   IMAGES[picture],
+                                                   'raw', '1;IR', 0, 1)
+        self.lcd.img.paste(self.images[picture], (x, y))
         self.lcd.update()
 
     def clearDisplay(self):
@@ -103,13 +104,13 @@ class Hal(object):
             if mode is 'double_flash':
                 wait_time = 2000
             if color in ['green', 'orange']:
-                self.led.green_left.flash(500,500)
-                self.led.green_right.flash(500,500)
+                self.led.green_left.flash(500, 500)
+                self.led.green_right.flash(500, 500)
                 self.waitFor(wait_time)
                 self.ledOff()
             if color in ['red', 'orange']:
-                self.led.red_left.flash(500,500)
-                self.led.red_right.flash(500,500)
+                self.led.red_left.flash(500, 500)
+                self.led.red_right.flash(500, 500)
                 self.waitFor(wait_time)
                 self.ledOff()
 
@@ -117,7 +118,7 @@ class Hal(object):
         self.led.all_off()
 
     def resetLED(self):
-        self.lefOff();
+        self.lefOff()
 
     # key
     def isKeyPressed(self, key):
@@ -126,8 +127,8 @@ class Hal(object):
         else:
             # remap some keys
             key_aliases = {
-              'escape':  'back',
-              'back': 'backspace',
+                'escape':  'back',
+                'back': 'backspace',
             }
             if key in key_aliases:
                 key = key_aliases[key]
@@ -141,17 +142,17 @@ class Hal(object):
         frequency = frequency if frequency >= 100 else 0
         self.sound.tone(frequency, duration).wait()
 
-    def playFile(self,systemSound):
+    def playFile(self, systemSound):
         # systemSound is a enum for preset beeps:
         # http://www.lejos.org/ev3/docs/lejos/hardware/Audio.html#systemSound-int-
-        # https://sourceforge.net/p/lejos/ev3/code/ci/master/tree/ev3classes/src/lejos/remote/nxt/RemoteNXTAudio.java#l20
-        C2=523
+        # http://sf.net/p/lejos/ev3/code/ci/master/tree/ev3classes/src/lejos/remote/nxt/RemoteNXTAudio.java#l20
+        C2 = 523
         if systemSound == 0:
             self.playTone(600, 200)
         elif systemSound == 1:
             self.playTone(600, 150)
             self.playTone(600, 150)
-        elif systemSound == 2: # C major arpeggio
+        elif systemSound == 2:  # C major arpeggio
             for i in range(4, 7):
                 self.playTone(C2 * i / 4, 50)
         elif systemSound == 3:
@@ -184,7 +185,7 @@ class Hal(object):
 
     def rotateUnregulatedMotor(self, port, speed_pct, mode, value):
         speed_pct *= 10.0
-        m = self.cfg['actors'][port];
+        m = self.cfg['actors'][port]
         if mode is 'rotations':
             value *= m.count_per_rot
         if speed_pct >= 0:
@@ -217,16 +218,16 @@ class Hal(object):
         return self.cfg['actors'][port].speed / 10.0
 
     def getUnregulatedMotorSpeed(self, port):
-        return self.cfg['actors'][port].duty_cycle  / 10.0
+        return self.cfg['actors'][port].duty_cycle / 10.0
 
     def stopMotor(self, port, mode='float'):
         # mode: float, nonfloat
         # stop_commands: ['brake', 'coast', 'hold']
-        m = self.cfg['actors'][port];
+        m = self.cfg['actors'][port]
         if mode is 'float':
-            m.stop_command='coast'
+            m.stop_command = 'coast'
         elif mode is 'nonfloat':
-            m.stop_command='brake'
+            m.stop_command = 'brake'
         self.cfg['actors'][port].stop()
 
     def stopMotors(self, left_port, right_port):
@@ -245,22 +246,26 @@ class Hal(object):
         speed_pct *= 10.0
         if direction is 'backward':
             speed_pct = -speed_pct
-        self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on', speed_sp=int(speed_pct))
-        self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on', speed_sp=int(speed_pct))
+        self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on',
+                                                  speed_sp=int(speed_pct))
+        self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on',
+                                                   speed_sp=int(speed_pct))
 
     def driveDistance(self, left_port, right_port, reverse, direction, speed_pct, distance):
         # direction: forward, backward
         # reverse: always false for now
         speed_pct *= 10.0
-        ml = self.cfg['actors'][left_port];
-        mr = self.cfg['actors'][right_port];
+        ml = self.cfg['actors'][left_port]
+        mr = self.cfg['actors'][right_port]
         circ = math.pi * self.cfg['wheel-diameter']
         dc = distance / circ
         if direction is 'backward':
             dc = -dc
-        ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * ml.count_per_rot), speed_sp=int(speed_pct))
-        mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * mr.count_per_rot), speed_sp=int(speed_pct))
-        logger.info("driving: %s, %s" % (ml.state,mr.state))
+        ml.run_to_rel_pos(speed_regulation_enabled='on',
+                          position_sp=int(dc * ml.count_per_rot), speed_sp=int(speed_pct))
+        mr.run_to_rel_pos(speed_regulation_enabled='on',
+                          position_sp=int(dc * mr.count_per_rot), speed_sp=int(speed_pct))
+        logger.info("driving: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
             self.busyWait()
 
@@ -269,30 +274,38 @@ class Hal(object):
         # reverse: always false for now
         speed_pct *= 10.0
         if direction is 'left':
-            self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on', speed_sp=int(speed_pct))
-            self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on', speed_sp=int(-speed_pct))
+            self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on',
+                                                       speed_sp=int(speed_pct))
+            self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on',
+                                                      speed_sp=int(-speed_pct))
         else:
-            self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on', speed_sp=int(speed_pct))
-            self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on', speed_sp=int(-speed_pct))
+            self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on',
+                                                      speed_sp=int(speed_pct))
+            self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on',
+                                                       speed_sp=int(-speed_pct))
 
     def rotateDirectionAngle(self, left_port, right_port, reverse, direction, speed_pct, angle):
         # direction: left, right
         # reverse: always false for now
         speed_pct *= 10.0
-        ml = self.cfg['actors'][left_port];
-        mr = self.cfg['actors'][right_port];
+        ml = self.cfg['actors'][left_port]
+        mr = self.cfg['actors'][right_port]
         circ = math.pi * self.cfg['track-width']
         distance = angle * circ / 360.0
         circ = math.pi * self.cfg['wheel-diameter']
         dc = distance / circ
         logger.info("doing %lf rotations" % dc)
         if direction is 'left':
-            mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * mr.count_per_rot), speed_sp=int(speed_pct))
-            ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * ml.count_per_rot), speed_sp=int(speed_pct))
+            mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * mr.count_per_rot),
+                              speed_sp=int(speed_pct))
+            ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * ml.count_per_rot),
+                              speed_sp=int(speed_pct))
         else:
-            ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * ml.count_per_rot), speed_sp=int(speed_pct))
-            mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * mr.count_per_rot), speed_sp=int(speed_pct))
-        logger.info("turning: %s, %s" % (ml.state,mr.state))
+            ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * ml.count_per_rot),
+                              speed_sp=int(speed_pct))
+            mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * mr.count_per_rot),
+                              speed_sp=int(speed_pct))
+        logger.info("turning: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
             self.busyWait()
 
@@ -303,55 +316,55 @@ class Hal(object):
 
     # ultrasonic sensor
     def getUltraSonicSensorDistance(self, port):
-        self.cfg['sensors'][port].mode='US-DIST-CM'
+        self.cfg['sensors'][port].mode = 'US-DIST-CM'
         return self.cfg['sensors'][port].value()
 
     def getUltraSonicSensorPresence(self, port):
-        self.cfg['sensors'][port].mode='US-SI-CM'
+        self.cfg['sensors'][port].mode = 'US-SI-CM'
         return self.cfg['sensors'][port].value()
 
     # gyro
     # http://www.ev3dev.org/docs/sensors/lego-ev3-gyro-sensor/
     def resetGyroSensor(self, port):
         # change mode to reset for GYRO-ANG and GYRO-G&A
-        self.cfg['sensors'][port].mode='GYRO-RATE'
-        self.cfg['sensors'][port].mode='GYRO-ANG'
+        self.cfg['sensors'][port].mode = 'GYRO-RATE'
+        self.cfg['sensors'][port].mode = 'GYRO-ANG'
 
     def getGyroSensorValue(self, port, mode):
         # mode = rate, angle
         if mode is 'angle':
-            self.cfg['sensors'][port].mode='GYRO-ANG'
+            self.cfg['sensors'][port].mode = 'GYRO-ANG'
         elif mode is 'rate':
-            self.cfg['sensors'][port].mode='GYRO-RATE'
+            self.cfg['sensors'][port].mode = 'GYRO-RATE'
         return self.cfg['sensors'][port].value()
         pass
 
     # color
     # http://www.ev3dev.org/docs/sensors/lego-ev3-color-sensor/
     def getColorSensorAmbient(self, port):
-        self.cfg['sensors'][port].mode='COL-AMBIENT'
+        self.cfg['sensors'][port].mode = 'COL-AMBIENT'
         return self.cfg['sensors'][port].value()
 
     def getColorSensorColour(self, port):
-        self.cfg['sensors'][port].mode='COL-COLOR'
+        self.cfg['sensors'][port].mode = 'COL-COLOR'
         return self.cfg['sensors'][port].value()
 
     def getColorSensorRed(self, port):
-        self.cfg['sensors'][port].mode='COL-REFLECT'
+        self.cfg['sensors'][port].mode = 'COL-REFLECT'
         return self.cfg['sensors'][port].value()
 
     def getColorSensorRgb(self, port):
-        self.cfg['sensors'][port].mode='RGB-RAW'
+        self.cfg['sensors'][port].mode = 'RGB-RAW'
         return self.cfg['sensors'][port].value()
 
     # infrared
     # http://www.ev3dev.org/docs/sensors/lego-ev3-infrared-sensor/
     def getInfraredSensorSeek(self, port):
-        self.cfg['sensors'][port].mode='IR-SEEK'
+        self.cfg['sensors'][port].mode = 'IR-SEEK'
         return self.cfg['sensors'][port].value()
 
     def getInfraredSensorDistance(self, port):
-        self.cfg['sensors'][port].mode='IR-PROX'
+        self.cfg['sensors'][port].mode = 'IR-PROX'
         return self.cfg['sensors'][port].value()
 
     # timer
@@ -364,29 +377,26 @@ class Hal(object):
     def resetTimer(self, timer):
         del self.timers[timer]
 
-
+    # tacho-motor position
     def resetMotorTacho(self, actorPort):
         self.cfg['actors'][actorPort].last_position = self.cfg['actors'][actorPort].position
 
     def getMotorTachoValue(self, actorPort, mode):
-       	m = self.cfg['actors'][actorPort]
-       	tachoCount = m.position - m.last_position
+        m = self.cfg['actors'][actorPort]
+        tachoCount = m.position - m.last_position
 
-       	if mode == 'degree':
+        if mode == 'degree':
             return tachoCount * 360.0 / m.count_per_rot
-
         elif mode in ['rotation', 'distance']:
-
-            rotations = float( tachoCount / m.count_per_rot)
-
+            rotations = float(tachoCount / m.count_per_rot)
             if mode == 'rotation':
-                return rotations;
+                return rotations
             else:
-            	distance = round (math.pi * self.cfg['wheel-diameter'] * rotations )
-            	logger.info('distance: [%lf]' % distance)
+                distance = round(math.pi * self.cfg['wheel-diameter'] * rotations)
+                logger.info('distance: [%lf]' % distance)
                 return distance
         else:
-        	raise ValueError('incorrect MotorTachoMode: %s' % mode)
+            raise ValueError('incorrect MotorTachoMode: %s' % mode)
 
     # communication
     def establishConnectionTo(self, host):
@@ -399,8 +409,8 @@ class Hal(object):
                     host = bdaddr
                     break
         if is_valid_address(host):
-            con = sock=BluetoothSocket(RFCOMM)
-            con.connect((host,post))
+            con = BluetoothSocket(RFCOMM)
+            con.connect((host, post))
             self.bt_connections.append(con)
             return len(self.bt_connections) - 1
         else:
@@ -419,16 +429,16 @@ class Hal(object):
         props.Set('org.bluez.Adapter1', 'Discoverable', True)
 
         if not self.bt_server:
-            self.bt_server = sock=BluetoothSocket(RFCOMM)
-            self.bt_server.bind(("",PORT_ANY))
+            self.bt_server = BluetoothSocket(RFCOMM)
+            self.bt_server.bind(("", PORT_ANY))
             self.bt_server.listen(1)
 
-        con,info = self.bt_server.accept()
+        (con, info) = self.bt_server.accept()
         self.bt_connections.append(con)
         return len(self.bt_connections) - 1
 
     def readMessage(self, con_ix):
-        message = "NO MESSAGE";
+        message = "NO MESSAGE"
         if con_ix < len(self.bt_connections) and self.bt_connections[con_ix]:
             logger.info('reading msg')
             message = self.bt_connections[con_ix].recv(1024)

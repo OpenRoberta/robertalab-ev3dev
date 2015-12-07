@@ -1,5 +1,6 @@
 import math
 
+
 class BlocklyMethods:
     GOLDEN_RATIO = (1 + math.sqrt(5)) / 2
 
@@ -37,11 +38,11 @@ class BlocklyMethods:
 
     @staticmethod
     def remainderOf(divident, divisor):
-        return divident % divisor;
+        return divident % divisor
 
     @staticmethod
     def clamp(x, min_val, max_val):
-        return min(max(x, min_val), max_val);
+        return min(max(x, min_val), max_val)
 
     @staticmethod
     def randInt(min_val, max_val):

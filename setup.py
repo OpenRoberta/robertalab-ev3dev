@@ -31,4 +31,4 @@ setup(name='openrobertalab',
       package_data={'roberta': ['ter-*.p??']},
       # other deps: apt-get-install python-dbus python-bluez python-ev3dev
       #install_requires=['python-ev3dev']
-     )
+      )

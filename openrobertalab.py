@@ -24,6 +24,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger('openroberta-service')
 gobject.threads_init()
+service = None
+
 
 # helpers
 def getHwAddr(ifname):
@@ -31,9 +33,11 @@ def getHwAddr(ifname):
     info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
     return ':'.join(['%02x' % ord(char) for char in info[18:24]])
 
+
 def generateToken():
     chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     return ''.join(random.choice(chars) for _ in range(8))
+
 
 def getBatteryVoltage():
     with open('/sys/devices/platform/legoev3-battery/power_supply/legoev3-battery/voltage_now', 'r') as bv:
@@ -73,7 +77,7 @@ class Service(dbus.service.Object):
         logger.info('connect(%s)' % address)
         if self.thread:
             logger.info('disconnect() old thread')
-            self.thread.running = False;
+            self.thread.running = False
         # start thread, connecting to address
         self.thread = Connector(address, self)
         self.thread.daemon = True
@@ -96,6 +100,7 @@ class Service(dbus.service.Object):
     @dbus.service.signal('org.openroberta.lab', signature='s')
     def status(self, status):
         logger.info('status changed: %s' % status)
+
 
 class HardAbort(threading.Thread):
     """ Test for a 10s back key press and terminate the daemon"""
@@ -121,6 +126,7 @@ class HardAbort(threading.Thread):
                 self.long_press = 0
             time.sleep(0.1)
 
+
 class Connector(threading.Thread):
     """OpenRobertab-Lab network IO thread"""
 
@@ -129,11 +135,11 @@ class Connector(threading.Thread):
         self.address = address
         self.service = service
         self.params = {
-          'macaddr': '00:00:00:00:00:00',
-          'firmwarename': 'ev3dev',
-          'menuversion': version.split('-')[0],
+            'macaddr': '00:00:00:00:00:00',
+            'firmwarename': 'ev3dev',
+            'menuversion': version.split('-')[0],
         }
-        self.updateConfiguration();
+        self.updateConfiguration()
 
         self.registered = False
         self.running = True
@@ -157,9 +163,9 @@ class Connector(threading.Thread):
         logger.info('network thread started')
         # network related locals
         headers = {
-          'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
         }
-        timeout = 15 # seconds
+        timeout = 15  # seconds
 
         logger.info('target: %s' % self.address)
         while self.running:
@@ -266,7 +272,6 @@ class Connector(threading.Thread):
         if self.registered:
             self.service.hal.playFile(3)
 
-service = None
 
 def cleanup():
     if service:
@@ -275,6 +280,7 @@ def cleanup():
     os.system('setterm -cursor on')
     logger.info('--- done ---')
     logging.shutdown()
+
 
 def main():
     logger.info('--- starting ---')
