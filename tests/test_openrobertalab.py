@@ -3,6 +3,8 @@ import httpretty
 
 from openrobertalab import *
 
+URL = 'http://lab.open-roberta.org'
+
 
 class TestGetHwAddr(unittest.TestCase):
     def test_get_hw_addr(self):
@@ -42,29 +44,39 @@ class TestService(unittest.TestCase):
 
 class TestHardAbort(unittest.TestCase):
     def test___init__(self):
-        # hard_abort = HardAbort(service)
+        hard_abort = HardAbort(null)
         assert False # TODO: implement your test here
 
     def test_run(self):
         # hard_abort = HardAbort(service)
         # self.assertEqual(expected, hard_abort.run())
         assert False # TODO: implement your test here
+"""
+
 
 class TestConnector(unittest.TestCase):
     def test___init__(self):
-        # connector = Connector(address, service)
-        assert False # TODO: implement your test here
+        connector = Connector(URL, None)
+        self.assertTrue(connector.running)
 
+    @httpretty.activate
     def test_run(self):
-        # connector = Connector(address, service)
-        # self.assertEqual(expected, connector.run())
-        assert False # TODO: implement your test here
+        httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
+                               body='{"success": false}',
+                               status=403,
+                               content_type='text/json')
+
+        connector = Connector(URL, None)
+        connector.run()  # catch error and return
 
     def test_updateConfiguration(self):
-        # connector = Connector(address, service)
-        # self.assertEqual(expected, connector.updateConfiguration())
-        assert False # TODO: implement your test here
+        connector = Connector(URL, None)
+        token = connector.params['token']
+        connector.updateConfiguration()
+        self.assertNotEqual(token, connector.params['token'])
 
+
+"""
 class TestCleanup(unittest.TestCase):
     def test_cleanup(self):
         # self.assertEqual(expected, cleanup())
