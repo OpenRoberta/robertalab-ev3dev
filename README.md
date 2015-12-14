@@ -1,5 +1,5 @@
 # intro #
-A connector to use a LEGO Mindstorm ev3 running the ev3dev firmware 
+A connector to use a LEGO Mindstorm ev3 running the ev3dev firmware
 (http://www.ev3dev.org) from the Open Roberta lab (http://lab.open-roberta.org).
 
 ## prerequisites ##
@@ -25,10 +25,14 @@ As of now, you still need an unreleased version of brickman from git:
 https://github.com/ev3dev/brickman
 
 If the 'openrobertalab' package is installed and the service is running, the
-'Open Roberta' menu item in brickman will allow you to connect to an Open 
+'Open Roberta' menu item in brickman will allow you to connect to an Open
 Roberta server.
 
 ## configuration ##
 The brickman ui will store configuration data under /etc/openroberta.conf. All
 configuration can be edited from the UI. If there is a need to manully change
 the config, it is adviced to stop brickman.
+
+## Testing ##
+python -m unittest tests.test_openrobertalab
+The test requires python-httpretty.

@@ -18,7 +18,11 @@ import thread
 import threading
 import urllib2
 from dbus.mainloop.glib import DBusGMainLoop
-from roberta.ev3 import Hal
+# ignore failure to make this testable outside of the target platform
+try:
+    from roberta.ev3 import Hal
+except:
+    pass
 from roberta.__version__ import version
 
 logging.basicConfig(level=logging.DEBUG)
@@ -41,8 +45,11 @@ def generateToken():
 
 
 def getBatteryVoltage():
-    with open('/sys/devices/platform/legoev3-battery/power_supply/legoev3-battery/voltage_now', 'r') as bv:
-        return "{0:.3f}".format(float(bv.read()) / 1000000.0)
+    try:
+        with open('/sys/devices/platform/legoev3-battery/power_supply/legoev3-battery/voltage_now', 'r') as bv:
+            return "{0:.3f}".format(float(bv.read()) / 1000000.0)
+    except:
+        return '0.0'
 
 
 class Service(dbus.service.Object):
