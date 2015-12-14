@@ -9,6 +9,7 @@ import logging
 import os
 import random
 import socket
+import stat
 import struct
 import subprocess
 import sys
@@ -140,6 +141,7 @@ class Connector(threading.Thread):
             'menuversion': version.split('-')[0],
         }
         self.updateConfiguration()
+        self.home = os.path.expanduser("~")
 
         self.registered = False
         self.running = True
@@ -203,8 +205,8 @@ class Connector(threading.Thread):
                     response = urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
                     logger.info('response: %s' % json.dumps(reply))
                     hdr = response.info().getheader('Content-Disposition')
-                    # TODO: save to $HOME/
-                    filename = '/tmp/%s' % hdr.split('=')[1] if hdr else 'unknown'
+                    # save to $HOME/
+                    filename = '%s/%s' % (self.home, hdr.split('=')[1] if hdr else 'unknown')
                     with open(filename, 'w') as prog:
                         # temporary for package transitions
                         code = response.read().decode('utf-8')
@@ -218,6 +220,7 @@ class Connector(threading.Thread):
                         code = code.replace('ev3dev.touch_sensor', 'ev3dev.TouchSensor')
                         code = code.replace('ev3dev.ultrasonic_sensor', 'ev3dev.UltrasonicSensor')
                         prog.write(code)
+                    os.chmod(filename, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
                     logger.info('code downloaded to: %s' % filename)
                     # new process
                     #res = subprocess.call(["python", filename], env={"PYTHONPATH":"$PYTONPATH:."})
