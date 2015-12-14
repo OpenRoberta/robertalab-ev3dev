@@ -2,13 +2,18 @@ language: python
 python:
 - 2.7
 
-#before_install:
-#- sudo apt-get update -qq
-#- sudo apt-get install -y python-dbus python-bluez
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get install -y python-dbus python-bluez
+- pidof dbus-daemon || dbus-daemon --system --fork
 
-install: pip install httpretty dbus-python PyBluez
+# pip cannot install python-dbus: https://bugs.freedesktop.org/show_bug.cgi?id=55439
+install: pip install httpretty
 
-script: nosetests
+script:
+- python setup.py check
+- python setup.py pep8
+- nosetests
 
 notifications:
   irc: "chat.freenode.net#open-roberta"
