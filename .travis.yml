@@ -4,7 +4,7 @@ python:
 
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install -y python-dbus python-bluez
+- sudo apt-get install -y python-dbus python-bluez pep8
 - pidof dbus-daemon || dbus-daemon --system --fork
 
 # pip cannot install python-dbus: https://bugs.freedesktop.org/show_bug.cgi?id=55439
@@ -12,6 +12,7 @@ install: pip install httpretty
 
 script:
 - pep8 --max-line-length=120 --exclude=StaticData.py .
+- python -v -c "import dbus"
 - nosetests
 
 notifications:
