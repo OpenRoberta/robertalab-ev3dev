@@ -2,11 +2,11 @@ language: python
 python:
 - 2.7
 
-before_install:
-- sudo apt-get update -qq
-- sudo apt-get install -y python-dbus python-bluez
+#before_install:
+#- sudo apt-get update -qq
+#- sudo apt-get install -y python-dbus python-bluez
 
-install: pip install httpretty
+install: pip install httpretty dbus-python PyBluez
 
 script: nosetests
 
