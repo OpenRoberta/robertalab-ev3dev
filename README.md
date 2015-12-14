@@ -2,6 +2,11 @@
 A connector to use a LEGO Mindstorm ev3 running the ev3dev firmware
 (http://www.ev3dev.org) from the Open Roberta lab (http://lab.open-roberta.org).
 
+Build status:
+
+* master [![master](https://travis-ci.org/OpenRoberta/robertalab-ev3dev.svg?branch=master)](https://travis-ci.org/OpenRoberta/robertalab-ev3dev/builds)
+* develop [![develop](https://travis-ci.org/OpenRoberta/robertalab-ev3dev.svg?branch=develop)](https://travis-ci.org/OpenRoberta/robertalab-ev3dev/builds)
+
 ## prerequisites ##
 python-ev3dev
 python-bluez

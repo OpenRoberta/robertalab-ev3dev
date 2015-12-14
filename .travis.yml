@@ -11,8 +11,7 @@ before_install:
 install: pip install httpretty
 
 script:
-- python setup.py check
-- python setup.py pep8
+- pep8 --max-line-length=120 --exclude=StaticData.py .
 - nosetests
 
 notifications:
