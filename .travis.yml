@@ -17,6 +17,7 @@ virtualenv:
 
 script:
 - pep8 --max-line-length=120 --exclude=StaticData.py .
+- ./setup.py build
 - nosetests
 
 notifications:
