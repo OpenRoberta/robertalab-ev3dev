@@ -11,25 +11,27 @@ Build status:
 python-ev3dev
 python-bluez
 python-dbus
+python-gobject
 
 ## dist ##
-``VERSION="1.3.2" python setup.py sdist``
+
+    VERSION="1.3.2" python setup.py sdist
 
 Now you can also build a debian package using:
-``./package-deb.sh dist/openrobertalab-1.3.2.tar.gz``
+
+    ./package-deb.sh dist/openrobertalab-1.3.2.tar.gz
 
 ## upload to ev3 ##
 The easiest is to upload the debian package and install it.
-``
-scp <temp>/openrobertalab_1.3.2-1_all.deb root@ev3dev.local:/tmp/
-ssh root@ev3dev.local "dpkg --install /tmp/openrobertalab_1.3.2-1_all.deb"
-``
+
+    scp <temp>/openrobertalab_1.3.2-1_all.deb root@ev3dev.local:/tmp/
+    ssh root@ev3dev.local "dpkg --install /tmp/openrobertalab_1.3.2-1_all.deb"
 
 ## start it ##
 As of now, you still need an unreleased version of brickman from git:
 https://github.com/ev3dev/brickman
 
-If the 'openrobertalab' package is installed and the service is running, the
+If the ``openrobertalab`` package is installed and the service is running, the
 'Open Roberta' menu item in brickman will allow you to connect to an Open
 Roberta server.
 
@@ -39,5 +41,5 @@ configuration can be edited from the UI. If there is a need to manully change
 the config, it is adviced to stop brickman.
 
 ## Testing ##
-python -m unittest tests.test_openrobertalab
-The test requires python-httpretty.
+``python -m unittest tests.test_openrobertalab``
+The test require ``python-httpretty``, but run without ``python-ev3dev``.
