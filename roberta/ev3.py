@@ -74,7 +74,7 @@ class Hal(object):
         self.lcd.update()
 
     def drawPicture(self, picture, x, y):
-        if not picture in self.images:
+        if picture not in self.images:
             self.images[picture] = Image.frombytes('1', (178, 128),
                                                    IMAGES[picture],
                                                    'raw', '1;IR', 0, 1)
@@ -235,7 +235,7 @@ class Hal(object):
         self.stopMotor(right_port)
 
     def stopAllMotors(self):
-        #[m for m in [Motor(port) for port in ['outA', 'outB', 'outC', 'outD']] if m.connected]
+        # [m for m in [Motor(port) for port in ['outA', 'outB', 'outC', 'outD']] if m.connected]
         for file in glob.glob('/sys/class/tacho-motor/motor*/command'):
             with open(file, 'w') as f:
                 f.write('stop')

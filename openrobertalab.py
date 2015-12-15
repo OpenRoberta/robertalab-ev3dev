@@ -101,8 +101,8 @@ class Service(dbus.service.Object):
         # end thread, can take up to 15 seconds (the timeout to return)
         # hence we don't join(), when connecting again we create a new thread
         # anyway
-        #self.thread.join()
-        #self.status('disconnected')
+        # self.thread.join()
+        # self.status('disconnected')
         self.thread = None
 
     @dbus.service.signal('org.openroberta.lab', signature='s')
@@ -230,8 +230,8 @@ class Connector(threading.Thread):
                     os.chmod(filename, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
                     logger.info('code downloaded to: %s' % filename)
                     # new process
-                    #res = subprocess.call(["python", filename], env={"PYTHONPATH":"$PYTONPATH:."})
-                    #logger.info('execution result: %d' % res)
+                    # res = subprocess.call(["python", filename], env={"PYTHONPATH":"$PYTONPATH:."})
+                    # logger.info('execution result: %d' % res)
                     # eval from file, see http://bugs.python.org/issue14049
                     # NOTE: all the globals in the generated code will override gloabls we use here!
                     # NOTE: we don't have to keep pinging the server while running
