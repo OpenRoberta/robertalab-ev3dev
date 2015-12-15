@@ -4,11 +4,12 @@ python:
 
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install -y python-dbus
+- sudo apt-get install -y python-dbus python-bluez
 - pidof dbus-daemon || dbus-daemon --system --fork
 
 # pip cannot install python-dbus: https://bugs.freedesktop.org/show_bug.cgi?id=55439
-install: pip install httpretty pep8 PyBluez
+# travis cannot install PyBluez (missing gcc)
+install: pip install httpretty pep8
 
 virtualenv:
   system_site_packages: true
