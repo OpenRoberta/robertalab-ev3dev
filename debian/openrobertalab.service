@@ -7,7 +7,7 @@ After=systemd-user-sessions.service getty@tty2.service
 
 [Service]
 ExecStartPre=/bin/chown robot: /dev/tty2 
-ExecStart=/usr/bin/openrobertalab.py
+ExecStart=/usr/bin/openrobertalab
 Restart=always
 User=robot
 StandardInput=tty

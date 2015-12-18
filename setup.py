@@ -26,7 +26,7 @@ setup(name='openrobertalab',
       author='Stefan Sauer',
       author_email='ensonic@google.com',
       url='https://www.open-roberta.org/',
-      scripts=['openrobertalab.py'],
+      scripts=['openrobertalab'],
       packages=['roberta'],
       package_data={'roberta': ['ter-*.p??']},
       # other deps: apt-get-install python-dbus python-bluez python-ev3dev
