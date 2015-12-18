@@ -13,7 +13,7 @@ from ev3dev import ev3 as ev3dev
 from roberta.BlocklyMethods import BlocklyMethods
 from roberta.StaticData import IMAGES
 
-logger = logging.getLogger('ev3')
+logger = logging.getLogger('roberta.ev3')
 
 
 class Hal(object):

@@ -1,7 +1,10 @@
-import unittest
+import logging
 import httpretty
+import unittest
 
-from openrobertalab import *
+from lab import *
+
+logging.basicConfig(level=logging.DEBUG)
 
 URL = 'http://lab.open-roberta.org'
 
