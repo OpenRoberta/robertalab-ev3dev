@@ -17,14 +17,13 @@ python-gobject
 
     VERSION="1.3.2" python setup.py sdist
 
-Now you can also build a debian package using:
-
-    ./package-deb.sh dist/openrobertalab-1.3.2.tar.gz
+Now you can also build a debian package using ``debuild`` or 
+``debuild -us -us``. The new package will be in the parent folder.
 
 ## upload to ev3 ##
 The easiest is to upload the debian package and install it.
 
-    scp <temp>/openrobertalab_1.3.2-1_all.deb root@ev3dev.local:/tmp/
+    scp ../openrobertalab_1.3.2-1_all.deb root@ev3dev.local:/tmp/
     ssh root@ev3dev.local "dpkg --install /tmp/openrobertalab_1.3.2-1_all.deb"
 
 ## start it ##
