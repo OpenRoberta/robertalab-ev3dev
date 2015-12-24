@@ -4,7 +4,7 @@ import codecs
 import os
 from distutils.core import setup
 
-version='?'
+version = '?'
 root = os.path.dirname(os.path.abspath(__file__))
 # Path to __version__ module
 version_file = os.path.join(root, 'roberta', '__version__.py')
