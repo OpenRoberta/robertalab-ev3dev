@@ -1,16 +1,15 @@
 from __future__ import absolute_import
-from PIL import Image, ImageDraw, ImageFont
-from bluetooth import *
+from PIL import Image, ImageFont
+import bluetooth
+from bluetooth import BluetoothSocket
 import dbus
 import glob
 import logging
 import math
 import os
-import random
 import time
 
 from ev3dev import ev3 as ev3dev
-from roberta.BlocklyMethods import BlocklyMethods
 from roberta.StaticData import IMAGES
 
 logger = logging.getLogger('roberta.ev3')
@@ -402,15 +401,15 @@ class Hal(object):
     def establishConnectionTo(self, host):
         # host can also be a name, resolving it is slow though and requires the
         # device to be visible
-        if not is_valid_address(host):
-            nearby_devices = discover_devices()
+        if not bluetooth.is_valid_address(host):
+            nearby_devices = bluetooth.discover_devices()
             for bdaddr in nearby_devices:
-                if host == lookup_name(bdaddr):
+                if host == bluetooth.lookup_name(bdaddr):
                     host = bdaddr
                     break
-        if is_valid_address(host):
-            con = BluetoothSocket(RFCOMM)
-            con.connect((host, post))
+        if bluetooth.is_valid_address(host):
+            con = BluetoothSocket(bluetooth.RFCOMM)
+            con.connect((host, 1))  # 0 is channel
             self.bt_connections.append(con)
             return len(self.bt_connections) - 1
         else:
@@ -429,8 +428,8 @@ class Hal(object):
         props.Set('org.bluez.Adapter1', 'Discoverable', True)
 
         if not self.bt_server:
-            self.bt_server = BluetoothSocket(RFCOMM)
-            self.bt_server.bind(("", PORT_ANY))
+            self.bt_server = BluetoothSocket(bluetooth.RFCOMM)
+            self.bt_server.bind(("", bluetooth.PORT_ANY))
             self.bt_server.listen(1)
 
         (con, info) = self.bt_server.accept()

@@ -2,7 +2,8 @@ import logging
 import httpretty
 import unittest
 
-from lab import *
+import lab
+from lab import Connector
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -11,17 +12,17 @@ URL = 'http://lab.open-roberta.org'
 
 class TestGetHwAddr(unittest.TestCase):
     def test_get_hw_addr(self):
-        self.assertRegexpMatches(getHwAddr(b'eth0'), '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
+        self.assertRegexpMatches(lab.getHwAddr(b'eth0'), '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
 
 
 class TestGenerateToken(unittest.TestCase):
     def test_generate_token(self):
-        self.assertRegexpMatches(generateToken(), '^[0-9A-Z]{8}$')
+        self.assertRegexpMatches(lab.generateToken(), '^[0-9A-Z]{8}$')
 
 
 class TestGetBatteryVoltage(unittest.TestCase):
     def test_get_battery_voltage(self):
-        self.assertGreaterEqual(float(getBatteryVoltage()), 0.0)
+        self.assertGreaterEqual(float(lab.getBatteryVoltage()), 0.0)
 
 
 """
