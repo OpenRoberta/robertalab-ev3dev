@@ -372,7 +372,7 @@ class Hal(object):
         if timer in self.timers:
             return time.clock() - self.timers[timer]
         else:
-            timers[timer] = time.clock()
+            self.timers[timer] = time.clock()
 
     def resetTimer(self, timer):
         del self.timers[timer]
