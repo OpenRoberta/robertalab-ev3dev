@@ -7,7 +7,7 @@ import sys
 from dbus.mainloop.glib import DBusGMainLoop
 from roberta.lab import Service
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('roberta')
 
 gobject.threads_init()
@@ -37,7 +37,7 @@ def main():
     DBusGMainLoop(set_as_default=True)
     loop = gobject.MainLoop()
     service = Service('/org/openroberta/Lab1')
-    logger.info('loop running')
+    logger.debug('loop running')
     loop.run()
 
 if __name__ == "__main__":
