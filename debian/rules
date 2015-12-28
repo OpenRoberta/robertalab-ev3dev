@@ -4,6 +4,11 @@ export DH_VERBOSE = 1
 export PYBUILD_NAME = openrobertalab
 export PYBUILD_SYSTEM = distutils
 
+# expects changelog version in the format <menuversion>+<extraversion>
+# where <menuversion> matches the menuversion on the lab.open-roberta.org
+# server and <extraversion> can be any valid debian package version string.
+export VERSION = $(shell dpkg-parsechangelog | grep ^Version: | sed -e 's/Version: //' -e 's/+.*//')
+
 %:
 	dh $@ --with=python2,systemd --buildsystem=pybuild
 
