@@ -208,6 +208,8 @@ class Connector(threading.Thread):
                     with open(filename, 'w') as prog:
                         # temporary for package transitions
                         code = response.read().decode('utf-8')
+                        code = code.replace('import Hal,BlocklyMethods',
+                                            'import Hal\nfrom roberta import BlocklyMethods')
                         code = code.replace('import ev3dev', 'from ev3dev import ev3 as ev3dev')
                         code = code.replace('ev3dev.color_sensor', 'ev3dev.ColorSensor')
                         code = code.replace('ev3dev.gyro_sensor', 'ev3dev.GyroSensor')
@@ -234,7 +236,7 @@ class Connector(threading.Thread):
                             hard_abort = HardAbort(self.service)
                             hard_abort.daemon = True
                             hard_abort.start()
-                            exec(code, globals(), globals())
+                            exec(code, {'__name__': '__main__'})
                             hard_abort.running = False
                             logger.info('execution finished')
                         except:
