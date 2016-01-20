@@ -262,7 +262,7 @@ class Connector(threading.Thread):
                     break
             except urllib2.URLError as e:
                 # [Errno 111] Connection refused>
-                logger.error("URLError: %s" % e.reason)
+                logger.error("URLError: %s: %s" % (self.address, e.reason))
                 break
             except socket.timeout:
                 pass

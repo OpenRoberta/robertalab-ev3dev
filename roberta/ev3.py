@@ -149,7 +149,7 @@ class Hal(object):
         if systemSound == 0:
             self.playTone(600, 200)
         elif systemSound == 1:
-            self.sound.tone([(600, 150, 50),(600, 150, 50)]).wait()
+            self.sound.tone([(600, 150, 50), (600, 150, 50)]).wait()
         elif systemSound == 2:  # C major arpeggio
             self.sound.tone([(C2 * i / 4, 50, 50) for i in range(4, 7)]).wait()
         elif systemSound == 3:
