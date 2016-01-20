@@ -33,7 +33,7 @@ python-gobject
 
     VERSION="1.3.2" python setup.py sdist
 
-Now you can also build a debian package using ``debuild`` or 
+Now you can also build a debian package using ``debuild`` or
 ``debuild -us -us``. The new package will be in the parent folder.
 
 ## upload to ev3 ##
@@ -51,3 +51,7 @@ the config, it is adviced to stop brickman.
 ``python -m unittest roberta.test_lab`` or ``nosetests``.
 The test require ``python-httpretty``, but run without ``python-ev3dev``.
 
+## Logging ##
+The service writes status to the system journal.
+
+    sudo journalctl -f -u openrobertalab
