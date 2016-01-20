@@ -36,26 +36,34 @@ class Hal(object):
 
     @staticmethod
     def makeLargeMotor(port, regulated, direction, side):
-        m = ev3dev.LargeMotor(port)
-        m.speed_regulation_enabled = regulated
-        if direction is 'backward':
-            m.polarity = 'inversed'
-        else:
-            m.polarity = 'normal'
-        m.cfg_side = side
-        m.last_position = m.position
+        try:
+            m = ev3dev.LargeMotor(port)
+            m.speed_regulation_enabled = regulated
+            if direction is 'backward':
+                m.polarity = 'inversed'
+            else:
+                m.polarity = 'normal'
+            m.cfg_side = side
+            m.last_position = m.position
+        except AttributeError:
+            logger.info('no large motor connected to port [%s]' % port)
+            m = None
         return m
 
     @staticmethod
     def makeMediumMotor(port, regulated, direction, side):
-        m = ev3dev.MediumMotor(port)
-        m.speed_regulation_enabled = regulated
-        if direction is 'backward':
-            m.polarity = 'inversed'
-        else:
-            m.polarity = 'normal'
-        m.cfg_side = side
-        m.last_position = m.position
+        try:
+            m = ev3dev.MediumMotor(port)
+            m.speed_regulation_enabled = regulated
+            if direction is 'backward':
+                m.polarity = 'inversed'
+            else:
+                m.polarity = 'normal'
+            m.cfg_side = side
+            m.last_position = m.position
+        except AttributeError:
+            logger.info('no medium motor connected to port [%s]' % port)
+            m = None
         return m
 
     # control
