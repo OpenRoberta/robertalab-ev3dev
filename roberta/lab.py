@@ -65,7 +65,7 @@ class Service(dbus.service.Object):
         # needs /etc/dbus-1/system.d/openroberta.conf
         bus_name = dbus.service.BusName('org.openroberta.lab', bus=dbus.SystemBus())
         dbus.service.Object.__init__(self, bus_name, path)
-        logger.info('object registered')
+        logger.debug('object registered')
         self.status('disconnected')
         self.hal = Hal(None, None)
         self.hal.clearDisplay()
@@ -73,9 +73,9 @@ class Service(dbus.service.Object):
 
     @dbus.service.method('org.openroberta.lab', in_signature='s', out_signature='s')
     def connect(self, address):
-        logger.info('connect(%s)' % address)
+        logger.debug('connect(%s)' % address)
         if self.thread:
-            logger.info('disconnect() old thread')
+            logger.debug('disconnect() old thread')
             self.thread.running = False
         # start thread, connecting to address
         self.thread = Connector(address, self)
@@ -86,7 +86,7 @@ class Service(dbus.service.Object):
 
     @dbus.service.method('org.openroberta.lab')
     def disconnect(self):
-        logger.info('disconnect()')
+        logger.debug('disconnect()')
         self.thread.running = False
         self.status('disconnected')
         # end thread, can take up to 15 seconds (the timeout to return)
@@ -113,7 +113,7 @@ class HardAbort(threading.Thread):
     def run(self):
         while self.running:
             if self.service.hal.isKeyPressed('back'):
-                logger.info('back: %d', self.long_press)
+                logger.debug('back: %d', self.long_press)
                 # if pressed for one sec, hard exit
                 if self.long_press > 10:
                     logger.info('--- hard abort ---')
@@ -143,7 +143,7 @@ class Connector(threading.Thread):
 
         self.registered = False
         self.running = True
-        logger.info('thread created')
+        logger.debug('thread created')
 
     def updateConfiguration(self):
         # or /etc/os-release
@@ -160,14 +160,14 @@ class Connector(threading.Thread):
         self.params['token'] = generateToken()
 
     def run(self):
-        logger.info('network thread started')
+        logger.debug('network thread started')
         # network related locals
         headers = {
             'Content-Type': 'application/json'
         }
         timeout = 15  # seconds
 
-        logger.info('target: %s' % self.address)
+        logger.debug('target: %s' % self.address)
         while self.running:
             if self.registered:
                 self.params['cmd'] = 'push'
@@ -180,11 +180,11 @@ class Connector(threading.Thread):
 
             try:
                 # TODO: what about /api/v1/pushcmd
-                logger.info('sending: %s' % self.params['cmd'])
+                logger.debug('sending: %s' % self.params['cmd'])
                 req = urllib2.Request('%s/pushcmd' % self.address, headers=headers)
                 response = urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
                 reply = json.loads(response.read())
-                logger.info('response: %s' % json.dumps(reply))
+                logger.debug('response: %s' % json.dumps(reply))
                 cmd = reply['cmd']
                 if cmd == 'repeat':
                     if not self.registered:
@@ -201,13 +201,15 @@ class Connector(threading.Thread):
                     #   we can verify the download
                     req = urllib2.Request('%s/download' % self.address, headers=headers)
                     response = urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
-                    logger.info('response: %s' % json.dumps(reply))
+                    logger.debug('response: %s' % json.dumps(reply))
                     hdr = response.info().getheader('Content-Disposition')
                     # save to $HOME/
                     filename = '%s/%s' % (self.home, hdr.split('=')[1] if hdr else 'unknown')
                     with open(filename, 'w') as prog:
                         # temporary for package transitions
                         code = response.read().decode('utf-8')
+                        code = code.replace('import Hal,BlocklyMethods',
+                                            'import Hal\nfrom roberta import BlocklyMethods')
                         code = code.replace('import ev3dev', 'from ev3dev import ev3 as ev3dev')
                         code = code.replace('ev3dev.color_sensor', 'ev3dev.ColorSensor')
                         code = code.replace('ev3dev.gyro_sensor', 'ev3dev.GyroSensor')
@@ -234,7 +236,7 @@ class Connector(threading.Thread):
                             hard_abort = HardAbort(self.service)
                             hard_abort.daemon = True
                             hard_abort.start()
-                            exec(code, globals(), globals())
+                            exec(code, {'__name__': '__main__'})
                             hard_abort.running = False
                             logger.info('execution finished')
                         except:

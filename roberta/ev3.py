@@ -269,7 +269,7 @@ class Hal(object):
                           position_sp=int(dc * ml.count_per_rot), speed_sp=int(speed_pct))
         mr.run_to_rel_pos(speed_regulation_enabled='on',
                           position_sp=int(dc * mr.count_per_rot), speed_sp=int(speed_pct))
-        logger.info("driving: %s, %s" % (ml.state, mr.state))
+        logger.debug("driving: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
             self.busyWait()
 
@@ -298,7 +298,7 @@ class Hal(object):
         distance = angle * circ / 360.0
         circ = math.pi * self.cfg['wheel-diameter']
         dc = distance / circ
-        logger.info("doing %lf rotations" % dc)
+        logger.debug("doing %lf rotations" % dc)
         if direction is 'left':
             mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * mr.count_per_rot),
                               speed_sp=int(speed_pct))
@@ -309,7 +309,7 @@ class Hal(object):
                               speed_sp=int(speed_pct))
             mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * mr.count_per_rot),
                               speed_sp=int(speed_pct))
-        logger.info("turning: %s, %s" % (ml.state, mr.state))
+        logger.debug("turning: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
             self.busyWait()
 
@@ -397,7 +397,7 @@ class Hal(object):
                 return rotations
             else:
                 distance = round(math.pi * self.cfg['wheel-diameter'] * rotations)
-                logger.info('distance: [%lf]' % distance)
+                logger.debug('distance: [%lf]' % distance)
                 return distance
         else:
             raise ValueError('incorrect MotorTachoMode: %s' % mode)
@@ -444,13 +444,13 @@ class Hal(object):
     def readMessage(self, con_ix):
         message = "NO MESSAGE"
         if con_ix < len(self.bt_connections) and self.bt_connections[con_ix]:
-            logger.info('reading msg')
+            logger.debug('reading msg')
             message = self.bt_connections[con_ix].recv(1024)
-            logger.info('received msg [%s]' % message)
+            logger.debug('received msg [%s]' % message)
         return message
 
     def sendMessage(self, con_ix, message):
         if con_ix < len(self.bt_connections) and self.bt_connections[con_ix]:
-            logger.info('sending msg [%s]' % message)
+            logger.debug('sending msg [%s]' % message)
             self.bt_connection[con_ix].send(message)
-            logger.info('sent msg')
+            logger.debug('sent msg')

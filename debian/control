@@ -3,7 +3,8 @@ Maintainer: Stefan Sauer <ensonic@google.com>
 Section: python
 Priority: optional
 Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3),
- debhelper (>= 9), dh-systemd (>= 1.14), dh-python
+ debhelper (>= 9), dh-systemd (>= 1.14), dh-python, python-httpretty,
+ python-dbus
 Standards-Version: 3.9.5
 Homepage: http://lab.open-roberta.org/
 Vcs-Browser: https://github.com/OpenRoberta/robertalab-ev3dev
