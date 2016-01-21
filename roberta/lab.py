@@ -15,6 +15,7 @@ import threading
 import urllib2
 # ignore failure to make this testable outside of the target platform
 try:
+    from ev3dev import ev3 as ev3dev
     from ev3 import Hal
 except:
     pass
@@ -37,8 +38,7 @@ def generateToken():
 
 def getBatteryVoltage():
     try:
-        with open('/sys/devices/platform/legoev3-battery/power_supply/legoev3-battery/voltage_now', 'r') as bv:
-            return "{0:.3f}".format(float(bv.read()) / 1000000.0)
+        return "{0:.3f}".format(ev3dev.PowerSupply().measured_volts)
     except:
         return '0.0'
 
