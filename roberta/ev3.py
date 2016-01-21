@@ -107,19 +107,22 @@ class Hal(object):
                 self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.ORANGE)
                 self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.ORANGE)
         elif mode in ['flash', 'double_flash']:
-            wait_time = 1000
+            loops = 1
             if mode is 'double_flash':
-                wait_time = 2000
-            if color in ['green', 'orange']:
-                self.led.green_left.flash(500, 500)
-                self.led.green_right.flash(500, 500)
-                self.waitFor(wait_time)
+                loops = 2
+            for i in range(0, loops):
+                if color is 'green':
+                    self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.GREEN)
+                    self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.GREEN)
+                elif color is 'red':
+                    self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.RED)
+                    self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.RED)
+                elif color is 'orange':
+                    self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.ORANGE)
+                    self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.ORANGE)
+                self.waitFor(500)
                 self.ledOff()
-            if color in ['red', 'orange']:
-                self.led.red_left.flash(500, 500)
-                self.led.red_right.flash(500, 500)
-                self.waitFor(wait_time)
-                self.ledOff()
+                self.waitFor(500)
 
     def ledOff(self):
         self.led.all_off()
