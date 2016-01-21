@@ -15,7 +15,7 @@ import threading
 import urllib2
 # ignore failure to make this testable outside of the target platform
 try:
-    from ev3dev import ev3 as ev3dev
+    from ev3dev import auto as ev3dev
     from ev3 import Hal
 except:
     pass

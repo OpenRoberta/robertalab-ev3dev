@@ -9,7 +9,7 @@ import math
 import os
 import time
 
-from ev3dev import ev3 as ev3dev
+from ev3dev import auto as ev3dev
 from roberta.StaticData import IMAGES
 
 logger = logging.getLogger('roberta.ev3')
