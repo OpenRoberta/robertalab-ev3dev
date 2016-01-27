@@ -32,6 +32,8 @@ def getHwAddr(ifname):
 
 
 def generateToken():
+    # maybe read 8 chars from /dev/urandom and do mod 36 for each byte
+    # importing random adds 1.5 mb to our process size
     chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     return ''.join(random.choice(chars) for _ in range(8))
 
@@ -211,14 +213,14 @@ class Connector(threading.Thread):
                         code = code.replace('import Hal,BlocklyMethods',
                                             'import Hal\nfrom roberta import BlocklyMethods')
                         code = code.replace('import ev3dev', 'from ev3dev import ev3 as ev3dev')
-                        code = code.replace('ev3dev.color_sensor', 'ev3dev.ColorSensor')
-                        code = code.replace('ev3dev.gyro_sensor', 'ev3dev.GyroSensor')
-                        code = code.replace('ev3dev.i2c_sensor', 'ev3dev.I2cSensor')
-                        code = code.replace('ev3dev.infrared_sensor', 'ev3dev.InfraredSensor')
-                        code = code.replace('ev3dev.light_sensor', 'ev3dev.LightSensor')
-                        code = code.replace('ev3dev.sound_sensor', 'ev3dev.SoundSensor')
-                        code = code.replace('ev3dev.touch_sensor', 'ev3dev.TouchSensor')
-                        code = code.replace('ev3dev.ultrasonic_sensor', 'ev3dev.UltrasonicSensor')
+                        code = code.replace('ev3dev.color_sensor', 'Hal.makeColorSensor')
+                        code = code.replace('ev3dev.gyro_sensor', 'Hal.makeGyroSensor')
+                        code = code.replace('ev3dev.i2c_sensor', 'Hal.makeI2cSensor')
+                        code = code.replace('ev3dev.infrared_sensor', 'Hal.makeInfraredSensor')
+                        code = code.replace('ev3dev.light_sensor', 'Hal.makeLightSensor')
+                        code = code.replace('ev3dev.sound_sensor', 'Hal.makeSoundSensor')
+                        code = code.replace('ev3dev.touch_sensor', 'Hal.makeTouchSensor')
+                        code = code.replace('ev3dev.ultrasonic_sensor', 'Hal.makeUltrasonicSensor')
                         prog.write(code)
                     os.chmod(filename, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
                     logger.info('code downloaded to: %s' % filename)

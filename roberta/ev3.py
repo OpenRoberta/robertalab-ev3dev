@@ -66,6 +66,79 @@ class Hal(object):
             m = None
         return m
 
+    @staticmethod
+    def makeColorSensor(port):
+        try:
+            s = ev3dev.ColorSensor(port)
+        except AttributeError:
+            logger.info('no color sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeGyroSensor(port):
+        try:
+            s = ev3dev.GyroSensor(port)
+        except AttributeError:
+            logger.info('no gyro sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeI2cSensor(port):
+        try:
+            s = ev3dev.I2cSensor(port)
+        except AttributeError:
+            logger.info('no i2c sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeInfraredSensor(port):
+        try:
+            s = ev3dev.InfraredSensor(port)
+        except AttributeError:
+            logger.info('no infrared sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeLightSensor(port):
+        try:
+            s = ev3dev.LightSensor(port)
+        except AttributeError:
+            logger.info('no light sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeSoundSensor(port):
+        try:
+            s = ev3dev.SoundSensor(port)
+        except AttributeError:
+            logger.info('no sound sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeTouchSensor(port):
+        try:
+            s = ev3dev.TouchSensor(port)
+        except AttributeError:
+            logger.info('no touch sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+    @staticmethod
+    def makeUltrasonicSensor(port):
+        try:
+            s = ev3dev.UltrasonicSensor(port)
+        except AttributeError:
+            logger.info('no ultrasonic sensor connected to port [%s]' % port)
+            s = None
+        return s
+
+
     # control
     def waitFor(self, ms):
         time.sleep(ms / 1000.0)
