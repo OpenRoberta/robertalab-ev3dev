@@ -3,7 +3,7 @@ import httpretty
 import unittest
 
 import lab
-from lab import Connector
+from lab import Connector, Service
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -25,12 +25,18 @@ class TestGetBatteryVoltage(unittest.TestCase):
         self.assertGreaterEqual(float(lab.getBatteryVoltage()), 0.0)
 
 
-"""
 class TestService(unittest.TestCase):
     def test___init__(self):
-        # service = Service(path)
-        assert False # TODO: implement your test here
+        service = Service(None)
+        self.assertNotEqual('00:00:00:00:00:00', service.params['macaddr'])
 
+    def test_updateConfiguration(self):
+        service = Service(None)
+        token = service.params['token']
+        service.updateConfiguration()
+        self.assertNotEqual(token, service.params['token'])
+
+"""
     def test_connect(self):
         # service = Service(path)
         # self.assertEqual(expected, service.connect(address))
@@ -72,12 +78,6 @@ class TestConnector(unittest.TestCase):
 
         connector = Connector(URL, None)
         connector.run()  # catch error and return
-
-    def test_updateConfiguration(self):
-        connector = Connector(URL, None)
-        token = connector.params['token']
-        connector.updateConfiguration()
-        self.assertNotEqual(token, connector.params['token'])
 
 
 """

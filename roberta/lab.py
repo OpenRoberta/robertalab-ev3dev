@@ -18,7 +18,7 @@ try:
     from ev3dev import auto as ev3dev
     from ev3 import Hal
 except:
-    pass
+    from test import Hal
 from __version__ import version
 
 logger = logging.getLogger('roberta.lab')
@@ -66,14 +66,36 @@ class Service(dbus.service.Object):
     """
 
     def __init__(self, path):
-        # needs /etc/dbus-1/system.d/openroberta.conf
-        bus_name = dbus.service.BusName('org.openroberta.lab', bus=dbus.SystemBus())
-        dbus.service.Object.__init__(self, bus_name, path)
-        logger.debug('object registered')
-        self.status('disconnected')
+        # passing None for path is only for testing
+        if path:
+            # needs /etc/dbus-1/system.d/openroberta.conf
+            bus_name = dbus.service.BusName('org.openroberta.lab', bus=dbus.SystemBus())
+            dbus.service.Object.__init__(self, bus_name, path)
+            logger.debug('object registered')
+            self.status('disconnected')
         self.hal = Hal(None, None)
         self.hal.clearDisplay()
         self.thread = None
+        self.params = {
+            'macaddr': '00:00:00:00:00:00',
+            'firmwarename': 'ev3dev',
+            'menuversion': version.split('-')[0],
+        }
+        self.updateConfiguration()
+
+    def updateConfiguration(self):
+        # or /etc/os-release
+        with open('/proc/version', 'r') as ver:
+            self.params['firmwareversion'] = ver.read()
+
+        for iface in [b'wlan', b'usb', b'eth']:
+            for ix in range(10):
+                try:
+                    self.params['macaddr'] = getHwAddr(iface + str(ix))
+                    break
+                except IOError:
+                    pass
+        self.params['token'] = generateToken()
 
     @dbus.service.method('org.openroberta.lab', in_signature='s', out_signature='s')
     def connect(self, address):
@@ -137,31 +159,15 @@ class Connector(threading.Thread):
         threading.Thread.__init__(self)
         self.address = address
         self.service = service
-        self.params = {
-            'macaddr': '00:00:00:00:00:00',
-            'firmwarename': 'ev3dev',
-            'menuversion': version.split('-')[0],
-        }
-        self.updateConfiguration()
         self.home = os.path.expanduser("~")
+        if service:
+          self.params = service.params
+        else:
+          self.params = {}
 
         self.registered = False
         self.running = True
         logger.debug('thread created')
-
-    def updateConfiguration(self):
-        # or /etc/os-release
-        with open('/proc/version', 'r') as ver:
-            self.params['firmwareversion'] = ver.read()
-
-        for iface in [b'wlan', b'usb', b'eth']:
-            for ix in range(10):
-                try:
-                    self.params['macaddr'] = getHwAddr(iface + str(ix))
-                    break
-                except IOError:
-                    pass
-        self.params['token'] = generateToken()
 
     def run(self):
         logger.debug('network thread started')
