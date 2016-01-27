@@ -34,7 +34,9 @@ def getHwAddr(ifname):
 def generateToken():
     # maybe read 8 chars from /dev/urandom and do mod 36 for each byte
     # importing random adds 1.5 mb to our process size
-    chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    # note: we intnetionally leave '01' and 'IO' out since they can be confused
+    # when entering the code
+    chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
     return ''.join(random.choice(chars) for _ in range(8))
 
 
