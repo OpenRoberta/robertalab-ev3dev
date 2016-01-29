@@ -1,5 +1,5 @@
 import math
-import random
+import os
 
 
 class BlocklyMethods:
@@ -45,13 +45,18 @@ class BlocklyMethods:
     def clamp(x, min_val, max_val):
         return min(max(x, min_val), max_val)
 
+    # note: we don't use the random module since it is large
     @staticmethod
     def randInt(min_val, max_val):
+        b = os.urandom(4)
+        val = ord(b[0]) << 24 | ord(b[1]) << 16 | ord(b[2]) << 8 | ord(b[3])
         if min_val < max_val:
-            return random.randint(min_val, max_val)
+            return min_val + (val % (max_val - min_val))
         else:
-            return random.randint(max_val, min_val)
+            return max_val + (val % (min_val - max_val))
 
     @staticmethod
     def randDouble():
-        return random.random()
+        b = os.urandom(4)
+        val = ord(b[0]) << 24 | ord(b[1]) << 16 | ord(b[2]) << 8 | ord(b[3])
+        return float(val) / 0xffffffff

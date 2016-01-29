@@ -4,7 +4,6 @@ import fcntl
 import json
 import logging
 import os
-import random
 import socket
 import stat
 import struct
@@ -31,12 +30,12 @@ def getHwAddr(ifname):
 
 
 def generateToken():
-    # maybe read 8 chars from /dev/urandom and do mod 36 for each byte
-    # importing random adds 1.5 mb to our process size
-    # note: we intnetionally leave '01' and 'IO' out since they can be confused
+    # note: we intentionally leave '01' and 'IO' out since they can be confused
     # when entering the code
     chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-    return ''.join(random.choice(chars) for _ in range(8))
+    # note: we don't use the random module since it is large
+    b = os.urandom(8)
+    return ''.join(chars[ord(b[i]) % len(chars)] for i in range(8))
 
 
 def getBatteryVoltage():
