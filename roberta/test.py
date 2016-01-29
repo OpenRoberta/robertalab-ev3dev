@@ -1,5 +1,6 @@
 # Hal class to satisfy testing
 
+
 class Hal(object):
 
     def __init__(self, brickConfiguration, usedSensors):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import dbus
 import dbus.service
 import fcntl
@@ -161,9 +160,9 @@ class Connector(threading.Thread):
         self.service = service
         self.home = os.path.expanduser("~")
         if service:
-          self.params = service.params
+            self.params = service.params
         else:
-          self.params = {}
+            self.params = {}
 
         self.registered = False
         self.running = True

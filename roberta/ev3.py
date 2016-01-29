@@ -138,7 +138,6 @@ class Hal(object):
             s = None
         return s
 
-
     # control
     def waitFor(self, ms):
         time.sleep(ms / 1000.0)
