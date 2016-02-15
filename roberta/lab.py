@@ -105,6 +105,10 @@ class Service(dbus.service.Object):
         self.thread = Connector(address, self)
         self.thread.daemon = True
         self.thread.start()
+        # TODO: we have to 'wait' until the connection has been established and
+        # we got the token
+        # - we could defer the "connected" signal and add another method to get
+        #   the code
         self.status('connected')
         return self.thread.params['token']
 
@@ -199,6 +203,9 @@ class Connector(threading.Thread):
                         self.service.status('registered')
                         self.service.hal.playFile(2)
                     self.registered = True
+                # TODO: get token from server
+                #elif cmd == 'token':
+                #    self.params['token'] = self.reply['token']
                 elif cmd == 'abort':
                     break
                 elif cmd == 'download':
@@ -279,6 +286,8 @@ class Connector(threading.Thread):
             except:
                 logger.exception("Ooops:")
         logger.info('network thread stopped')
+        if self.service:
+            self.service.status('disconnected')
         # don't play if we we just canceled a registration
         if self.registered:
             self.service.hal.playFile(3)
