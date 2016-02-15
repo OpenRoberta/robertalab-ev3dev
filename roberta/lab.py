@@ -203,9 +203,6 @@ class Connector(threading.Thread):
                         self.service.status('registered')
                         self.service.hal.playFile(2)
                     self.registered = True
-                # TODO: get token from server
-                #elif cmd == 'token':
-                #    self.params['token'] = self.reply['token']
                 elif cmd == 'abort':
                     break
                 elif cmd == 'download':
