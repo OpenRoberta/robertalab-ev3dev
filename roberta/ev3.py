@@ -425,8 +425,9 @@ class Hal(object):
         return self.cfg['sensors'][port].value()
 
     def getColorSensorColour(self, port):
+        colors = ['none', 'black', 'blue', 'green', 'yellow', 'red', 'white', 'brown']
         self.cfg['sensors'][port].mode = 'COL-COLOR'
-        return self.cfg['sensors'][port].value()
+        return colors[self.cfg['sensors'][port].value()]
 
     def getColorSensorRed(self, port):
         self.cfg['sensors'][port].mode = 'COL-REFLECT'
