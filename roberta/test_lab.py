@@ -10,6 +10,18 @@ logging.basicConfig(level=logging.DEBUG)
 URL = 'http://lab.open-roberta.org'
 
 
+class DummyHardAbort():
+    def __init__(self):
+        self.running = True
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, type, value, traceback):
+        if type is not None:  # an exception has occurred
+            return False      # reraise the exception
+
+
 class TestGetHwAddr(unittest.TestCase):
     def test_get_hw_addr(self):
         self.assertRegexpMatches(lab.getHwAddr(b'eth0'), '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
@@ -65,6 +77,18 @@ class TestHardAbort(unittest.TestCase):
 
 
 class TestConnector(unittest.TestCase):
+    GOOD_CODE = (
+        'if __name__ == "__main__":'
+        '  pass'
+    )
+    BAD_CODE = (
+        '{ this is not python, right?'
+    )
+    GOOD_CODE_WITH_RESULT = (
+        'if __name__ == "__main__":'
+        '  result = 42'
+    )
+
     def test___init__(self):
         connector = Connector(URL, None)
         self.assertTrue(connector.running)
@@ -79,7 +103,20 @@ class TestConnector(unittest.TestCase):
         connector = Connector(URL, None)
         connector.run()  # catch error and return
 
+    def test_exec_good_code(self):
+        connector = Connector(URL, None)
+        res = connector._exec_code("test.py", TestConnector.GOOD_CODE, DummyHardAbort())
+        self.assertEqual(res, 0)
 
+    def test_exec_bad_code(self):
+        connector = Connector(URL, None)
+        res = connector._exec_code("test.py", TestConnector.BAD_CODE, DummyHardAbort())
+        self.assertEqual(res, 1)
+
+    def test_exec_code_with_result(self):
+        connector = Connector(URL, None)
+        res = connector._exec_code("test.py", TestConnector.GOOD_CODE_WITH_RESULT, DummyHardAbort())
+        self.assertEqual(res, 42)
 """
 class TestCleanup(unittest.TestCase):
     def test_cleanup(self):
