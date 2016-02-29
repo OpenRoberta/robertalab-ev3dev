@@ -60,3 +60,87 @@ class BlocklyMethods:
         b = os.urandom(4)
         val = ord(b[0]) << 24 | ord(b[1]) << 16 | ord(b[2]) << 8 | ord(b[3])
         return float(val) / 0xffffffff
+
+    @staticmethod
+    def textJoin(*args):
+        return "".join(args)
+
+    @staticmethod
+    def lenght(_list):
+        return len(_list)
+
+    @staticmethod
+    def isEmpty(_list):
+        return not _list
+
+    @staticmethod
+    def createListWith(*args):
+        return list(args)
+
+    @staticmethod
+    def createListWithItem(item, times):
+        return [item] * times
+
+    @staticmethod
+    def listsGetSubList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def findFirst(_list, item):
+        try:
+            return _list.index(item)
+        except:
+            return -1
+
+    @staticmethod
+    def findLast(_list, item):
+        try:
+            _list[::-1].index(item)
+        except:
+            return -1
+
+    @staticmethod
+    def listsIndex():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def sumOnList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def minOnList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def maxOnList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def averageOnList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def medianOnList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def standardDeviatioin():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def randOnList():
+        # FIXME:
+        pass
+
+    @staticmethod
+    def modeOnList():
+        # FIXME:
+        pass
