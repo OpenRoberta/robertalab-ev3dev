@@ -185,7 +185,7 @@ class Connector(threading.Thread):
         """Apply hotfixes needed untile server update"""
         with open(filename, 'w') as prog:
             code = code.replace('import Hal,BlocklyMethods',
-                                'import Hal\nfrom roberta import BlocklyMethods')
+                                'import Hal\nfrom roberta.BlocklyMethods import BlocklyMethods')
             code = code.replace('import ev3dev', 'from ev3dev import ev3 as ev3dev')
             code = code.replace('ev3dev.color_sensor', 'Hal.makeColorSensor')
             code = code.replace('ev3dev.gyro_sensor', 'Hal.makeGyroSensor')
