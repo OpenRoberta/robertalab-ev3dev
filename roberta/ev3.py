@@ -209,12 +209,12 @@ class Hal(object):
         else:
             # remap some keys
             key_aliases = {
-                'escape':  'back',
+                'escape':  'backspace',
                 'back': 'backspace',
             }
             if key in key_aliases:
                 key = key_aliases[key]
-            return self.keys.check_buttons([key])
+            return key in self.keys.buttons_pressed
 
     def isKeyPressedAndReleased(self, key):
         return False
