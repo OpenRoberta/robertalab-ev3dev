@@ -389,18 +389,23 @@ class Hal(object):
             self.busyWait()
 
     # sensors
+    def scaledValue(self, sensor):
+        return sensor.value() / (10.0 ** sensor.decimals)
+
     # touch sensor
     def isPressed(self, port):
-        return self.cfg['sensors'][port].value()
+        return self.scaledValue(self.cfg['sensors'][port])
 
     # ultrasonic sensor
     def getUltraSonicSensorDistance(self, port):
-        self.cfg['sensors'][port].mode = 'US-DIST-CM'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'US-DIST-CM'
+        return self.scaledValue(s)
 
     def getUltraSonicSensorPresence(self, port):
-        self.cfg['sensors'][port].mode = 'US-SI-CM'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'US-SI-CM'
+        return self.scaledValue(s)
 
     # gyro
     # http://www.ev3dev.org/docs/sensors/lego-ev3-gyro-sensor/
@@ -411,41 +416,47 @@ class Hal(object):
 
     def getGyroSensorValue(self, port, mode):
         # mode = rate, angle
+        s = self.cfg['sensors'][port]
         if mode is 'angle':
-            self.cfg['sensors'][port].mode = 'GYRO-ANG'
+            s.mode = 'GYRO-ANG'
         elif mode is 'rate':
-            self.cfg['sensors'][port].mode = 'GYRO-RATE'
-        return self.cfg['sensors'][port].value()
-        pass
+            s.mode = 'GYRO-RATE'
+        return self.scaledValue(s)
 
     # color
     # http://www.ev3dev.org/docs/sensors/lego-ev3-color-sensor/
     def getColorSensorAmbient(self, port):
-        self.cfg['sensors'][port].mode = 'COL-AMBIENT'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'COL-AMBIENT'
+        return self.scaledValue(s)
 
     def getColorSensorColour(self, port):
         colors = ['none', 'black', 'blue', 'green', 'yellow', 'red', 'white', 'brown']
-        self.cfg['sensors'][port].mode = 'COL-COLOR'
-        return colors[self.cfg['sensors'][port].value()]
+        s = self.cfg['sensors'][port]
+        s.mode = 'COL-COLOR'
+        return colors[int(self.scaledValue(s))]
 
     def getColorSensorRed(self, port):
-        self.cfg['sensors'][port].mode = 'COL-REFLECT'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'COL-REFLECT'
+        return self.scaledValue(s)
 
     def getColorSensorRgb(self, port):
-        self.cfg['sensors'][port].mode = 'RGB-RAW'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'RGB-RAW'
+        return s.value()
 
     # infrared
     # http://www.ev3dev.org/docs/sensors/lego-ev3-infrared-sensor/
     def getInfraredSensorSeek(self, port):
-        self.cfg['sensors'][port].mode = 'IR-SEEK'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'IR-SEEK'
+        return self.scaledValue(s)
 
     def getInfraredSensorDistance(self, port):
-        self.cfg['sensors'][port].mode = 'IR-PROX'
-        return self.cfg['sensors'][port].value()
+        s = self.cfg['sensors'][port]
+        s.mode = 'IR-PROX'
+        return self.scaledValue(s)
 
     # timer
     def getTimerValue(self, timer):
