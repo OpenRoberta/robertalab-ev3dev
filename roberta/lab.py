@@ -174,8 +174,6 @@ class Connector(threading.Thread):
             self.params = service.params
         else:
             self.params = {}
-        self.hard_abort = HardAbort(self.service)
-        self.hard_abort.daemon = True
 
         self.registered = False
         self.running = True
@@ -276,7 +274,10 @@ class Connector(threading.Thread):
                     logger.info('code downloaded to: %s' % filename)
                     with open(filename) as f:
                         code = f.read()
-                    self.params['nepoexitvalue'] = self._exec_code(filename, code, self.hard_abort)
+                    # use a long-press of backspace to terminate
+                    hard_abort = HardAbort(self.service)
+                    hard_abort.daemon = True
+                    self.params['nepoexitvalue'] = self._exec_code(filename, code, hard_abort)
                     self.service.hal.clearDisplay()
                     self.service.hal.stopAllMotors()
                     self.service.status('registered')
