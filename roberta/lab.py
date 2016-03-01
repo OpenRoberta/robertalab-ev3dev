@@ -195,10 +195,10 @@ class Connector(threading.Thread):
             code = code.replace('ev3dev.ultrasonic_sensor', 'Hal.makeUltrasonicSensor')
             # https://github.com/OpenRoberta/robertalab-ev3dev/issues/13
             # avoid to pull in 're' module
-            code = code.replace('hal.setRegulatedMotorSpeed(\'A', 'hal.setRegulatedMotorSpeed(\'A\'')
-            code = code.replace('hal.setRegulatedMotorSpeed(\'B', 'hal.setRegulatedMotorSpeed(\'B\'')
-            code = code.replace('hal.setRegulatedMotorSpeed(\'C', 'hal.setRegulatedMotorSpeed(\'C\'')
-            code = code.replace('hal.setRegulatedMotorSpeed(\'D', 'hal.setRegulatedMotorSpeed(\'D\'')
+            code = code.replace('hal.setRegulatedMotorSpeed(\'A,', 'hal.setRegulatedMotorSpeed(\'A\',')
+            code = code.replace('hal.setRegulatedMotorSpeed(\'B,', 'hal.setRegulatedMotorSpeed(\'B\',')
+            code = code.replace('hal.setRegulatedMotorSpeed(\'C,', 'hal.setRegulatedMotorSpeed(\'C\',')
+            code = code.replace('hal.setRegulatedMotorSpeed(\'D,', 'hal.setRegulatedMotorSpeed(\'D\',')
             prog.write(code)
 
     def _exec_code(self, filename, code, hard_abort):
