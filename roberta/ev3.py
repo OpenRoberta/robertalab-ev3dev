@@ -269,12 +269,12 @@ class Hal(object):
             value *= m.count_per_rot
         if speed_pct >= 0:
             value = m.position + value
-            m.run_forever(speed_regulation_enabled='off', duty_cycle_sp=int(speed_pct))
+            m.run_direct(duty_cycle_sp=int(speed_pct))
             while (m.position < value):
                 self.busyWait()
         else:
             value = m.position - value
-            m.run_forever(speed_regulation_enabled='off', duty_cycle_sp=int(speed_pct))
+            m.run_direct(duty_cycle_sp=int(speed_pct))
             while (m.position > value):
                 self.busyWait()
         m.stop()
@@ -285,13 +285,19 @@ class Hal(object):
 
     def turnOnUnregulatedMotor(self, port, value):
         value *= 10.0
-        self.cfg['actors'][port].run_forever(speed_regulation_enabled='off', duty_cycle_sp=int(value))
+        self.cfg['actors'][port].run_direct(duty_cycle_sp=int(value))
 
-    def setRegulatedMotorSpeed(self, port, power):
-        self.cfg['actors'][port].speed_sp = power * 10.0
+    def setRegulatedMotorSpeed(self, port, value):
+        value *= 10.0
+        m = self.cfg['actors'][port]
+        if m.state:
+          m.run_forever(speed_regulation_enabled='on', speed_sp=int(value))
+        else:
+          m.speed_sp = 300
 
-    def setUnregulatedMotorSpeed(self, port, power):
-        self.cfg['actors'][port].duty_cycle_sp = power * 10.0
+    def setUnregulatedMotorSpeed(self, port, value):
+        value *= 10.0
+        self.cfg['actors'][port].duty_cycle_sp = int(value)
 
     def getRegulatedMotorSpeed(self, port):
         return self.cfg['actors'][port].speed / 10.0
