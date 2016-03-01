@@ -291,9 +291,9 @@ class Hal(object):
         value *= 10.0
         m = self.cfg['actors'][port]
         if m.state:
-          m.run_forever(speed_regulation_enabled='on', speed_sp=int(value))
+            m.run_forever(speed_regulation_enabled='on', speed_sp=int(value))
         else:
-          m.speed_sp = 300
+            m.speed_sp = 300
 
     def setUnregulatedMotorSpeed(self, port, value):
         value *= 10.0
