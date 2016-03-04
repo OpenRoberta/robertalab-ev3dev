@@ -45,7 +45,7 @@ class Hal(object):
                 m.polarity = 'normal'
             m.cfg_side = side
             m.last_position = m.position
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no large motor connected to port [%s]' % port)
             m = None
         return m
@@ -61,7 +61,7 @@ class Hal(object):
                 m.polarity = 'normal'
             m.cfg_side = side
             m.last_position = m.position
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no medium motor connected to port [%s]' % port)
             m = None
         return m
@@ -70,7 +70,7 @@ class Hal(object):
     def makeColorSensor(port):
         try:
             s = ev3dev.ColorSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no color sensor connected to port [%s]' % port)
             s = None
         return s
@@ -79,7 +79,7 @@ class Hal(object):
     def makeGyroSensor(port):
         try:
             s = ev3dev.GyroSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no gyro sensor connected to port [%s]' % port)
             s = None
         return s
@@ -88,7 +88,7 @@ class Hal(object):
     def makeI2cSensor(port):
         try:
             s = ev3dev.I2cSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no i2c sensor connected to port [%s]' % port)
             s = None
         return s
@@ -97,7 +97,7 @@ class Hal(object):
     def makeInfraredSensor(port):
         try:
             s = ev3dev.InfraredSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no infrared sensor connected to port [%s]' % port)
             s = None
         return s
@@ -106,7 +106,7 @@ class Hal(object):
     def makeLightSensor(port):
         try:
             s = ev3dev.LightSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no light sensor connected to port [%s]' % port)
             s = None
         return s
@@ -115,7 +115,7 @@ class Hal(object):
     def makeSoundSensor(port):
         try:
             s = ev3dev.SoundSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no sound sensor connected to port [%s]' % port)
             s = None
         return s
@@ -124,7 +124,7 @@ class Hal(object):
     def makeTouchSensor(port):
         try:
             s = ev3dev.TouchSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no touch sensor connected to port [%s]' % port)
             s = None
         return s
@@ -133,7 +133,7 @@ class Hal(object):
     def makeUltrasonicSensor(port):
         try:
             s = ev3dev.UltrasonicSensor(port)
-        except AttributeError:
+        except (AttributeError,OSError):
             logger.info('no ultrasonic sensor connected to port [%s]' % port)
             s = None
         return s
