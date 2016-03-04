@@ -246,6 +246,11 @@ class Connector(threading.Thread):
 
             try:
                 # TODO: what about /api/v1/pushcmd
+                # TODO: according to https://tools.ietf.org/html/rfc6202
+                # we should use keep alive
+                # http://stackoverflow.com/questions/1037406/python-urllib2-with-keep-alive
+                # http://stackoverflow.com/questions/13881196/remove-http-connection-header-python-urllib2
+                # https://github.com/jcgregorio/httplib2
                 logger.debug('sending: %s' % self.params['cmd'])
                 req = urllib2.Request('%s/pushcmd' % self.address, headers=headers)
                 response = urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
