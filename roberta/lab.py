@@ -200,8 +200,8 @@ class Connector(threading.Thread):
             code = code.replace('hal.setRegulatedMotorSpeed(\'C,', 'hal.setRegulatedMotorSpeed(\'C\',')
             code = code.replace('hal.setRegulatedMotorSpeed(\'D,', 'hal.setRegulatedMotorSpeed(\'D\',')
             # https://github.com/OpenRoberta/robertalab-ev3dev/issues/16
-            code = code.replace(' || ', ' or ');
-            code = code.replace(' && ', ' and ');
+            code = code.replace(' || ', ' or ')
+            code = code.replace(' && ', ' and ')
             prog.write(code)
 
     def _exec_code(self, filename, code, hard_abort):
