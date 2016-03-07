@@ -202,6 +202,10 @@ class Connector(threading.Thread):
             # https://github.com/OpenRoberta/robertalab-ev3dev/issues/16
             code = code.replace(' || ', ' or ')
             code = code.replace(' && ', ' and ')
+            # various codegen bugs
+            code = code.replace(' else if ', ' elif ')
+            code = code.replace(': return\n', ': return None\n')
+            code = code.replace(': return', ': return ')
             prog.write(code)
 
     def _exec_code(self, filename, code, hard_abort):
