@@ -202,7 +202,7 @@ class Hal(object):
         self.led.all_off()
 
     def resetLED(self):
-        self.lefOff()
+        self.ledOff()
 
     # key
     def isKeyPressed(self, key):
