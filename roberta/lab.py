@@ -292,6 +292,7 @@ class Connector(threading.Thread):
                     self.params['nepoexitvalue'] = self._exec_code(filename, code, hard_abort)
                     self.service.hal.clearDisplay()
                     self.service.hal.stopAllMotors()
+                    self.service.hal.resetLED()
                     # if the user did wait for a key press, wait for the key for be released
                     # before handing control back (to e.g. brickman)
                     while self.service.hal.isKeyPressed('any'):
