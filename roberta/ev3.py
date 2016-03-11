@@ -181,22 +181,24 @@ class Hal(object):
                 self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.ORANGE)
                 self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.ORANGE)
         elif mode in ['flash', 'double_flash']:
-            loops = 1
-            if mode is 'double_flash':
-                loops = 2
-            for i in range(0, loops):
-                if color is 'green':
-                    self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.GREEN)
-                    self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.GREEN)
-                elif color is 'red':
-                    self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.RED)
-                    self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.RED)
-                elif color is 'orange':
-                    self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.ORANGE)
-                    self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.ORANGE)
-                self.waitFor(500)
-                self.ledOff()
-                self.waitFor(500)
+            # FIXME: timer mode does not support double flash
+            group = []
+            if color in ['green', 'orange']:
+                group.append(self.led.green_left)
+                group.append(self.led.green_right)
+            if color in ['red', 'orange']:
+                group.append(self.led.red_left)
+                group.append(self.led.red_right)
+            self.led.set(group, trigger='timer')
+            # when the trigger attribute is set other attributes appear
+            # dynamically :/ - but this still does not help :/
+            for i in range(5):
+                try:
+                    self.led.set(group, delay_on=200, delay_off=800)
+                    break
+                except IOError as e:
+                    logger.info('failed to set blink timing [%s]' % e.message)
+                time.sleep(0.1)
 
     def ledOff(self):
         self.led.all_off()
