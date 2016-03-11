@@ -39,8 +39,13 @@ Now you can also build a debian package using ``debuild`` or
 ## upload to ev3 ##
 The easiest is to upload the debian package and install it.
 
-    scp ../openrobertalab_1.3.2-1_all.deb root@ev3dev.local:/tmp/
-    ssh root@ev3dev.local "dpkg --install /tmp/openrobertalab_1.3.2-1_all.deb"
+    scp ../openrobertalab_1.3.2-1_all.deb maker@ev3dev.local:
+    ssh -t maker@ev3dev.local "sudo dpkg --install openrobertalab_1.3.2-1_all.deb;"
+
+Alternatively after changing single files you can do:
+
+    scp roberta/ev3.py robot@ev3dev.local:
+    ssh -t robot@ev3dev.local "sudo mv ev3.py /usr/lib/python2.7/dist-packages/roberta/; sudo systemctl restart openrobertalab"
 
 ## configuration ##
 The brickman ui will store configuration data under /etc/openroberta.conf. All
