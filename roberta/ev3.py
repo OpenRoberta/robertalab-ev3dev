@@ -157,7 +157,9 @@ class Hal(object):
             self.images[picture] = Image.frombytes('1', (178, 128),
                                                    IMAGES[picture],
                                                    'raw', '1;IR', 0, 1)
-        self.lcd.img.paste(self.images[picture], (x, y))
+        # FIXME: this should not poke into a private field
+        # https://github.com/rhempel/ev3dev-lang-python/issues/142
+        self.lcd._img.paste(self.images[picture], (x, y))
         self.lcd.update()
 
     def clearDisplay(self):
