@@ -5,7 +5,7 @@ import unittest
 import lab
 from lab import Connector, Service
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.CRITICAL)
 
 URL = 'http://lab.open-roberta.org'
 

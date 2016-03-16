@@ -1,5 +1,8 @@
+import logging
 import math
 import os
+
+logger = logging.getLogger('roberta.blocklymethods')
 
 
 class BlocklyMethods:
@@ -82,9 +85,10 @@ class BlocklyMethods:
         return [item] * times
 
     @staticmethod
-    def listsGetSubList():
-        # FIXME:
-        pass
+    def listsGetSubList(_list, startLocation, startIndex, endLocation, endIndex):
+        fromIndex = BlocklyMethods._calculateIndex(_list, startLocation, startIndex)
+        toIndex = 1 + BlocklyMethods._calculateIndex(_list, endLocation, endIndex)
+        return _list[fromIndex:toIndex]
 
     @staticmethod
     def findFirst(_list, item):
@@ -101,9 +105,16 @@ class BlocklyMethods:
             return -1
 
     @staticmethod
-    def listsIndex():
-        # FIXME:
-        pass
+    def listsIndex(_list, operation, location, index=None):
+        # FIXME: two different protos:
+        # listGet(_list, operation, location[, index])
+        # ListSet(_list, operation, element, location[, index])
+        #
+        # operation: GET, GET_REMOVE, REMOVE, SET, INSERT
+        # location: FIRST, LAST, FROM_START, FROM_END, RANDOM
+        #
+        index = BlocklyMethods._calculateIndex(_list, location, index)
+        return BlocklyMethods._executeOperation(_list, operation, index, 'element')
 
     @staticmethod
     def sumOnList():
@@ -144,3 +155,34 @@ class BlocklyMethods:
     def modeOnList():
         # FIXME:
         pass
+
+    @staticmethod
+    def _calculateIndex(_list, location, index):
+        if location is 'FROM_START':
+            return index
+        elif location is 'FROM_END':
+            return len(_list) - 1 - index
+        elif location is 'FIRST':
+            return 0
+        elif location is 'LAST':
+            return len(_list) - 1
+        elif location is 'RANDOM':
+            return BlocklyMethods.randInt(0, len(_list) - 1)
+        else:
+            logger.info('unknown location type [%s]' % location)
+
+    @staticmethod
+    def _executeOperation(_list, operation, index, element):
+        result = _list[index]
+        if operation is 'SET':
+            _list[index] = element
+        elif operation is 'INSERT':
+            _list[index:index] = [element]
+            result = element
+        elif operation is 'GET':
+            pass
+        elif operation in ['GET', 'GET_REMOVE']:
+            del _list[index]
+        else:
+            logger.info('unknown operation [%s]' % operation)
+        return result

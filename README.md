@@ -53,7 +53,7 @@ configuration can be edited from the UI. If there is a need to manully change
 the config, it is adviced to stop brickman.
 
 ## Testing ##
-``python -m unittest roberta.test_lab`` or ``nosetests``.
+``python -m unittest discover roberta`` or ``nosetests``.
 The test require ``python-httpretty``, but run without ``python-ev3dev``.
 
 ## Logging ##
