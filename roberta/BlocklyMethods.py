@@ -51,9 +51,9 @@ class BlocklyMethods:
         b = os.urandom(4)
         val = ord(b[0]) << 24 | ord(b[1]) << 16 | ord(b[2]) << 8 | ord(b[3])
         if min_val < max_val:
-            return min_val + (val % (max_val - min_val))
+            return min_val + (val % ((max_val - min_val) + 1))
         else:
-            return max_val + (val % (min_val - max_val))
+            return max_val + (val % ((min_val - max_val) + 1))
 
     @staticmethod
     def randDouble():
