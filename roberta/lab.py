@@ -206,6 +206,8 @@ class Connector(threading.Thread):
             code = code.replace(' else if ', ' elif ')
             code = code.replace(': return\n', ': return None\n')
             code = code.replace(': return', ': return ')
+            # and typos in method names
+            code = code.replace('BlocklyMethods.lenght', 'BlocklyMethods.length')
             prog.write(code)
 
     def _exec_code(self, filename, code, hard_abort):

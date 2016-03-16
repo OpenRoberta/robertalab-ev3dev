@@ -66,7 +66,7 @@ class BlocklyMethods:
         return "".join(args)
 
     @staticmethod
-    def lenght(_list):
+    def length(_list):
         return len(_list)
 
     @staticmethod
