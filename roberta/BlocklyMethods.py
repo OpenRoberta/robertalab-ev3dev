@@ -105,16 +105,14 @@ class BlocklyMethods:
             return -1
 
     @staticmethod
-    def listsIndex(_list, operation, location, index=None):
-        # FIXME: two different protos:
-        # listGet(_list, operation, location[, index])
-        # ListSet(_list, operation, element, location[, index])
-        #
-        # operation: GET, GET_REMOVE, REMOVE, SET, INSERT
-        # location: FIRST, LAST, FROM_START, FROM_END, RANDOM
-        #
+    def listsGetIndex(_list, operation, location, index=None):
         index = BlocklyMethods._calculateIndex(_list, location, index)
-        return BlocklyMethods._executeOperation(_list, operation, index, 'element')
+        return BlocklyMethods._executeOperation(_list, operation, index, None)
+
+    @staticmethod
+    def listsSetIndex(_list, operation, element, location, index=None):
+        index = BlocklyMethods._calculateIndex(_list, location, index)
+        BlocklyMethods._executeOperation(_list, operation, index, element)
 
     @staticmethod
     def sumOnList():
@@ -181,7 +179,7 @@ class BlocklyMethods:
             result = element
         elif operation is 'GET':
             pass
-        elif operation in ['GET', 'GET_REMOVE']:
+        elif operation in ['REMOVE', 'GET_REMOVE']:
             del _list[index]
         else:
             logger.info('unknown operation [%s]' % operation)
