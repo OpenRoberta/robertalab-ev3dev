@@ -138,7 +138,7 @@ class BlocklyMethods:
         _list = sorted(_list)
         m = n / 2
         if n % 2 == 0:  # even
-            return float(sum(_list[m - 1 : m + 1])) / 2.0
+            return float(sum(_list[m - 1: m + 1])) / 2.0
         else:
             return _list[m]
 
@@ -147,13 +147,13 @@ class BlocklyMethods:
         n = len(_list)
         if not n:
             return 0
-        mean = BlocklyMethods.averageOnList(_list);
+        mean = BlocklyMethods.averageOnList(_list)
         var = float(reduce(lambda x, y: x + math.pow(y - mean, 2), _list)) / n
-        return math.sqrt(var);
+        return math.sqrt(var)
 
     @staticmethod
     def randOnList(_list):
-        return _list[BlocklyMethods.randInt(0, len(_list) - 1)];
+        return _list[BlocklyMethods.randInt(0, len(_list) - 1)]
 
     @staticmethod
     def modeOnList(_list):
