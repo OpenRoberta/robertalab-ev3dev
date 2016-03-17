@@ -46,6 +46,22 @@ class TestBlocklyMethods(unittest.TestCase):
         sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'LAST', None, 'LAST', None)
         self.assertEqual(['d'], sub)
 
+    def test_findFirst_NotFound(self):
+        res = BlocklyMethods.findFirst(['a', 'b', 'b', 'd'], 'x')
+        self.assertEqual(-1, res)
+
+    def test_findFirst_Found(self):
+        res = BlocklyMethods.findFirst(['a', 'b', 'b', 'c'], 'b')
+        self.assertEqual(1, res)
+
+    def test_findLast_NotFound(self):
+        res = BlocklyMethods.findLast(['a', 'b', 'b', 'd'], 'x')
+        self.assertEqual(-1, res)
+
+    def test_findLast_Found(self):
+        res = BlocklyMethods.findLast(['a', 'b', 'b', 'c'], 'b')
+        self.assertEqual(2, res)
+
     def test_listsGetIndex_GetFirst(self):
         res = BlocklyMethods.listsGetIndex(['a', 'b', 'c', 'd'], 'GET', 'FIRST')
         self.assertEqual('a', res)
@@ -84,6 +100,36 @@ class TestBlocklyMethods(unittest.TestCase):
         items = ['a', 'b', 'c', 'd']
         BlocklyMethods.listsSetIndex(items, 'INSERT', 'A', 'FROM_START', 1)
         self.assertEqual(['a', 'A', 'b', 'c', 'd'], items)
+
+    def test_averageOnList(self):
+        items = [0, 8, 4, 10]
+        res = BlocklyMethods.averageOnList(items)
+        self.assertEqual(5.5, res)
+
+    def test_medianOnList(self):
+        items = [0, 8, 4, 10]
+        res = BlocklyMethods.medianOnList(items)
+        self.assertEqual(6.0, res)
+
+    def test_standardDeviatioin(self):
+        items = [0, 8, 4, 10]
+        res = BlocklyMethods.standardDeviatioin(items)
+        self.assertAlmostEqual(2.6809513, res)
+
+    def test_randOnList(self):
+        items = ['a', 'b', 'c', 'd']
+        res = BlocklyMethods.randOnList(items)
+        self.assertIn(res, items)
+
+    def test_modeOnList_all(self):
+        items = ['a', 'b', 'c', 'd']
+        res = BlocklyMethods.modeOnList(items)
+        self.assertEqual(items, res)
+
+    def test_modeOnList_One(self):
+        items = ['a', 'b', 'a', 'd']
+        res = BlocklyMethods.modeOnList(items)
+        self.assertEqual(['a'], res)
 
 if __name__ == '__main__':
     unittest.main()

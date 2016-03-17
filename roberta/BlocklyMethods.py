@@ -100,7 +100,7 @@ class BlocklyMethods:
     @staticmethod
     def findLast(_list, item):
         try:
-            _list[::-1].index(item)
+            return (len(_list) - 1) - _list[::-1].index(item)
         except:
             return -1
 
@@ -115,44 +115,68 @@ class BlocklyMethods:
         BlocklyMethods._executeOperation(_list, operation, index, element)
 
     @staticmethod
-    def sumOnList():
-        # FIXME:
-        pass
+    def sumOnList(_list):
+        return sum(_list)
 
     @staticmethod
-    def minOnList():
-        # FIXME:
-        pass
+    def minOnList(_list):
+        return min(_list)
 
     @staticmethod
-    def maxOnList():
-        # FIXME:
-        pass
+    def maxOnList(_list):
+        return max(_list)
 
     @staticmethod
-    def averageOnList():
-        # FIXME:
-        pass
+    def averageOnList(_list):
+        return float(sum(_list))/len(_list)
 
     @staticmethod
-    def medianOnList():
-        # FIXME:
-        pass
+    def medianOnList(_list):
+        n = len(_list)
+        if not n:
+            return 0
+        _list = sorted(_list)
+        m = n / 2
+        if n % 2 == 0:  # even
+            return float(sum(_list[m - 1 : m + 1])) / 2.0
+        else:
+            return _list[m]
 
     @staticmethod
-    def standardDeviatioin():
-        # FIXME:
-        pass
+    def standardDeviatioin(_list):
+        n = len(_list)
+        if not n:
+            return 0
+        mean = BlocklyMethods.averageOnList(_list);
+        var = float(reduce(lambda x, y: x + math.pow(y - mean, 2), _list)) / n
+        return math.sqrt(var);
 
     @staticmethod
-    def randOnList():
-        # FIXME:
-        pass
+    def randOnList(_list):
+        return _list[BlocklyMethods.randInt(0, len(_list) - 1)];
 
     @staticmethod
-    def modeOnList():
-        # FIXME:
-        pass
+    def modeOnList(_list):
+        # find which elements are most frequent in the list and
+        # returns a list fo them
+        modes = []
+        # Using a lists of [item, count] to keep count rather than dict to
+        # avoid "unhashable" errors when the counted item is itself a list or dict
+        counts = []
+        maxCount = 1
+        for item in _list:
+            found = False
+            for count in counts:
+                if count[0] == item:
+                    count[1] += 1
+                    maxCount = max(maxCount, count[1])
+                    found = True
+            if not found:
+                counts.append([item, 1])
+        for counted_item, item_count in counts:
+            if item_count == maxCount:
+                modes.append(counted_item)
+        return modes
 
     @staticmethod
     def _calculateIndex(_list, location, index):
