@@ -480,21 +480,21 @@ class Hal(object):
 
     # tacho-motor position
     def resetMotorTacho(self, actorPort):
-        self.cfg['actors'][actorPort].last_position = self.cfg['actors'][actorPort].position
+        m = self.cfg['actors'][actorPort]
+        m.last_position = m.position
 
     def getMotorTachoValue(self, actorPort, mode):
         m = self.cfg['actors'][actorPort]
         tachoCount = m.position - m.last_position
 
         if mode == 'degree':
-            return tachoCount * 360.0 / m.count_per_rot
+            return tachoCount * 360.0 / float(m.count_per_rot)
         elif mode in ['rotation', 'distance']:
-            rotations = float(tachoCount / m.count_per_rot)
+            rotations = float(tachoCount) / float(m.count_per_rot)
             if mode == 'rotation':
                 return rotations
             else:
                 distance = round(math.pi * self.cfg['wheel-diameter'] * rotations)
-                logger.debug('distance: [%lf]' % distance)
                 return distance
         else:
             raise ValueError('incorrect MotorTachoMode: %s' % mode)
