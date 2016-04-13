@@ -93,7 +93,9 @@ class Service(dbus.service.Object):
                     break
                 except IOError:
                     pass
-        self.params['token'] = generateToken()
+        # reusing token is nice for developers, but the server started to reject
+        # them
+        # self.params['token'] = generateToken()
 
     @dbus.service.method('org.openroberta.lab', in_signature='s', out_signature='s')
     def connect(self, address):
@@ -174,6 +176,7 @@ class Connector(threading.Thread):
             self.params = service.params
         else:
             self.params = {}
+        self.params['token'] = generateToken()
 
         self.registered = False
         self.running = True
