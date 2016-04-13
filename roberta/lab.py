@@ -239,7 +239,7 @@ class Connector(threading.Thread):
                 req = urllib2.Request(url, headers=headers)
                 return urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
             except urllib2.HTTPError as e:
-                if e.code == 404 and not '/rest/' in url:
+                if e.code == 404 and '/rest/' not in url:
                     logger.warning("HTTPError(%s): %s, retrying with '/rest'" % (e.code, e.reason))
                     # upstream change the server path
                     url = '%s/rest/%s' % (self.address, cmd)
