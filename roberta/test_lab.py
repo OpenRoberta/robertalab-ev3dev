@@ -42,11 +42,11 @@ class TestService(unittest.TestCase):
         service = Service(None)
         self.assertNotEqual('00:00:00:00:00:00', service.params['macaddr'])
 
-    def test_updateConfiguration(self):
-        service = Service(None)
-        token = service.params['token']
-        service.updateConfiguration()
-        self.assertNotEqual(token, service.params['token'])
+    # def test_updateConfiguration(self):
+    #     service = Service(None)
+    #     token = service.params['token']
+    #     service.updateConfiguration()
+    #     self.assertNotEqual(token, service.params['token'])
 
 """
     def test_connect(self):
