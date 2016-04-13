@@ -231,6 +231,22 @@ class Connector(threading.Thread):
             logger.exception("Ooops:")
         return result
 
+    def _request(self, cmd, headers, timeout):
+        url = '%s/%s' % (self.address, cmd)
+        while True:
+            try:
+                logger.debug('sending request to: %s' % url)
+                req = urllib2.Request(url, headers=headers)
+                return urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
+            except urllib2.HTTPError as e:
+                if e.code == 404 and not '/rest/' in url:
+                    logger.warning("HTTPError(%s): %s, retrying with '/rest'" % (e.code, e.reason))
+                    # upstream change the server path
+                    url = '%s/rest/%s' % (self.address, cmd)
+                else:
+                    raise e
+        return None
+
     def run(self):
         logger.debug('network thread started')
         # network related locals
@@ -257,9 +273,7 @@ class Connector(threading.Thread):
                 # http://stackoverflow.com/questions/1037406/python-urllib2-with-keep-alive
                 # http://stackoverflow.com/questions/13881196/remove-http-connection-header-python-urllib2
                 # https://github.com/jcgregorio/httplib2
-                logger.debug('sending: %s' % self.params['cmd'])
-                req = urllib2.Request('%s/pushcmd' % self.address, headers=headers)
-                response = urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
+                response = self._request("pushcmd", headers, timeout)
                 reply = json.loads(response.read())
                 logger.debug('response: %s' % json.dumps(reply))
                 cmd = reply['cmd']
@@ -277,8 +291,8 @@ class Connector(threading.Thread):
                     # TODO: url is not part of reply :/
                     # TODO: we should receive a digest for the download (md5sum) so that
                     #   we can verify the download
-                    req = urllib2.Request('%s/download' % self.address, headers=headers)
-                    response = urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
+                    logger.debug('download code: %s/download' % self.address)
+                    response = self._request("download", headers, timeout)
                     logger.debug('response: %s' % json.dumps(reply))
                     hdr = response.info().getheader('Content-Disposition')
                     # save to $HOME/
@@ -310,16 +324,11 @@ class Connector(threading.Thread):
                 else:
                     logger.warning('unhandled command: %s' % cmd)
             except urllib2.HTTPError as e:
-                if e.code == 404 and not self.address.endswith('/rest'):
-                    logger.warning("HTTPError(%s): %s, retrying" % (e.code, e.reason))
-                    # upstream change the server path
-                    self.address = '%s/rest' % self.address
-                else:
-                    # [Errno 111] Connection refused>
-                    logger.error("HTTPError(%s): %s" % (e.code, e.reason))
-                    break
+                # e.g. [Errno 404]
+                logger.error("HTTPError(%s): %s" % (e.code, e.reason))
+                break
             except urllib2.URLError as e:
-                # [Errno 111] Connection refused>
+                # e.g. [Errno 111] Connection refused
                 logger.error("URLError: %s: %s" % (self.address, e.reason))
                 break
             except socket.timeout:
