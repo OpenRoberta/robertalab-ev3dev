@@ -244,8 +244,12 @@ class Connector(threading.Thread):
             except urllib2.HTTPError as e:
                 if e.code == 404 and '/rest/' not in url:
                     logger.warning("HTTPError(%s): %s, retrying with '/rest'" % (e.code, e.reason))
-                    # upstream change the server path
+                    # upstream changed the server path
                     url = '%s/rest/%s' % (self.address, cmd)
+                elif e.code == 405 and not url.startswith('https://'):
+                    logger.warning("HTTPError(%s): %s, retrying with 'https://'" % (e.code, e.reason))
+                    self.address = "https" + self.address[4:]
+                    url = "https" + url[4:]
                 else:
                     raise e
         return None
