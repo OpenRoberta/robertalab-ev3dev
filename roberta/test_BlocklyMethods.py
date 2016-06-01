@@ -31,19 +31,19 @@ class TestBlocklyMethods(unittest.TestCase):
         self.assertEqual(['x', 'x'], BlocklyMethods.createListWithItem('x', 2))
 
     def test_listsGetSubList_FromStart(self):
-        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'FROM_START', 1, 'FROM_START', 2)
+        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'from_start', 1, 'from_start', 2)
         self.assertEqual(['b', 'c'], sub)
 
     def test_listsGetSubList_FromEnd(self):
-        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'FROM_END', 2, 'FROM_END', 1)
+        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'from_end', 2, 'from_end', 1)
         self.assertEqual(['b', 'c'], sub)
 
     def test_listsGetSubList_First(self):
-        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'FIRST', None, 'FIRST', None)
+        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'first', None, 'first', None)
         self.assertEqual(['a'], sub)
 
     def test_listsGetSubList_Last(self):
-        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'LAST', None, 'LAST', None)
+        sub = BlocklyMethods.listsGetSubList(['a', 'b', 'c', 'd'], 'last', None, 'last', None)
         self.assertEqual(['d'], sub)
 
     def test_findFirst_NotFound(self):
@@ -63,42 +63,42 @@ class TestBlocklyMethods(unittest.TestCase):
         self.assertEqual(2, res)
 
     def test_listsGetIndex_GetFirst(self):
-        res = BlocklyMethods.listsGetIndex(['a', 'b', 'c', 'd'], 'GET', 'FIRST')
+        res = BlocklyMethods.listsGetIndex(['a', 'b', 'c', 'd'], 'get', 'first')
         self.assertEqual('a', res)
 
     def test_listsGetIndex_RemoveFirst(self):
         items = ['a', 'b', 'c', 'd']
-        BlocklyMethods.listsGetIndex(items, 'REMOVE', 'FIRST')
+        BlocklyMethods.listsGetIndex(items, 'remove', 'first')
         self.assertEqual(['b', 'c', 'd'], items)
 
     def test_listsGetIndex_RemoveLast(self):
         items = ['a', 'b', 'c', 'd']
-        BlocklyMethods.listsGetIndex(items, 'REMOVE', 'LAST')
+        BlocklyMethods.listsGetIndex(items, 'remove', 'last')
         self.assertEqual(['a', 'b', 'c'], items)
 
     def test_listsGetIndex_GetFromStart(self):
-        res = BlocklyMethods.listsGetIndex(['a', 'b', 'c', 'd'], 'GET', 'FROM_START', 1)
+        res = BlocklyMethods.listsGetIndex(['a', 'b', 'c', 'd'], 'get', 'from_start', 1)
         self.assertEqual('b', res)
 
     def test_listsSetIndex_SetFirst(self):
         items = ['a', 'b', 'c', 'd']
-        BlocklyMethods.listsSetIndex(items, 'SET', 'A', 'FIRST')
+        BlocklyMethods.listsSetIndex(items, 'set', 'A', 'first')
         self.assertEqual(['A', 'b', 'c', 'd'], items)
 
     def test_listsSetIndex_SetRandom(self):
         items = ['a', 'b', 'c', 'd']
-        BlocklyMethods.listsSetIndex(items, 'SET', 'A', 'RANDOM')
+        BlocklyMethods.listsSetIndex(items, 'set', 'A', 'random')
         self.assertNotEqual(['a', 'b', 'c', 'd'], items)
         self.assertIn('A', items)
 
     def test_listsSetIndex_InsertFirst(self):
         items = ['a', 'b', 'c', 'd']
-        BlocklyMethods.listsSetIndex(items, 'INSERT', 'A', 'FIRST')
+        BlocklyMethods.listsSetIndex(items, 'insert', 'A', 'first')
         self.assertEqual(['A', 'a', 'b', 'c', 'd'], items)
 
     def test_listsSetIndex_InsertFromStart(self):
         items = ['a', 'b', 'c', 'd']
-        BlocklyMethods.listsSetIndex(items, 'INSERT', 'A', 'FROM_START', 1)
+        BlocklyMethods.listsSetIndex(items, 'insert', 'A', 'from_start', 1)
         self.assertEqual(['a', 'A', 'b', 'c', 'd'], items)
 
     def test_averageOnList(self):
