@@ -180,15 +180,15 @@ class BlocklyMethods:
 
     @staticmethod
     def _calculateIndex(_list, location, index):
-        if location is 'FROM_START':
+        if location is 'from_start':
             return index
-        elif location is 'FROM_END':
+        elif location is 'from_end':
             return len(_list) - 1 - index
-        elif location is 'FIRST':
+        elif location is 'first':
             return 0
-        elif location is 'LAST':
+        elif location is 'last':
             return len(_list) - 1
-        elif location is 'RANDOM':
+        elif location is 'random':
             return BlocklyMethods.randInt(0, len(_list) - 1)
         else:
             logger.info('unknown location type [%s]' % location)
@@ -196,14 +196,14 @@ class BlocklyMethods:
     @staticmethod
     def _executeOperation(_list, operation, index, element):
         result = _list[index]
-        if operation is 'SET':
+        if operation is 'set':
             _list[index] = element
-        elif operation is 'INSERT':
+        elif operation is 'insert':
             _list[index:index] = [element]
             result = element
-        elif operation is 'GET':
+        elif operation is 'get':
             pass
-        elif operation in ['REMOVE', 'GET_REMOVE']:
+        elif operation in ['remove', 'get_remove']:
             del _list[index]
         else:
             logger.info('unknown operation [%s]' % operation)
