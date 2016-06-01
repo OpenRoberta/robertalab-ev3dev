@@ -454,7 +454,7 @@ class Hal(object):
     def getColorSensorRgb(self, port):
         s = self.cfg['sensors'][port]
         s.mode = 'RGB-RAW'
-        return s.value()
+        return (s.value(0), s.value(1), s.value(2))
 
     # infrared
     # http://www.ev3dev.org/docs/sensors/lego-ev3-infrared-sensor/
