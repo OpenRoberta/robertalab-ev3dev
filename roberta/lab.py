@@ -257,6 +257,9 @@ class Connector(threading.Thread):
     def run(self):
         logger.debug('network thread started')
         # network related locals
+        # TODO: change the user agent:
+        # https://docs.python.org/2/library/urllib2.html#urllib2.Request
+        # default is "Python-urllib/2.7"
         headers = {
             'Content-Type': 'application/json'
         }
