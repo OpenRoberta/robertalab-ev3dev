@@ -2,8 +2,6 @@
 import atexit
 import gobject
 import logging
-import os
-import sys
 from dbus.mainloop.glib import DBusGMainLoop
 from roberta.lab import Service
 
@@ -13,14 +11,13 @@ logger = logging.getLogger('roberta')
 gobject.threads_init()
 service = None
 
-
 def cleanup():
     global service
 
     if service:
         service.hal.clearDisplay()
         service.hal.stopAllMotors()
-    os.system('setterm -cursor on')
+        service.switchToTxtMode()
     logger.info('--- done ---')
     logging.shutdown()
 
@@ -29,8 +26,6 @@ def main():
     global service
 
     logger.info('--- starting ---')
-    logger.info('running on tty: %s' % os.ttyname(sys.stdin.fileno()))
-    os.system('setterm -cursor off')
 
     atexit.register(cleanup)
 

@@ -1,6 +1,6 @@
 import dbus
 import dbus.service
-import fcntl
+from fcntl import ioctl
 import json
 import logging
 import os
@@ -11,6 +11,7 @@ import time
 import thread
 import threading
 import urllib2
+import sys
 # ignore failure to make this testable outside of the target platform
 try:
     from ev3dev import auto as ev3dev
@@ -25,7 +26,7 @@ logger = logging.getLogger('roberta.lab')
 # helpers
 def getHwAddr(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
+    info = ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
     return ':'.join(['%02x' % ord(char) for char in info[18:24]])
 
 
@@ -43,7 +44,6 @@ def getBatteryVoltage():
         return "{0:.3f}".format(ev3dev.PowerSupply().measured_volts)
     except:
         return '0.0'
-
 
 class Service(dbus.service.Object):
     """OpenRobertab-Lab dbus service
@@ -80,6 +80,19 @@ class Service(dbus.service.Object):
             'menuversion': version.split('-')[0],
         }
         self.updateConfiguration()
+
+    def switchToGfxMode(self):
+        logger.info('running on tty: %s' % os.ttyname(sys.stdin.fileno()))
+        with open(os.ttyname(sys.stdin.fileno()), 'r') as tty:
+            # KDSETMODE = 0x4B3A, GRAPHICS = 0x01
+            ioctl(tty, 0x4B3A, 0x01)
+
+    def switchToTxtMode(self):
+        with open(os.ttyname(sys.stdin.fileno()), 'r+b') as tty:
+            # KDSETMODE = 0x4B3A, TEXT = 0x00
+            ioctl(tty, 0x4B3A, 0x00)
+            # send Ctrl-L to tty to clear
+            tty.write('\033c')
 
     def updateConfiguration(self):
         # or /etc/os-release
@@ -296,6 +309,7 @@ class Connector(threading.Thread):
                 elif cmd == 'abort':
                     break
                 elif cmd == 'download':
+                    self.service.switchToGfxMode()
                     self.service.hal.clearDisplay()
                     self.service.status('executing')
                     # TODO: url is not part of reply :/
@@ -324,6 +338,7 @@ class Connector(threading.Thread):
                     while self.service.hal.isKeyPressed('any'):
                         time.sleep(0.1)
                     self.service.status('registered')
+                    self.service.switchToTxtMode()
                 elif cmd == 'update':
                     # FIXME:
                     # fetch new files (menu/hal)
