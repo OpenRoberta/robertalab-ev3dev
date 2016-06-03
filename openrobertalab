@@ -11,6 +11,7 @@ logger = logging.getLogger('roberta')
 gobject.threads_init()
 service = None
 
+
 def cleanup():
     global service
 

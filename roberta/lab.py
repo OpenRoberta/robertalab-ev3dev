@@ -45,6 +45,7 @@ def getBatteryVoltage():
     except:
         return '0.0'
 
+
 class Service(dbus.service.Object):
     """OpenRobertab-Lab dbus service
 
