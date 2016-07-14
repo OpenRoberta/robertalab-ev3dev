@@ -3,7 +3,7 @@ import httpretty
 import unittest
 
 import lab
-from lab import Connector, Service
+from lab import Connector, Service, TOKEN_PER_SESSION
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -42,11 +42,13 @@ class TestService(unittest.TestCase):
         service = Service(None)
         self.assertNotEqual('00:00:00:00:00:00', service.params['macaddr'])
 
-    # def test_updateConfiguration(self):
-    #     service = Service(None)
-    #     token = service.params['token']
-    #     service.updateConfiguration()
-    #     self.assertNotEqual(token, service.params['token'])
+    def test_updateConfiguration(self):
+        if TOKEN_PER_SESSION:
+            return
+        service = Service(None)
+        token = service.params['token']
+        service.updateConfiguration()
+        self.assertNotEqual(token, service.params['token'])
 
 """
     def test_connect(self):

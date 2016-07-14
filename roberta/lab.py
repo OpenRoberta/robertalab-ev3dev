@@ -22,6 +22,13 @@ from __version__ import version
 
 logger = logging.getLogger('roberta.lab')
 
+# configuration
+
+# TRUE: use a new token per reconnect
+# FALSE: try keep using the token for as long as possible
+#        (needs robertalab > 1.4 or develop branch)
+TOKEN_PER_SESSION = True
+
 
 # helpers
 def getHwAddr(ifname):
@@ -109,7 +116,8 @@ class Service(dbus.service.Object):
                     pass
         # reusing token is nice for developers, but the server started to reject
         # them
-        # self.params['token'] = generateToken()
+        if not TOKEN_PER_SESSION:
+            self.params['token'] = generateToken()
 
     @dbus.service.method('org.openroberta.lab', in_signature='s', out_signature='s')
     def connect(self, address):
@@ -190,7 +198,8 @@ class Connector(threading.Thread):
             self.params = service.params
         else:
             self.params = {}
-        self.params['token'] = generateToken()
+        if TOKEN_PER_SESSION:
+            self.params['token'] = generateToken()
 
         self.registered = False
         self.running = True
