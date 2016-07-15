@@ -317,7 +317,13 @@ class Connector(threading.Thread):
                     self.registered = True
                     self.params['nepoexitvalue'] = 0
                 elif cmd == 'abort':
-                    break
+                    if not self.registered:
+                        logger.info('token collision, retrying')
+                        self.params['token'] = generateToken()
+                        # make sure we don't DOS the server
+                        time.sleep(1.0)
+                    else:
+                        break
                 elif cmd == 'download':
                     self.service.switchToGfxMode()
                     self.service.hal.clearDisplay()
