@@ -17,9 +17,10 @@ logger = logging.getLogger('roberta.ev3')
 
 class Hal(object):
 
-    def __init__(self, brickConfiguration, usedSensors):
+    # usedSensors is unused, the code-generator for lab.openroberta > 1.4 wont
+    # pass it anymore
+    def __init__(self, brickConfiguration, usedSensors=None):
         self.cfg = brickConfiguration
-        self.usedSensors = usedSensors
         dir = os.path.dirname(__file__)
         self.font_s = ImageFont.load(os.path.join(dir, 'ter-u12n_unicode.pil'))
         self.font_x = ImageFont.load(os.path.join(dir, 'ter-u18n_unicode.pil'))
