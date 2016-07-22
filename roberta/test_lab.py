@@ -1,5 +1,8 @@
 import logging
 import httpretty
+import thread
+import threading
+import time
 import unittest
 
 import lab
@@ -10,12 +13,19 @@ logging.basicConfig(level=logging.CRITICAL)
 URL = 'http://lab.open-roberta.org'
 
 
-class DummyHardAbort():
-    def __init__(self):
+class DummyAbortHandler(threading.Thread):
+    def __init__(self, to_sleep=0.0):
+        threading.Thread.__init__(self)
         self.running = True
+        self.to_sleep = to_sleep
+
+    def run(self):
+        if self.to_sleep:
+            time.sleep(self.to_sleep)
+            thread.interrupt_main()
 
     def __enter__(self):
-        pass
+        self.start()
 
     def __exit__(self, type, value, traceback):
         if type is not None:  # an exception has occurred
@@ -66,29 +76,35 @@ class TestService(unittest.TestCase):
         # self.assertEqual(expected, service.status(status))
         assert False # TODO: implement your test here
 
-class TestHardAbort(unittest.TestCase):
+class TestAbortHandler(unittest.TestCase):
     def test___init__(self):
-        hard_abort = HardAbort(null)
+        abort_handler = AbortHandler(null)
         assert False # TODO: implement your test here
 
     def test_run(self):
-        # hard_abort = HardAbort(service)
-        # self.assertEqual(expected, hard_abort.run())
+        # abort_handler = AbortHandler(service)
+        # self.assertEqual(expected, abort_handler.run())
         assert False # TODO: implement your test here
 """
 
 
 class TestConnector(unittest.TestCase):
     GOOD_CODE = (
-        'if __name__ == "__main__":'
-        '  pass'
+        'if __name__ == "__main__":\n'
+        '  pass\n'
     )
     BAD_CODE = (
-        '{ this is not python, right?'
+        '{ this is not python, right?\n'
     )
     GOOD_CODE_WITH_RESULT = (
-        'if __name__ == "__main__":'
-        '  result = 42'
+        'if __name__ == "__main__":\n'
+        '  result = 42\n'
+    )
+    INFINITE_LOOP = (
+        'import time\n'
+        'while True:\n'
+        '  time.sleep(0.1)\n'
+        '  result += 1\n'
     )
 
     def test___init__(self):
@@ -107,18 +123,23 @@ class TestConnector(unittest.TestCase):
 
     def test_exec_good_code(self):
         connector = Connector(URL, None)
-        res = connector._exec_code("test.py", TestConnector.GOOD_CODE, DummyHardAbort())
+        res = connector._exec_code("test.py", TestConnector.GOOD_CODE, DummyAbortHandler())
         self.assertEqual(res, 0)
 
     def test_exec_bad_code(self):
         connector = Connector(URL, None)
-        res = connector._exec_code("test.py", TestConnector.BAD_CODE, DummyHardAbort())
+        res = connector._exec_code("test.py", TestConnector.BAD_CODE, DummyAbortHandler())
         self.assertEqual(res, 1)
 
     def test_exec_code_with_result(self):
         connector = Connector(URL, None)
-        res = connector._exec_code("test.py", TestConnector.GOOD_CODE_WITH_RESULT, DummyHardAbort())
+        res = connector._exec_code("test.py", TestConnector.GOOD_CODE_WITH_RESULT, DummyAbortHandler())
         self.assertEqual(res, 42)
+
+    def test_exec_code_with_infinite_loop(self):
+        connector = Connector(URL, None)
+        res = connector._exec_code("test.py", TestConnector.INFINITE_LOOP, DummyAbortHandler(to_sleep=0.3))
+        self.assertEqual(res, 143)
 """
 class TestCleanup(unittest.TestCase):
     def test_cleanup(self):

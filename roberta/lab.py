@@ -1,3 +1,4 @@
+import ctypes
 import dbus
 import dbus.service
 from fcntl import ioctl
@@ -153,18 +154,22 @@ class Service(dbus.service.Object):
         logger.info('status changed: %s' % status)
 
 
-class HardAbort(threading.Thread):
-    """ Test for a 10s back key press and terminate the daemon"""
+class AbortHandler(threading.Thread):
+    """ Key press handler to abort running programms.
+        Tests for a center+down press to soft-kill the programm or a 1s back
+        key press and terminate the daemon"""
 
-    def __init__(self, service):
+    def __init__(self, service, runner):
         threading.Thread.__init__(self)
         self.service = service
         self.running = True
+        self.runner = runner
 
     def run(self):
         self.long_press = 0
+        hal = self.service.hal
         while self.running:
-            if self.service.hal.isKeyPressed('back'):
+            if hal.isKeyPressed('back'):
                 logger.debug('back: %d', self.long_press)
                 # if pressed for one sec, hard exit
                 if self.long_press > 10:
@@ -173,6 +178,11 @@ class HardAbort(threading.Thread):
                     self.running = False
                 else:
                     self.long_press += 1
+            elif hal.isKeyPressed('enter') and hal.isKeyPressed('down'):
+                logger.debug('--- soft-abort ---')
+                self.running = False
+                # Exception SystemExit in <bound method Popen.__del__ of <subprocess.Popen object at 0xb608f0f0>> ignored
+                self.ctype_async_raise(SystemExit)
             else:
                 self.long_press = 0
             time.sleep(0.1)
@@ -184,6 +194,30 @@ class HardAbort(threading.Thread):
         self.running = False
         if type is not None:  # an exception has occurred
             return False      # reraise the exception
+
+    def ctype_async_raise(self, exception):
+        # adapted from https://gist.github.com/liuw/2407154
+        found = False
+        target_tid = 0
+        for tid, tobj in threading._active.items():
+            if tobj is self.runner:
+                found = True
+                target_tid = tid
+                break
+        if not found:
+            raise ValueError("Invalid thread object")
+
+        ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(target_tid), ctypes.py_object(exception))
+        # ref: http://docs.python.org/c-api/init.html#PyThreadState_SetAsyncExc
+        if ret == 0:
+            raise ValueError("Invalid thread ID")
+        elif ret > 1:
+            # Huh? Why would we notify more than one threads?
+            # Because we punch a hole into C level interpreter.
+            # So it is better to clean up the mess.
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(target_tid, 0)
+            raise SystemError("PyThreadState_SetAsyncExc failed")
+        logger.debug("Successfully set asynchronized exception for", target_tid)
 
 
 class Connector(threading.Thread):
@@ -206,7 +240,7 @@ class Connector(threading.Thread):
         logger.debug('thread created')
 
     def _fix_code(self, filename, code):
-        """Apply hotfixes needed untile server update"""
+        """Apply hotfixes needed until server update"""
         with open(filename, 'w') as prog:
             code = code.replace('import Hal,BlocklyMethods',
                                 'import Hal\nfrom roberta.BlocklyMethods import BlocklyMethods')
@@ -236,7 +270,7 @@ class Connector(threading.Thread):
             code = code.replace('BlocklyMethods.lenght', 'BlocklyMethods.length')
             prog.write(code)
 
-    def _exec_code(self, filename, code, hard_abort):
+    def _exec_code(self, filename, code, abort_handler):
         result = 0
         # using a new process would be using this, but is slower (4s vs <1s):
         # result = subprocess.call(["python", filename], env={"PYTHONPATH":"$PYTONPATH:."})
@@ -247,11 +281,17 @@ class Connector(threading.Thread):
         #   it would be nice though if we could cancel the running program
         try:
             compiled_code = compile(code, filename, 'exec')
-            with hard_abort:
-                scope = {'__name__': '__main__', 'result': 0}
+            with abort_handler:
+                scope = {
+                    '__name__': '__main__',
+                    'result': 0,
+                }
                 exec(compiled_code, scope)
                 result = scope['result']
             logger.info('execution finished: result = %d', result)
+        except (SystemExit, KeyboardInterrupt):
+            result = 143
+            logger.info("soft kill")
         except:
             result = 1
             logger.exception("Ooops:")
@@ -343,9 +383,9 @@ class Connector(threading.Thread):
                     with open(filename) as f:
                         code = f.read()
                     # use a long-press of backspace to terminate
-                    hard_abort = HardAbort(self.service)
-                    hard_abort.daemon = True
-                    self.params['nepoexitvalue'] = self._exec_code(filename, code, hard_abort)
+                    abort_handler = AbortHandler(self.service, self)
+                    abort_handler.daemon = True
+                    self.params['nepoexitvalue'] = self._exec_code(filename, code, abort_handler)
                     self.service.hal.clearDisplay()
                     self.service.hal.stopAllMotors()
                     self.service.hal.resetLED()

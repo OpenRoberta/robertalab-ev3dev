@@ -14,8 +14,14 @@ You can turn it back off by running:
     sudo systemctl mask openrobertalab.service
 
 If the ``openrobertalab`` package is installed and the service is running, the
-'Open Roberta' menu item in brickman will allow you to connect to an Open
+``Open Roberta`` menu item in brickman will allow you to connect to an Open
 Roberta server.
+
+When a programm contains an infinite loop, it can be ``killed`` by pressing
+the ``enter`` and ``down`` buttons on the ev3 simulataneously. If this is not
+enough to terminate the program, holding the ``back`` button for one second
+will kill it, but together with it the connector. The connector will restart
+automatically, but one needs to reconnect to the Open Roberta server again.
 
 # build status #
 
