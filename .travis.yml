@@ -19,7 +19,7 @@ script:
 - pep8 --max-line-length=120 --exclude=StaticData.py . openrobertalab
 - pyflakes . openrobertalab
 - ./setup.py build
-- nosetests
+- nosetests --with-coverage
 
 after_success:
 - codecov
