@@ -10,7 +10,7 @@ before_install:
 # pip cannot install python-dbus: https://bugs.freedesktop.org/show_bug.cgi?id=55439
 # pip cannot install PyGObject: "Building PyGObject using distutils is only supported on windows."
 # travis cannot install PyBluez (missing gcc)
-install: pip install httpretty pep8 pyflakes
+install: pip install httpretty pep8 pyflakes codecov
 
 virtualenv:
   system_site_packages: true
@@ -20,6 +20,9 @@ script:
 - pyflakes . openrobertalab
 - ./setup.py build
 - nosetests
+
+after_success:
+- codecov
 
 notifications:
   irc: "chat.freenode.net#open-roberta"
