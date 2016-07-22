@@ -181,7 +181,6 @@ class AbortHandler(threading.Thread):
             elif hal.isKeyPressed('enter') and hal.isKeyPressed('down'):
                 logger.debug('--- soft-abort ---')
                 self.running = False
-                # Exception SystemExit in <bound method Popen.__del__ of <subprocess.Popen object at 0xb608f0f0>> ignored
                 self.ctype_async_raise(SystemExit)
             else:
                 self.long_press = 0
