@@ -351,9 +351,9 @@ class Hal(object):
         dc = distance / circ
         if direction is 'backward':
             dc = -dc
-        ml.run_to_rel_pos(speed_regulation_enabled='on',
+        ml.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
                           position_sp=int(dc * ml.count_per_rot), speed_sp=int(speed_pct))
-        mr.run_to_rel_pos(speed_regulation_enabled='on',
+        mr.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
                           position_sp=int(dc * mr.count_per_rot), speed_sp=int(speed_pct))
         logger.debug("driving: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
@@ -386,14 +386,18 @@ class Hal(object):
         dc = distance / circ
         logger.debug("doing %lf rotations" % dc)
         if direction is 'left':
-            mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * mr.count_per_rot),
+            mr.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
+                              position_sp=int(dc * mr.count_per_rot),
                               speed_sp=int(speed_pct))
-            ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * ml.count_per_rot),
+            ml.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
+                              position_sp=int(-dc * ml.count_per_rot),
                               speed_sp=int(speed_pct))
         else:
-            ml.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(dc * ml.count_per_rot),
+            ml.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
+                              position_sp=int(dc * ml.count_per_rot),
                               speed_sp=int(speed_pct))
-            mr.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(-dc * mr.count_per_rot),
+            mr.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
+                              position_sp=int(-dc * mr.count_per_rot),
                               speed_sp=int(speed_pct))
         logger.debug("turning: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
