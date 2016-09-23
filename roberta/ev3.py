@@ -351,11 +351,19 @@ class Hal(object):
         dc = distance / circ
         if direction is 'backward':
             dc = -dc
-        ml.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
-                          position_sp=int(dc * ml.count_per_rot), speed_sp=int(speed_pct))
-        mr.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
-                          position_sp=int(dc * mr.count_per_rot), speed_sp=int(speed_pct))
-        logger.debug("driving: %s, %s" % (ml.state, mr.state))
+        # set all attributes
+        ml.speed_regulation_enabled='on'
+        ml.stop_command='brake'
+        ml.position_sp=int(dc * ml.count_per_rot)
+        ml.speed_sp=int(speed_pct)
+        mr.speed_regulation_enabled='on'
+        mr.stop_command='brake'
+        mr.position_sp=int(dc * mr.count_per_rot)
+        mr.speed_sp=int(speed_pct)
+        # start motors
+        ml.run_to_rel_pos()
+        mr.run_to_rel_pos()
+        # logger.debug("driving: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
             self.busyWait()
 
@@ -385,23 +393,64 @@ class Hal(object):
         circ = math.pi * self.cfg['wheel-diameter']
         dc = distance / circ
         logger.debug("doing %lf rotations" % dc)
+        # set all attributes
+        ml.speed_regulation_enabled='on'
+        ml.stop_command='brake'
+        ml.speed_sp=int(speed_pct)
+        mr.speed_regulation_enabled='on'
+        mr.stop_command='brake'
+        mr.speed_sp=int(speed_pct)
         if direction is 'left':
-            mr.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
-                              position_sp=int(dc * mr.count_per_rot),
-                              speed_sp=int(speed_pct))
-            ml.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
-                              position_sp=int(-dc * ml.count_per_rot),
-                              speed_sp=int(speed_pct))
+            mr.position_sp=int(dc * mr.count_per_rot)
+            ml.position_sp=int(-dc * ml.count_per_rot)
         else:
-            ml.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
-                              position_sp=int(dc * ml.count_per_rot),
-                              speed_sp=int(speed_pct))
-            mr.run_to_rel_pos(speed_regulation_enabled='on', stop_command='brake',
-                              position_sp=int(-dc * mr.count_per_rot),
-                              speed_sp=int(speed_pct))
+            ml.position_sp=int(dc * ml.count_per_rot)
+            mr.position_sp=int(-dc * mr.count_per_rot)
+        # start motors
+        ml.run_to_rel_pos()
+        mr.run_to_rel_pos()
         logger.debug("turning: %s, %s" % (ml.state, mr.state))
         while (ml.state or mr.state):
             self.busyWait()
+
+    def driveInCurve(self, direction, left_port, left_speed_pct, right_port, right_speed_pct, distance=None):
+        # direction: foreward, backwards
+        left_speed_pct *= 10.0
+        right_speed_pct *= 10.0
+        ml = self.cfg['actors'][left_port]
+        mr = self.cfg['actors'][right_port]
+        
+        if distance:
+            speed_pct = (left_speed_pct + right_speed_pct) / 2.0;
+            circ = math.pi * self.cfg['wheel-diameter']
+            dc = distance / circ
+            left_dc = dc * left_speed_pct / speed_pct
+            right_dc = dc * right_speed_pct / speed_pct
+            # set all attributes
+            ml.speed_regulation_enabled='on'
+            ml.stop_command='brake'
+            ml.speed_sp=int(left_speed_pct)
+            mr.speed_regulation_enabled='on'
+            mr.stop_command='brake'
+            mr.speed_sp=int(right_speed_pct)
+            if direction is 'backwards':
+                ml.position_sp=int(-left_dc * ml.count_per_rot)
+                mr.position_sp=int(-right_dc * mr.count_per_rot)
+            else:
+                ml.position_sp=int(left_dc * ml.count_per_rot)
+                mr.position_sp=int(right_dc * mr.count_per_rot)
+            # start motors
+            ml.run_to_rel_pos()
+            mr.run_to_rel_pos()
+            while (ml.state or mr.state):
+                self.busyWait()
+        else:
+            if direction is 'backwards':
+                ml.run_forever(speed_regulation_enabled='on', speed_sp=int(-left_speed_pct))
+                mr.run_forever(speed_regulation_enabled='on', speed_sp=int(-right_speed_pct))
+            else:
+                ml.run_forever(speed_regulation_enabled='on', speed_sp=int(left_speed_pct))
+                mr.run_forever(speed_regulation_enabled='on', speed_sp=int(right_speed_pct))
 
     # sensors
     def scaledValue(self, sensor):
