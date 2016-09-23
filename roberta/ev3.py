@@ -352,14 +352,14 @@ class Hal(object):
         if direction is 'backward':
             dc = -dc
         # set all attributes
-        ml.speed_regulation_enabled='on'
-        ml.stop_command='brake'
-        ml.position_sp=int(dc * ml.count_per_rot)
-        ml.speed_sp=int(speed_pct)
-        mr.speed_regulation_enabled='on'
-        mr.stop_command='brake'
-        mr.position_sp=int(dc * mr.count_per_rot)
-        mr.speed_sp=int(speed_pct)
+        ml.speed_regulation_enabled = 'on'
+        ml.stop_command = 'brake'
+        ml.position_sp = int(dc * ml.count_per_rot)
+        ml.speed_sp = int(speed_pct)
+        mr.speed_regulation_enabled = 'on'
+        mr.stop_command = 'brake'
+        mr.position_sp = int(dc * mr.count_per_rot)
+        mr.speed_sp = int(speed_pct)
         # start motors
         ml.run_to_rel_pos()
         mr.run_to_rel_pos()
@@ -394,18 +394,18 @@ class Hal(object):
         dc = distance / circ
         logger.debug("doing %lf rotations" % dc)
         # set all attributes
-        ml.speed_regulation_enabled='on'
-        ml.stop_command='brake'
-        ml.speed_sp=int(speed_pct)
-        mr.speed_regulation_enabled='on'
-        mr.stop_command='brake'
-        mr.speed_sp=int(speed_pct)
+        ml.speed_regulation_enabled = 'on'
+        ml.stop_command = 'brake'
+        ml.speed_sp = int(speed_pct)
+        mr.speed_regulation_enabled = 'on'
+        mr.stop_command = 'brake'
+        mr.speed_sp = int(speed_pct)
         if direction is 'left':
-            mr.position_sp=int(dc * mr.count_per_rot)
-            ml.position_sp=int(-dc * ml.count_per_rot)
+            mr.position_sp = int(dc * mr.count_per_rot)
+            ml.position_sp = int(-dc * ml.count_per_rot)
         else:
-            ml.position_sp=int(dc * ml.count_per_rot)
-            mr.position_sp=int(-dc * mr.count_per_rot)
+            ml.position_sp = int(dc * ml.count_per_rot)
+            mr.position_sp = int(-dc * mr.count_per_rot)
         # start motors
         ml.run_to_rel_pos()
         mr.run_to_rel_pos()
@@ -419,26 +419,25 @@ class Hal(object):
         right_speed_pct *= 10.0
         ml = self.cfg['actors'][left_port]
         mr = self.cfg['actors'][right_port]
-        
         if distance:
-            speed_pct = (left_speed_pct + right_speed_pct) / 2.0;
+            speed_pct = (left_speed_pct + right_speed_pct) / 2.0
             circ = math.pi * self.cfg['wheel-diameter']
             dc = distance / circ
             left_dc = dc * left_speed_pct / speed_pct
             right_dc = dc * right_speed_pct / speed_pct
             # set all attributes
-            ml.speed_regulation_enabled='on'
-            ml.stop_command='brake'
-            ml.speed_sp=int(left_speed_pct)
-            mr.speed_regulation_enabled='on'
-            mr.stop_command='brake'
-            mr.speed_sp=int(right_speed_pct)
+            ml.speed_regulation_enabled = 'on'
+            ml.stop_command = 'brake'
+            ml.speed_sp = int(left_speed_pct)
+            mr.speed_regulation_enabled = 'on'
+            mr.stop_command = 'brake'
+            mr.speed_sp = int(right_speed_pct)
             if direction is 'backwards':
-                ml.position_sp=int(-left_dc * ml.count_per_rot)
-                mr.position_sp=int(-right_dc * mr.count_per_rot)
+                ml.position_sp = int(-left_dc * ml.count_per_rot)
+                mr.position_sp = int(-right_dc * mr.count_per_rot)
             else:
-                ml.position_sp=int(left_dc * ml.count_per_rot)
-                mr.position_sp=int(right_dc * mr.count_per_rot)
+                ml.position_sp = int(left_dc * ml.count_per_rot)
+                mr.position_sp = int(right_dc * mr.count_per_rot)
             # start motors
             ml.run_to_rel_pos()
             mr.run_to_rel_pos()
