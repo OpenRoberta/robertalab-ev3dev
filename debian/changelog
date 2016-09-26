@@ -1,3 +1,14 @@
+openrobertalab (1.4.0+2.0.0) stable; urgency=medium
+
+  * add soft abort feature (press and hold enter+down keys)
+  * more list operation supported
+  * new drive-in-curve block supported in hal
+  * two motor drive command are better synced
+  * proper gfx<->txt mode switching
+  * fix tgb-color sensor values
+
+ -- Stefan Sauer <ensonic@google.com>  Mon, 26 Sep 2016 11:00:54 +0200
+
 openrobertalab (1.4.0+1.0.0) stable; urgency=medium
 
   * code generator fixes
