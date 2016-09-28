@@ -30,10 +30,10 @@ automatically, but one needs to reconnect to the Open Roberta server again.
 
 # development #
 ## prerequisites ##
-python-ev3dev
-python-bluez
-python-dbus
-python-gobject
+python3-ev3dev
+python3-bluez
+python3-dbus
+python3-gobject
 
 ## dist ##
 
@@ -51,7 +51,7 @@ The easiest is to upload the debian package and install it.
 Alternatively after changing single files you can do:
 
     scp roberta/ev3.py robot@ev3dev.local:
-    ssh -t robot@ev3dev.local "sudo mv ev3.py /usr/lib/python2.7/dist-packages/roberta/; sudo systemctl restart openrobertalab"
+    ssh -t robot@ev3dev.local "sudo mv ev3.py /usr/lib/python3/dist-packages/roberta/; sudo systemctl restart openrobertalab"
 
 ## configuration ##
 The brickman ui will store configuration data under /etc/openroberta.conf. All
@@ -59,8 +59,8 @@ configuration can be edited from the UI. If there is a need to manully change
 the config, it is adviced to stop brickman.
 
 ## Testing ##
-``python -m unittest discover roberta`` or ``nosetests``.
-The test require ``python-httpretty``, but run without ``python-ev3dev``.
+``python3 -m unittest discover roberta`` or ``nosetests``.
+The test require ``python3-httpretty``, but run without ``python3-ev3dev``.
 
 ## Logging ##
 The service writes status to the system journal.

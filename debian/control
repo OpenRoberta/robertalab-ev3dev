@@ -2,9 +2,9 @@ Source: openrobertalab
 Maintainer: Stefan Sauer <ensonic@google.com>
 Section: python
 Priority: optional
-Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3),
- debhelper (>= 9), dh-systemd (>= 1.14), dh-python, python-httpretty,
- python-dbus
+Build-Depends: python3-setuptools (>= 0.6b3), python3-all (>= 3.4.2-2),
+ debhelper (>= 9), dh-systemd (>= 1.14), dh-python, python3-httpretty,
+ python3-dbus
 Standards-Version: 3.9.5
 Homepage: http://lab.open-roberta.org/
 Vcs-Browser: https://github.com/OpenRoberta/robertalab-ev3dev
@@ -12,8 +12,8 @@ Vcs-Git: git://github.com/OpenRoberta/robertalab-ev3dev.git
 
 Package: openrobertalab
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, systemd, python-dbus, python-bluez,
- python-ev3dev
+Depends: ${misc:Depends}, ${python3:Depends}, systemd, python3-dbus,
+ python3-bluez, python3-ev3dev
 Enhances: brickman
 Description: lab.open-roberta.org connector for ev3dev.org
  Open-roberta.org is a web platform for learning how to program robots. This

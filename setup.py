@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import codecs
 import os
@@ -29,6 +29,6 @@ setup(name='openrobertalab',
       scripts=['openrobertalab'],
       packages=['roberta'],
       package_data={'roberta': ['ter-*.p??']},
-      # other deps: apt-get-install python-dbus python-bluez python-ev3dev
-      # install_requires=['python-ev3dev']
+      # other deps: apt-get-install python3-dbus python3-bluez python3-ev3dev
+      # install_requires=['python3-ev3dev']
       )

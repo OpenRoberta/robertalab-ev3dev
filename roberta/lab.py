@@ -9,17 +9,19 @@ import socket
 import stat
 import struct
 import time
-import thread
+import _thread
 import threading
-import urllib2
+import urllib.request
+import urllib.error
+import urllib.parse
 import sys
 # ignore failure to make this testable outside of the target platform
 try:
     from ev3dev import auto as ev3dev
-    from ev3 import Hal
+    from .ev3 import Hal
 except:
-    from test import Hal
-from __version__ import version
+    from .test import Hal
+from .__version__ import version
 
 logger = logging.getLogger('roberta.lab')
 
@@ -33,9 +35,9 @@ TOKEN_PER_SESSION = True
 
 # helpers
 def getHwAddr(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    info = ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
-    return ':'.join(['%02x' % ord(char) for char in info[18:24]])
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        info = ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
+    return ':'.join(['%02x' % char for char in info[18:24]])
 
 
 def generateToken():
@@ -44,7 +46,7 @@ def generateToken():
     chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
     # note: we don't use the random module since it is large
     b = os.urandom(8)
-    return ''.join(chars[ord(b[i]) % len(chars)] for i in range(8))
+    return ''.join(chars[b[i] % len(chars)] for i in range(8))
 
 
 def getBatteryVoltage():
@@ -97,7 +99,7 @@ class Service(dbus.service.Object):
             ioctl(tty, 0x4B3A, 0x01)
 
     def switchToTxtMode(self):
-        with open(os.ttyname(sys.stdin.fileno()), 'r+b') as tty:
+        with open(os.ttyname(sys.stdin.fileno()), 'w') as tty:
             # KDSETMODE = 0x4B3A, TEXT = 0x00
             ioctl(tty, 0x4B3A, 0x00)
             # send Ctrl-L to tty to clear
@@ -108,10 +110,11 @@ class Service(dbus.service.Object):
         with open('/proc/version', 'r') as ver:
             self.params['firmwareversion'] = ver.read()
 
-        for iface in [b'wlan', b'usb', b'eth']:
+        for iface in ['wlan', 'usb', 'eth']:
             for ix in range(10):
                 try:
-                    self.params['macaddr'] = getHwAddr(iface + str(ix))
+                    ifname = bytes(iface + str(ix), 'ascii')
+                    self.params['macaddr'] = getHwAddr(ifname)
                     break
                 except IOError:
                     pass
@@ -174,7 +177,7 @@ class AbortHandler(threading.Thread):
                 # if pressed for one sec, hard exit
                 if self.long_press > 10:
                     logger.info('--- hard abort ---')
-                    thread.interrupt_main()
+                    _thread.interrupt_main()
                     self.running = False
                 else:
                     self.long_press += 1
@@ -198,7 +201,7 @@ class AbortHandler(threading.Thread):
         # adapted from https://gist.github.com/liuw/2407154
         found = False
         target_tid = 0
-        for tid, tobj in threading._active.items():
+        for tid, tobj in list(threading._active.items()):
             if tobj is self.runner:
                 found = True
                 target_tid = tid
@@ -301,9 +304,10 @@ class Connector(threading.Thread):
         while True:
             try:
                 logger.debug('sending request to: %s' % url)
-                req = urllib2.Request(url, headers=headers)
-                return urllib2.urlopen(req, json.dumps(self.params), timeout=timeout)
-            except urllib2.HTTPError as e:
+                req = urllib.request.Request(url, headers=headers)
+                data = json.dumps(self.params).encode('utf8')
+                return urllib.request.urlopen(req, data, timeout=timeout)
+            except urllib.error.HTTPError as e:
                 if e.code == 404 and '/rest/' not in url:
                     logger.warning("HTTPError(%s): %s, retrying with '/rest'" % (e.code, e.reason))
                     # upstream changed the server path
@@ -346,7 +350,7 @@ class Connector(threading.Thread):
                 # http://stackoverflow.com/questions/13881196/remove-http-connection-header-python-urllib2
                 # https://github.com/jcgregorio/httplib2
                 response = self._request("pushcmd", headers, timeout)
-                reply = json.loads(response.read())
+                reply = json.loads(response.read().decode('utf8'))
                 logger.debug('response: %s' % json.dumps(reply))
                 cmd = reply['cmd']
                 if cmd == 'repeat':
@@ -372,8 +376,7 @@ class Connector(threading.Thread):
                     #   we can verify the download
                     logger.debug('download code: %s/download' % self.address)
                     response = self._request("download", headers, timeout)
-                    logger.debug('response: %s' % json.dumps(reply))
-                    hdr = response.info().getheader('Content-Disposition')
+                    hdr = response.getheader('Content-Disposition')
                     # save to $HOME/
                     filename = '%s/%s' % (self.home, hdr.split('=')[1] if hdr else 'unknown')
                     self._fix_code(filename, response.read().decode('utf-8'))
@@ -403,11 +406,11 @@ class Connector(threading.Thread):
                     pass
                 else:
                     logger.warning('unhandled command: %s' % cmd)
-            except urllib2.HTTPError as e:
+            except urllib.error.HTTPError as e:
                 # e.g. [Errno 404]
                 logger.error("HTTPError(%s): %s" % (e.code, e.reason))
                 break
-            except urllib2.URLError as e:
+            except urllib.error.URLError as e:
                 # e.g. [Errno 111] Connection refused
                 logger.error("URLError: %s: %s" % (self.address, e.reason))
                 break

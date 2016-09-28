@@ -1,6 +1,7 @@
 import logging
 import math
 import os
+from functools import reduce
 
 logger = logging.getLogger('roberta.blocklymethods')
 
@@ -18,7 +19,7 @@ class BlocklyMethods:
 
     @staticmethod
     def isPrime(number):
-        for i in xrange(2, math.sqrt(number)):
+        for i in range(2, math.sqrt(number)):
             remainder = number % i
             if remainder == 0:
                 return False
@@ -52,7 +53,7 @@ class BlocklyMethods:
     @staticmethod
     def randInt(min_val, max_val):
         b = os.urandom(4)
-        val = ord(b[0]) << 24 | ord(b[1]) << 16 | ord(b[2]) << 8 | ord(b[3])
+        val = b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3]
         if min_val < max_val:
             return min_val + (val % ((max_val - min_val) + 1))
         else:
@@ -61,7 +62,7 @@ class BlocklyMethods:
     @staticmethod
     def randDouble():
         b = os.urandom(4)
-        val = ord(b[0]) << 24 | ord(b[1]) << 16 | ord(b[2]) << 8 | ord(b[3])
+        val = b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3]
         return float(val) / 0xffffffff
 
     @staticmethod
@@ -136,7 +137,7 @@ class BlocklyMethods:
         if not n:
             return 0
         _list = sorted(_list)
-        m = n / 2
+        m = n // 2
         if n % 2 == 0:  # even
             return float(sum(_list[m - 1: m + 1])) / 2.0
         else:

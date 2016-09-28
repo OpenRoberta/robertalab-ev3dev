@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 from PIL import Image, ImageFont
 import bluetooth
 from bluetooth import BluetoothSocket

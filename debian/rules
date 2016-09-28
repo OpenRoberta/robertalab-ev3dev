@@ -10,12 +10,12 @@ export PYBUILD_SYSTEM = distutils
 export VERSION = $(shell dpkg-parsechangelog | grep ^Version: | sed -e 's/Version: //' -e 's/+.*//')
 
 %:
-	dh $@ --with=python2,systemd --buildsystem=pybuild
+	dh $@ --with=python3,systemd --buildsystem=pybuild
 
 override_dh_auto_install:
 	dh_auto_install
 	install -D -o root -g root -m 644 debian/openrobertalab.conf debian/tmp/etc/dbus-1/system.d/openrobertalab.conf
-		
+
 override_dh_install:
 	dh_install etc/dbus-1/system.d/openrobertalab.conf
 

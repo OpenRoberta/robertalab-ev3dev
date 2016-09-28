@@ -1,14 +1,14 @@
 import logging
 import httpretty
-import thread
+import _thread
 import threading
 import time
 import unittest
 
-import lab
-from lab import Connector, Service, TOKEN_PER_SESSION
+from roberta import lab
+from roberta.lab import Connector, Service, TOKEN_PER_SESSION
 
-logging.basicConfig(level=logging.CRITICAL)
+logging.basicConfig(level=logging.DEBUG)
 
 URL = 'http://lab.open-roberta.org'
 
@@ -22,7 +22,7 @@ class DummyAbortHandler(threading.Thread):
     def run(self):
         if self.to_sleep:
             time.sleep(self.to_sleep)
-            thread.interrupt_main()
+            _thread.interrupt_main()
 
     def __enter__(self):
         self.start()
@@ -34,12 +34,12 @@ class DummyAbortHandler(threading.Thread):
 
 class TestGetHwAddr(unittest.TestCase):
     def test_get_hw_addr(self):
-        self.assertRegexpMatches(lab.getHwAddr(b'eth0'), '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
+        self.assertRegex(lab.getHwAddr(b'eth0'), '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
 
 
 class TestGenerateToken(unittest.TestCase):
     def test_generate_token(self):
-        self.assertRegexpMatches(lab.generateToken(), '^[0-9A-Z]{8}$')
+        self.assertRegex(lab.generateToken(), '^[0-9A-Z]{8}$')
 
 
 class TestGetBatteryVoltage(unittest.TestCase):
