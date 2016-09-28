@@ -578,11 +578,17 @@ class Hal(object):
         # host can also be a name, resolving it is slow though and requires the
         # device to be visible
         if not Bluetooth.isValidAddr(host):
-            #nearby_devices = bluetooth.discover_devices()
-            #for bdaddr in nearby_devices:
-            #    if host == bluetooth.lookup_name(bdaddr):
-            #        host = bdaddr
-            #        break
+            # FIXME: there is no python3-bluez (for debian-jessie)
+            # https://github.com/karulis/pybluez/blob/master/bluetooth/bluez.py#L23
+            # maybe we can use DBus:
+            # https://git.kernel.org/cgit/bluetooth/bluez.git/tree/doc/
+            # DiscoverDevices, ResolveHostName
+            #
+            # nearby_devices = bluetooth.discover_devices()
+            # for bdaddr in nearby_devices:
+            #     if host == bluetooth.lookup_name(bdaddr):
+            #         host = bdaddr
+            #         break
             logger.warning('no bluetooth discovery available')
             return -1
         if Bluetooth.isValidAddr(host):
