@@ -1,16 +1,16 @@
 language: python
 python:
-- 2.7
+- 3.4
 
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install -y python-dbus python-bluez python-gobject
+- sudo apt-get install -y python3-dbus python3-gi
 - pidof dbus-daemon || dbus-daemon --system --fork
 
 # pip cannot install python-dbus: https://bugs.freedesktop.org/show_bug.cgi?id=55439
 # pip cannot install PyGObject: "Building PyGObject using distutils is only supported on windows."
 # travis cannot install PyBluez (missing gcc)
-install: pip install httpretty pep8 pyflakes codecov
+install: pip3 install httpretty pep8 pyflakes codecov
 
 virtualenv:
   system_site_packages: true
