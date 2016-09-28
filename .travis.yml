@@ -1,6 +1,6 @@
 language: python
 python:
-- 3.4
+- 3.2
 
 before_install:
 - sudo apt-get update -qq
@@ -12,8 +12,9 @@ before_install:
 install: pip3 install httpretty pep8 pyflakes codecov
 
 # this only works with 2.7 and 3.2
-# virtualenv:
-#  system_site_packages: true
+# we must use this though, since python3-dbus won't work in a virtualenv
+virtualenv:
+  system_site_packages: true
 
 script:
 - pep8 --max-line-length=120 --exclude=StaticData.py . openrobertalab
