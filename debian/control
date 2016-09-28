@@ -13,7 +13,7 @@ Vcs-Git: git://github.com/OpenRoberta/robertalab-ev3dev.git
 Package: openrobertalab
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, systemd, python3-dbus,
- python3-bluez, python3-ev3dev
+ python3-ev3dev
 Enhances: brickman
 Description: lab.open-roberta.org connector for ev3dev.org
  Open-roberta.org is a web platform for learning how to program robots. This

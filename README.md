@@ -31,7 +31,6 @@ automatically, but one needs to reconnect to the Open Roberta server again.
 # development #
 ## prerequisites ##
 python3-ev3dev
-python3-bluez
 python3-dbus
 python3-gobject
 

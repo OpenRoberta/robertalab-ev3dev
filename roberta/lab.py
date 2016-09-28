@@ -35,6 +35,7 @@ TOKEN_PER_SESSION = True
 
 # helpers
 def getHwAddr(ifname):
+    # SIOCGIFHWADDR = 0x8927
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         info = ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
     return ':'.join(['%02x' % char for char in info[18:24]])

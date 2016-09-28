@@ -1,18 +1,39 @@
 
 from PIL import Image, ImageFont
-import bluetooth
-from bluetooth import BluetoothSocket
 import dbus
 import glob
 import logging
 import math
 import os
+import re
+import socket
 import time
 
 from ev3dev import auto as ev3dev
 from roberta.StaticData import IMAGES
 
 logger = logging.getLogger('roberta.ev3')
+
+
+class Bluetooth:
+
+    @staticmethod
+    def getAddr(self, iface):
+        try:
+            with open('/sys/class/bluetooth/%s/address' % iface, 'r') as f:
+                mac = f.read()
+        except (AttributeError, OSError):
+            logger.warning('no bluetooth device %s found', iface)
+            mac = None
+        return mac
+
+    @staticmethod
+    def isValidAddr(self, mac):
+        if not mac:
+            return False
+        if not re.match(r'([0-9A-F]{2}[:-]){5}([0-9A-F]{2})', mac):
+            return False
+        return True
 
 
 class Hal(object):
@@ -556,15 +577,17 @@ class Hal(object):
     def establishConnectionTo(self, host):
         # host can also be a name, resolving it is slow though and requires the
         # device to be visible
-        if not bluetooth.is_valid_address(host):
-            nearby_devices = bluetooth.discover_devices()
-            for bdaddr in nearby_devices:
-                if host == bluetooth.lookup_name(bdaddr):
-                    host = bdaddr
-                    break
-        if bluetooth.is_valid_address(host):
-            con = BluetoothSocket(bluetooth.RFCOMM)
-            con.connect((host, 1))  # 0 is channel
+        if not Bluetooth.isValidAddr(host):
+            #nearby_devices = bluetooth.discover_devices()
+            #for bdaddr in nearby_devices:
+            #    if host == bluetooth.lookup_name(bdaddr):
+            #        host = bdaddr
+            #        break
+            logger.warning('no bluetooth discovery available')
+            return -1
+        if Bluetooth.isValidAddr(host):
+            con = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+            con.connect((host, 0))
             self.bt_connections.append(con)
             return len(self.bt_connections) - 1
         else:
@@ -583,9 +606,12 @@ class Hal(object):
         props.Set('org.bluez.Adapter1', 'Discoverable', True)
 
         if not self.bt_server:
-            self.bt_server = BluetoothSocket(bluetooth.RFCOMM)
-            self.bt_server.bind(("", bluetooth.PORT_ANY))
-            self.bt_server.listen(1)
+            mac = Bluetooth.getAddr('hci0')
+            if Bluetooth.isValidAddr(mac):
+                con = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+                con.bind((mac, 0))
+                con.listen(1)
+                self.bt_server = con
 
         (con, info) = self.bt_server.accept()
         self.bt_connections.append(con)
