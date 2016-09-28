@@ -3,6 +3,8 @@
 #export DH_VERBOSE = 1
 export PYBUILD_NAME = openrobertalab
 export PYBUILD_SYSTEM = distutils
+# the tests hang at the *end* when run under pbuilder-dist
+export PYBUILD_DISABLE_python3.4=test
 
 # expects changelog version in the format <menuversion>+<extraversion>
 # where <menuversion> matches the menuversion on the lab.open-roberta.org
