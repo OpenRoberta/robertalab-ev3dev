@@ -8,9 +8,13 @@ import unittest
 from roberta import lab
 from roberta.lab import Connector, Service, TOKEN_PER_SESSION
 
+from .test import Hal
+from .__version__ import version
+
 logging.basicConfig(level=logging.DEBUG)
 
 URL = 'http://lab.open-roberta.org'
+JSON = 'application/json'
 
 
 class DummyAbortHandler(threading.Thread):
@@ -30,6 +34,20 @@ class DummyAbortHandler(threading.Thread):
     def __exit__(self, type, value, traceback):
         if type is not None:  # an exception has occurred
             return False      # reraise the exception
+
+
+class DummyService(object):
+    def __init__(self):
+        self.hal = Hal(None)
+        self.params = {
+            'macaddr': '00:00:00:00:00:00',
+            'firmwarename': 'ev3dev',
+            'menuversion': version.split('-')[0],
+        }
+        self.last_status = None
+
+    def status(self, status):
+        self.last_status = status
 
 
 class TestGetHwAddr(unittest.TestCase):
@@ -112,14 +130,49 @@ class TestConnector(unittest.TestCase):
         self.assertTrue(connector.running)
 
     @httpretty.activate
-    def test_run(self):
+    def test_terminate_on_error(self):
         httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
-                               body='{"success": false}',
+                               body='{"cmd": "repeat"}',
                                status=403,
-                               content_type='text/json')
+                               content_type=JSON)
 
         connector = Connector(URL, None)
         connector.run()  # catch error and return
+
+    @httpretty.activate
+    def test_sends_json_with_register(self):
+        httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
+                               body='{"cmd": "repeat"}',
+                               status=403,
+                               content_type=JSON)
+
+        connector = Connector(URL, None)
+        connector.run()
+        req = httpretty.last_request()
+        self.assertEqual(req.headers['Content-Type'], JSON)
+        body = httpretty.last_request().parsed_body
+        self.assertEqual(body['cmd'], 'register')
+        self.assertIn('token', body)
+        self.assertIn('brickname', body)
+
+    @httpretty.activate
+    def test_register(self):
+        httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
+                               responses=[
+                                   httpretty.Response(body='{"cmd": "repeat"}',
+                                                      status=200,
+                                                      content_type=JSON),
+                                   httpretty.Response(body='{"cmd": "repeat"}',
+                                                      status=403,
+                                                      content_type=JSON),
+                               ])
+
+        connector = Connector(URL,  DummyService())
+        connector.run()
+        body = httpretty.last_request().parsed_body
+        self.assertEqual(body['cmd'], 'push')
+        self.assertIn('token', body)
+        self.assertIn('brickname', body)
 
     def test_exec_good_code(self):
         connector = Connector(URL, None)

@@ -3,9 +3,11 @@
 
 class Hal(object):
 
-    def __init__(self, brickConfiguration, usedSensors):
+    def __init__(self, brickConfiguration, usedSensors=None):
         self.cfg = brickConfiguration
-        self.usedSensors = usedSensors
 
     def clearDisplay(self):
+        pass
+
+    def playFile(self, systemSound):
         pass

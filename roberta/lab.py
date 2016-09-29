@@ -307,6 +307,7 @@ class Connector(threading.Thread):
                 logger.debug('sending request to: %s' % url)
                 req = urllib.request.Request(url, headers=headers)
                 data = json.dumps(self.params).encode('utf8')
+                logger.debug('  with params: %s' % data)
                 return urllib.request.urlopen(req, data, timeout=timeout)
             except urllib.error.HTTPError as e:
                 if e.code == 404 and '/rest/' not in url:
