@@ -24,7 +24,7 @@ script:
 - nosetests --with-coverage
 
 after_success:
-- codecov
+- bash <(curl -s https://codecov.io/bash)
 
 notifications:
   irc: "chat.freenode.net#open-roberta"
