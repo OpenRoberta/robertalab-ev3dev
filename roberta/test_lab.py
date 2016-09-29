@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 URL = 'http://lab.open-roberta.org'
 JSON = 'application/json'
+CMD_REPEAT = '{"cmd": "repeat"}'
 
 
 class DummyAbortHandler(threading.Thread):
@@ -132,19 +133,27 @@ class TestConnector(unittest.TestCase):
     @httpretty.activate
     def test_terminate_on_error(self):
         httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
-                               body='{"cmd": "repeat"}',
-                               status=403,
-                               content_type=JSON)
+                               body=CMD_REPEAT, status=403, content_type=JSON)
 
         connector = Connector(URL, None)
         connector.run()  # catch error and return
 
     @httpretty.activate
+    def test_retires_rest_prefix(self):
+        httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
+                               body=CMD_REPEAT, status=404, content_type=JSON)
+        httpretty.register_uri(httpretty.POST, "%s/rest/pushcmd" % URL,
+                               body=CMD_REPEAT, status=403, content_type=JSON)
+
+        connector = Connector(URL, None)
+        connector.run()  # catch error and return
+        req = httpretty.last_request()
+        self.assertEqual(req.path, '/rest/pushcmd')
+
+    @httpretty.activate
     def test_sends_json_with_register(self):
         httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
-                               body='{"cmd": "repeat"}',
-                               status=403,
-                               content_type=JSON)
+                               body=CMD_REPEAT, status=403, content_type=JSON)
 
         connector = Connector(URL, None)
         connector.run()
@@ -157,15 +166,11 @@ class TestConnector(unittest.TestCase):
 
     @httpretty.activate
     def test_register(self):
-        httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
-                               responses=[
-                                   httpretty.Response(body='{"cmd": "repeat"}',
-                                                      status=200,
-                                                      content_type=JSON),
-                                   httpretty.Response(body='{"cmd": "repeat"}',
-                                                      status=403,
-                                                      content_type=JSON),
-                               ])
+        responses = [
+            httpretty.Response(body=CMD_REPEAT, status=200, content_type=JSON),
+            httpretty.Response(body=CMD_REPEAT, status=403, content_type=JSON),
+        ]
+        httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL, responses=responses)
 
         connector = Connector(URL,  DummyService())
         connector.run()
