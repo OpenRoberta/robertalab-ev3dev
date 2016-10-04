@@ -245,32 +245,9 @@ class Connector(threading.Thread):
     def _fix_code(self, filename, code):
         """Apply hotfixes needed until server update"""
         with open(filename, 'w') as prog:
-            code = code.replace('import Hal,BlocklyMethods',
-                                'import Hal\nfrom roberta.BlocklyMethods import BlocklyMethods')
-            code = code.replace('import ev3dev', 'from ev3dev import ev3 as ev3dev')
-            code = code.replace('ev3dev.color_sensor', 'Hal.makeColorSensor')
-            code = code.replace('ev3dev.gyro_sensor', 'Hal.makeGyroSensor')
-            code = code.replace('ev3dev.i2c_sensor', 'Hal.makeI2cSensor')
-            code = code.replace('ev3dev.infrared_sensor', 'Hal.makeInfraredSensor')
-            code = code.replace('ev3dev.light_sensor', 'Hal.makeLightSensor')
-            code = code.replace('ev3dev.sound_sensor', 'Hal.makeSoundSensor')
-            code = code.replace('ev3dev.touch_sensor', 'Hal.makeTouchSensor')
-            code = code.replace('ev3dev.ultrasonic_sensor', 'Hal.makeUltrasonicSensor')
-            # https://github.com/OpenRoberta/robertalab-ev3dev/issues/13
-            # avoid to pull in 're' module
-            code = code.replace('hal.setRegulatedMotorSpeed(\'A,', 'hal.setRegulatedMotorSpeed(\'A\',')
-            code = code.replace('hal.setRegulatedMotorSpeed(\'B,', 'hal.setRegulatedMotorSpeed(\'B\',')
-            code = code.replace('hal.setRegulatedMotorSpeed(\'C,', 'hal.setRegulatedMotorSpeed(\'C\',')
-            code = code.replace('hal.setRegulatedMotorSpeed(\'D,', 'hal.setRegulatedMotorSpeed(\'D\',')
-            # https://github.com/OpenRoberta/robertalab-ev3dev/issues/16
-            code = code.replace(' || ', ' or ')
-            code = code.replace(' && ', ' and ')
-            # various codegen bugs
-            code = code.replace(' else if ', ' elif ')
-            code = code.replace(': return\n', ': return None\n')
-            code = code.replace(': return', ': return ')
-            # and typos in method names
-            code = code.replace('BlocklyMethods.lenght', 'BlocklyMethods.length')
+            # the generated code is python2 still
+            code = code.replace('from __future__ import absolute_import', '')
+            code = code.replace('in xrange(', 'in range(')
             prog.write(code)
 
     def _exec_code(self, filename, code, abort_handler):
