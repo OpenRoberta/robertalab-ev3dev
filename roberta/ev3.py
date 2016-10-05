@@ -595,7 +595,10 @@ class Hal(object):
             try:
                 logger.debug('reading msg')
                 # TODO(ensonic): how much do we actually expect
-                message = self.bt_connections[con_ix].recv(1024)
+                # here is the lejos counter part
+                # https://github.com/OpenRoberta/robertalab-ev3lejos/blob/master/
+                # EV3Runtime/src/main/java/de/fhg/iais/roberta/runtime/ev3/BluetoothComImpl.java#L40..L59
+                message = self.bt_connections[con_ix].recv(128)
                 logger.debug('received msg [%s]' % message)
             except bluetooth.btcommon.BluetoothError:
                 logger.exception("Bluetooth error")
