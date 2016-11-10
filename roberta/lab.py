@@ -246,8 +246,9 @@ class Connector(threading.Thread):
         """Apply hotfixes needed until server update"""
         with open(filename, 'w') as prog:
             # the generated code is python2 still
-            code = code.replace('from __future__ import absolute_import', '')
+            code = code.replace('from __future__ import absolute_import\n', '')
             code = code.replace('in xrange(', 'in range(')
+            code = code.replace('#!/usr/bin/python\n', '#!/usr/bin/python3\n')
             prog.write(code)
 
     def _exec_code(self, filename, code, abort_handler):
