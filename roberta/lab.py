@@ -242,7 +242,7 @@ class Connector(threading.Thread):
         self.running = True
         logger.debug('thread created')
 
-    def _fix_code(self, filename, code):
+    def _store_code(self, filename, code):
         """Apply hotfixes needed until server update"""
         with open(filename, 'w') as prog:
             # the generated code is python2 still
@@ -250,6 +250,8 @@ class Connector(threading.Thread):
             code = code.replace('in xrange(', 'in range(')
             code = code.replace('#!/usr/bin/python\n', '#!/usr/bin/python3\n')
             prog.write(code)
+        os.chmod(filename, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
+        return code
 
     def _exec_code(self, filename, code, abort_handler):
         result = 0
@@ -359,11 +361,8 @@ class Connector(threading.Thread):
                     hdr = response.getheader('Content-Disposition')
                     # save to $HOME/
                     filename = '%s/%s' % (self.home, hdr.split('=')[1] if hdr else 'unknown')
-                    self._fix_code(filename, response.read().decode('utf-8'))
-                    os.chmod(filename, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
+                    code = self._store_code(filename, response.read().decode('utf-8'))
                     logger.info('code downloaded to: %s' % filename)
-                    with open(filename) as f:
-                        code = f.read()
                     # use a long-press of backspace to terminate
                     abort_handler = AbortHandler(self.service, self)
                     abort_handler.daemon = True
