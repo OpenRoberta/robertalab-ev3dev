@@ -16,19 +16,23 @@ You can turn it back off by running:
 If the ``openrobertalab`` package is installed and the service is running, the
 ``Open Roberta Lab`` menu item in brickman will allow you to connect to an Open
 Roberta server. This is how the menu will look like:
-![Main Menu](/docs/MainMenu.png?raw=true "Main Menu").
+
+![Main Menu](/docs/MenuMain.png?raw=true "Main Menu").
 
 Once you selected the ``Open Roberta Lab`` menu item you'll get to this screen:
+
 ![Open Roberta Lab](/docs/RobertaLabDisconnected.png?raw=true "Open Roberta Lab").
 
 This offers to conenct to the public server as the first item, or to a custom
 server as a 2nd item. The 2nd choice is mostly for developers or for using a
 local server. When clicking connect, the screen will show a pairing code:
+
 ![Pairing Code](/docs/RobertaLabConnecting.png?raw=true "Pairing Code").
 
 This code will have to be entered on the web-ui to establish the link. Once that
 has been done a beep-sequence on the ev3 confirms the link and this screen is
 shown:
+
 ![Connected](/docs/RobertaLabConnected.png?raw=true "Connected").
 
 When a programm contains an infinite loop, it can be ``killed`` by pressing
