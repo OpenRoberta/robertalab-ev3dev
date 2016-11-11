@@ -23,7 +23,7 @@ Once you selected the ``Open Roberta Lab`` menu item you'll get to this screen:
 
 ![Open Roberta Lab](/docs/RobertaLabDisconnected.png?raw=true "Open Roberta Lab").
 
-This offers to conenct to the public server as the first item, or to a custom
+This offers to connect to the public server as the first item, or to a custom
 server as a 2nd item. The 2nd choice is mostly for developers or for using a
 local server. When clicking connect, the screen will show a pairing code:
 
@@ -35,8 +35,8 @@ shown:
 
 ![Connected](/docs/RobertaLabConnected.png?raw=true "Connected").
 
-When a programm contains an infinite loop, it can be ``killed`` by pressing
-the ``enter`` and ``down`` buttons on the ev3 simulataneously. If this is not
+When a program contains an infinite loop, it can be ``killed`` by pressing
+the ``enter`` and ``down`` buttons on the ev3 simultaneously. If this is not
 enough to terminate the program, holding the ``back`` button for one second
 will kill it, but together with it the connector. The connector will restart
 automatically, but one needs to reconnect to the Open Roberta server again.
@@ -73,8 +73,8 @@ Alternatively after changing single files you can do:
 
 ## configuration ##
 The brickman ui will store configuration data under /etc/openroberta.conf. All
-configuration can be edited from the UI. If there is a need to manully change
-the config, it is adviced to stop brickman.
+configuration can be edited from the UI. If there is a need to manually change
+the config, it is advised to stop brickman.
 
 ## Testing ##
 ``python3 -m unittest discover roberta`` or ``nosetests``.
