@@ -263,8 +263,8 @@ class Hal(object):
 
     def rotateRegulatedMotor(self, port, speed_pct, mode, value):
         # mode: degree, rotations, distance
-        speed = self.scaleSpeed(m, clamp(speed_pct, -100, 100))
         m = self.cfg['actors'][port]
+        speed = self.scaleSpeed(m, clamp(speed_pct, -100, 100))
         if mode is 'degree':
             m.run_to_rel_pos(speed_regulation_enabled='on', position_sp=value, speed_sp=speed)
             while (m.state):
