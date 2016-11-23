@@ -301,7 +301,7 @@ class Hal(object):
     def setRegulatedMotorSpeed(self, port, value):
         m = self.cfg['actors'][port]
         # https://github.com/rhempel/ev3dev-lang-python/issues/263
-        #m.speed_sp = self.scaleSpeed(m, clamp(value, -100, 100))
+        # m.speed_sp = self.scaleSpeed(m, clamp(value, -100, 100))
         m.run_forever(speed_sp=self.scaleSpeed(m, clamp(value, -100, 100)))
 
     def setUnregulatedMotorSpeed(self, port, value):
