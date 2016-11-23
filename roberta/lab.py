@@ -277,6 +277,8 @@ class Connector(threading.Thread):
             logger.info("soft kill")
         except:
             result = 1
+            # TODO: return exception details as a string and put into a
+            # 'nepoexitdetails' field, so that we can show this in the UI
             logger.exception("Ooops:")
         return result
 
