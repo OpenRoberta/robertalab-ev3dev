@@ -15,6 +15,10 @@ from roberta.StaticData import IMAGES
 logger = logging.getLogger('roberta.ev3')
 
 
+def clamp(v, mi, ma):
+    return mi if v < mi else ma if v > ma else v
+
+
 class Hal(object):
 
     # usedSensors is unused, the code-generator for lab.openroberta > 1.4 wont
@@ -35,6 +39,7 @@ class Hal(object):
         self.bt_server = None
         self.bt_connections = []
 
+    # factory methods
     @staticmethod
     def makeLargeMotor(port, regulated, direction, side):
         try:
@@ -224,7 +229,8 @@ class Hal(object):
 
     # tones
     def playTone(self, frequency, duration):
-        frequency = frequency if frequency >= 100 else 0
+        # this is already handled by the sound api (via beep cmd)
+        # frequency = frequency if frequency >= 100 else 0
         self.sound.tone(frequency, duration).wait()
 
     def playFile(self, systemSound):
@@ -243,6 +249,7 @@ class Hal(object):
         elif systemSound == 4:
             self.playTone(100, 500)
 
+    # FIXME: https://github.com/rhempel/ev3dev-lang-python/issues/258
     def setVolume(self, volume):
         self.sound.volume = volume
 
@@ -251,22 +258,25 @@ class Hal(object):
 
     # actors
     # http://www.ev3dev.org/docs/drivers/tacho-motor-class/
+    def scaleSpeed(self, m, speed_pct):
+        return int(speed_pct * m.max_speed / 100.0)
+
     def rotateRegulatedMotor(self, port, speed_pct, mode, value):
         # mode: degree, rotations, distance
-        speed_pct *= 10.0
+        speed = self.scaleSpeed(m, clamp(speed_pct, -100, 100))
         m = self.cfg['actors'][port]
         if mode is 'degree':
-            m.run_to_rel_pos(speed_regulation_enabled='on', position_sp=value, speed_sp=int(speed_pct))
+            m.run_to_rel_pos(speed_regulation_enabled='on', position_sp=value, speed_sp=speed)
             while (m.state):
                 self.busyWait()
         elif mode is 'rotations':
             value *= m.count_per_rot
-            m.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(value), speed_sp=int(speed_pct))
+            m.run_to_rel_pos(speed_regulation_enabled='on', position_sp=int(value), speed_sp=speed)
             while (m.state):
                 self.busyWait()
 
     def rotateUnregulatedMotor(self, port, speed_pct, mode, value):
-        speed_pct *= 10.0
+        speed_pct = clamp(speed_pct, -100, 100)
         m = self.cfg['actors'][port]
         if mode is 'rotations':
             value *= m.count_per_rot
@@ -283,30 +293,30 @@ class Hal(object):
         m.stop()
 
     def turnOnRegulatedMotor(self, port, value):
-        value *= 10.0
-        self.cfg['actors'][port].run_forever(speed_regulation_enabled='on', speed_sp=int(value))
+        m = self.cfg['actors'][port]
+        m.run_forever(speed_regulation_enabled='on',
+                      speed_sp=self.scaleSpeed(m, clamp(value, -100, 100)))
 
     def turnOnUnregulatedMotor(self, port, value):
-        value *= 10.0
+        value = clamp(value, -100, 100)
         self.cfg['actors'][port].run_direct(duty_cycle_sp=int(value))
 
     def setRegulatedMotorSpeed(self, port, value):
-        value *= 10.0
         m = self.cfg['actors'][port]
-        if m.state:
-            m.run_forever(speed_regulation_enabled='on', speed_sp=int(value))
-        else:
-            m.speed_sp = 300
+        # https://github.com/rhempel/ev3dev-lang-python/issues/263
+        #m.speed_sp = self.scaleSpeed(m, clamp(value, -100, 100))
+        m.run_forever(speed_sp=self.scaleSpeed(m, clamp(value, -100, 100)))
 
     def setUnregulatedMotorSpeed(self, port, value):
-        value *= 10.0
+        value = clamp(value, -100, 100)
         self.cfg['actors'][port].duty_cycle_sp = int(value)
 
     def getRegulatedMotorSpeed(self, port):
-        return self.cfg['actors'][port].speed / 10.0
+        m = self.cfg['actors'][port]
+        return m.speed * 100.0 / m.max_speed
 
     def getUnregulatedMotorSpeed(self, port):
-        return self.cfg['actors'][port].duty_cycle / 10.0
+        return self.cfg['actors'][port].duty_cycle
 
     def stopMotor(self, port, mode='float'):
         # mode: float, nonfloat
@@ -316,7 +326,7 @@ class Hal(object):
             m.stop_command = 'coast'
         elif mode is 'nonfloat':
             m.stop_command = 'brake'
-        self.cfg['actors'][port].stop()
+        m.stop()
 
     def stopMotors(self, left_port, right_port):
         self.stopMotor(left_port)
@@ -331,18 +341,18 @@ class Hal(object):
     def regulatedDrive(self, left_port, right_port, reverse, direction, speed_pct):
         # direction: forward, backward
         # reverse: always false for now
-        speed_pct *= 10.0
+        speed_pct = clamp(speed_pct, -100, 100)
+        ml = self.cfg['actors'][left_port]
+        mr = self.cfg['actors'][right_port]
         if direction is 'backward':
             speed_pct = -speed_pct
-        self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on',
-                                                  speed_sp=int(speed_pct))
-        self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on',
-                                                   speed_sp=int(speed_pct))
+        ml.run_forever(speed_regulation_enabled='on', speed_sp=self.scaleSpeed(ml, speed_pct))
+        mr.run_forever(speed_regulation_enabled='on', speed_sp=self.scaleSpeed(mr, speed_pct))
 
     def driveDistance(self, left_port, right_port, reverse, direction, speed_pct, distance):
         # direction: forward, backward
         # reverse: always false for now
-        speed_pct *= 10.0
+        speed_pct = clamp(speed_pct, -100, 100)
         ml = self.cfg['actors'][left_port]
         mr = self.cfg['actors'][right_port]
         circ = math.pi * self.cfg['wheel-diameter']
@@ -353,11 +363,11 @@ class Hal(object):
         ml.speed_regulation_enabled = 'on'
         ml.stop_command = 'brake'
         ml.position_sp = int(dc * ml.count_per_rot)
-        ml.speed_sp = int(speed_pct)
+        ml.speed_sp = self.scaleSpeed(ml, speed_pct)
         mr.speed_regulation_enabled = 'on'
         mr.stop_command = 'brake'
         mr.position_sp = int(dc * mr.count_per_rot)
-        mr.speed_sp = int(speed_pct)
+        mr.speed_sp = self.scaleSpeed(mr, speed_pct)
         # start motors
         ml.run_to_rel_pos()
         mr.run_to_rel_pos()
@@ -368,22 +378,24 @@ class Hal(object):
     def rotateDirectionRegulated(self, left_port, right_port, reverse, direction, speed_pct):
         # direction: left, right
         # reverse: always false for now
-        speed_pct *= 10.0
+        speed_pct = clamp(speed_pct, -100, 100)
+        ml = self.cfg['actors'][left_port]
+        mr = self.cfg['actors'][right_port]
         if direction is 'left':
-            self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on',
-                                                       speed_sp=int(speed_pct))
-            self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on',
-                                                      speed_sp=int(-speed_pct))
+            mr.run_forever(speed_regulation_enabled='on',
+                           speed_sp=self.scaleSpeed(mr, speed_pct))
+            ml.run_forever(speed_regulation_enabled='on',
+                           speed_sp=self.scaleSpeed(ml, -speed_pct))
         else:
-            self.cfg['actors'][left_port].run_forever(speed_regulation_enabled='on',
-                                                      speed_sp=int(speed_pct))
-            self.cfg['actors'][right_port].run_forever(speed_regulation_enabled='on',
-                                                       speed_sp=int(-speed_pct))
+            ml.run_forever(speed_regulation_enabled='on',
+                           speed_sp=self.scaleSpeed(ml, speed_pct))
+            mr.run_forever(speed_regulation_enabled='on',
+                           speed_sp=self.scaleSpeed(mr, -speed_pct))
 
     def rotateDirectionAngle(self, left_port, right_port, reverse, direction, speed_pct, angle):
         # direction: left, right
         # reverse: always false for now
-        speed_pct *= 10.0
+        speed_pct = clamp(speed_pct, -100, 100)
         ml = self.cfg['actors'][left_port]
         mr = self.cfg['actors'][right_port]
         circ = math.pi * self.cfg['track-width']
@@ -394,10 +406,10 @@ class Hal(object):
         # set all attributes
         ml.speed_regulation_enabled = 'on'
         ml.stop_command = 'brake'
-        ml.speed_sp = int(speed_pct)
+        ml.speed_sp = self.scaleSpeed(ml, speed_pct)
         mr.speed_regulation_enabled = 'on'
         mr.stop_command = 'brake'
-        mr.speed_sp = int(speed_pct)
+        mr.speed_sp = self.scaleSpeed(mr, speed_pct)
         if direction is 'left':
             mr.position_sp = int(dc * mr.count_per_rot)
             ml.position_sp = int(-dc * ml.count_per_rot)
@@ -412,11 +424,11 @@ class Hal(object):
             self.busyWait()
 
     def driveInCurve(self, direction, left_port, left_speed_pct, right_port, right_speed_pct, distance=None):
-        # direction: foreward, backwards
-        left_speed_pct *= 10.0
-        right_speed_pct *= 10.0
+        # direction: foreward, backward
         ml = self.cfg['actors'][left_port]
         mr = self.cfg['actors'][right_port]
+        left_speed_pct = self.scaleSpeed(ml, clamp(left_speed_pct, -100, 100))
+        right_speed_pct = self.scaleSpeed(mr, clamp(right_speed_pct, -100, 100))
         if distance:
             speed_pct = (left_speed_pct + right_speed_pct) / 2.0
             circ = math.pi * self.cfg['wheel-diameter']
