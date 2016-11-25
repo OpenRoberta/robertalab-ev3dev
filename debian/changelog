@@ -1,3 +1,12 @@
+openrobertalab (1.6.0+1.0.0) stable; urgency=medium
+
+  * rewrite the she-bang since we now use python3
+  * add screenshots for readme/wiki
+  * fix speed scaling of motors
+  * remove use of deprecated speed regullation attribute
+
+ -- Stefan Sauer <ensonic@google.com>  Fri, 25 Nov 2016 20:36:46 +0100
+
 openrobertalab (1.5.0+1.0.0) stable; urgency=medium
 
   * port to python3
