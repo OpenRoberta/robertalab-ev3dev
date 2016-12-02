@@ -247,11 +247,22 @@ class Hal(object):
         elif systemSound == 4:
             self.playTone(100, 500)
 
-    # FIXME: https://github.com/rhempel/ev3dev-lang-python/issues/258
     def setVolume(self, volume):
+        # FIXME: https://github.com/rhempel/ev3dev-lang-python/issues/258
+        # will be in python-ev3dev-0.9.0
+        try:
+            self.sound.set_volume(volume)
+        except AttributeError:
+            pass
         self.sound.volume = volume
 
     def getVolume(self):
+        # FIXME: https://github.com/rhempel/ev3dev-lang-python/issues/258
+        # will be in python-ev3dev-0.9.0
+        try:
+            return self.sound.get_volume()
+        except AttributeError:
+            pass
         return self.sound.volume
 
     # actors
