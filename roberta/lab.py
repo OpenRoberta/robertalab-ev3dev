@@ -243,9 +243,14 @@ class Connector(threading.Thread):
         logger.debug('thread created')
 
     def _store_code(self, filename, code):
-        """Apply hotfixes needed until server update"""
+        # TODO: what can we do if the file can't be overwritten
+        # https://github.com/OpenRoberta/robertalab-ev3dev/issues/26
+        # - there is no point in catching if we only log it
+        # - once we can report error details to the server, we can reconsider
+        #   https://github.com/OpenRoberta/robertalab-ev3dev/issues/20
         with open(filename, 'w') as prog:
-            # the generated code is python2 still
+            # Apply hotfixes needed until server update
+            # - the server generated code is python2 still
             code = code.replace('from __future__ import absolute_import\n', '')
             code = code.replace('in xrange(', 'in range(')
             code = code.replace('#!/usr/bin/python\n', '#!/usr/bin/python3\n')
