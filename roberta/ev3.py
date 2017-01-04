@@ -10,7 +10,6 @@ import os
 import time
 
 from ev3dev import auto as ev3dev
-from roberta.StaticData import IMAGES
 
 logger = logging.getLogger('roberta.ev3')
 
@@ -34,7 +33,6 @@ class Hal(object):
         self.sound = ev3dev.Sound
         (self.font_w, self.font_h) = self.lcd.draw.textsize('X', font=self.font_s)
         self.timers = {}
-        self.images = {}
         self.sys_bus = None
         self.bt_server = None
         self.bt_connections = []
@@ -157,11 +155,22 @@ class Hal(object):
         self.lcd.update()
 
     def drawPicture(self, picture, x, y):
-        if picture not in self.images:
-            self.images[picture] = Image.frombytes('1', (178, 128),
-                                                   IMAGES[picture],
-                                                   'raw', '1;IR', 0, 1)
-        self.lcd.image.paste(self.images[picture], (x, y))
+        logger.info('len(picture) = %d', len(picture))
+        size = (178, 128)
+        if len(picture) < 20:
+            # deprecated server API
+            # TODO(ensonic): remove after ora-2.1.4 is online
+            from roberta.StaticData import IMAGES
+            if not hasattr(self, 'images'):
+                self.images = {}
+            if picture not in self.images:
+                self.images[picture] = Image.frombytes('1', size,
+                                                       IMAGES[picture],
+                                                       'raw', '1;IR', 0, 1)
+            pixels = self.images[picture]
+        else:
+            pixels = Image.frombytes('1', size, picture, 'raw', '1;IR', 0, 1)
+        self.lcd.image.paste(pixels, (x, y))
         self.lcd.update()
 
     def clearDisplay(self):
