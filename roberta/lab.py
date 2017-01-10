@@ -398,8 +398,19 @@ class Connector(threading.Thread):
                 break
             except urllib.error.URLError as e:
                 # e.g. [Errno 111] Connection refused
-                logger.error("URLError: %s: %s" % (self.address, e.reason))
-                break
+                #                  The handshake operation timed out
+                # errors can be nested
+                nested_e = None
+                if len(e.args) > 0:
+                    nested_e = e.args[0]
+                elif e.__cause__:
+                    nested_e = e.__cause__
+                if not nested_e or isinstance(nested_e, socket.timeout):
+                    pass
+                else:
+                    logger.debug("URLError: %s" % repr(e))
+                    logger.error("URLError: %s: %s" % (self.address, e.reason))
+                    break
             except socket.timeout:
                 pass
             except:
