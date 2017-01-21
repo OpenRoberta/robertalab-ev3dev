@@ -407,11 +407,15 @@ class Connector(threading.Thread):
                     nested_e = e.__cause__
                 retry = False
                 if nested_e:
+                    # this happens if packets were lost
                     if isinstance(nested_e, socket.timeout):
-                        # this happens if packets were lost
                         retry = True
+                    # this happens if we loose network
                     if isinstance(nested_e, socket.gaierror):
-                        # this happens if we loose network
+                        retry = True
+                    if isinstance(nested_e, socket.herror):
+                        retry = True
+                    if isinstance(nested_e, socket.error):
                         retry = True
                 else:
                     retry = True
@@ -422,7 +426,7 @@ class Connector(threading.Thread):
                     if nested_e:
                         logger.debug("Nested Exception: %s" % repr(nested_e))
                     break
-            except (socket.timeout, socket.gaierror):
+            except (socket.timeout, socket.gaierror, socket.herror, socket.error):
                 pass
             except:
                 logger.exception("Ooops:")
