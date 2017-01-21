@@ -405,13 +405,24 @@ class Connector(threading.Thread):
                     nested_e = e.args[0]
                 elif e.__cause__:
                     nested_e = e.__cause__
-                if not nested_e or isinstance(nested_e, socket.timeout):
-                    pass
+                retry = False
+                if nested_e:
+                    if isinstance(nested_e, socket.timeout):
+                        # this happens if packets were lost
+                        retry = True
+                    if isinstance(nested_e, socket.gaierror):
+                        # this happens if we loose network
+                        retry = True
                 else:
-                    logger.debug("URLError: %s" % repr(e))
+                    retry = True
+
+                if not retry:
                     logger.error("URLError: %s: %s" % (self.address, e.reason))
+                    logger.debug("URLError: %s" % repr(e))
+                    if nested_e:
+                        logger.debug("Nested Exception: %s" % repr(nested_e))
                     break
-            except socket.timeout:
+            except (socket.timeout, socket.gaierror):
                 pass
             except:
                 logger.exception("Ooops:")
