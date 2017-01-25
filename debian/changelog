@@ -1,3 +1,11 @@
+openrobertalab (1.7.0+1.0.0) stable; urgency=medium
+
+  * handle more network errors
+  * support new image api (allows to pass images as part of the code)
+  * use new python sound api
+
+ -- Stefan Sauer <ensonic@google.com>  Wed, 25 Jan 2017 13:53:04 +0100
+
 openrobertalab (1.6.0+1.0.0) stable; urgency=medium
 
   * rewrite the she-bang since we now use python3
