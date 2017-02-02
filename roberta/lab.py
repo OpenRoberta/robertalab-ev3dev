@@ -76,6 +76,7 @@ class Service(dbus.service.Object):
     """
 
     def __init__(self, path):
+        logger.info('python path: %s\n' % (':'.join(sys.path)))
         # passing None for path is only for testing
         if path:
             # needs /etc/dbus-1/system.d/openroberta.conf
