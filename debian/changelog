@@ -1,3 +1,11 @@
+openrobertalab (1.7.1+1.0.0) stable; urgency=medium
+
+  * log the python path
+  * fix more motor attribute names
+  * avoid storing custom properties on monot instances
+
+ -- Stefan Sauer <ensonic@google.com>  Thu, 02 Feb 2017 16:15:28 +0100
+
 openrobertalab (1.7.0+1.0.0) stable; urgency=medium
 
   * handle more network errors
