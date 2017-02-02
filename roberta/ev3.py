@@ -46,10 +46,9 @@ class Hal(object):
                 m.polarity = 'inversed'
             else:
                 m.polarity = 'normal'
-            m.cfg_side = side
-            m.last_position = m.position
         except (AttributeError, OSError):
             logger.info('no large motor connected to port [%s]' % port)
+            logger.exception("HW Config error")
             m = None
         return m
 
@@ -61,10 +60,9 @@ class Hal(object):
                 m.polarity = 'inversed'
             else:
                 m.polarity = 'normal'
-            m.cfg_side = side
-            m.last_position = m.position
         except (AttributeError, OSError):
             logger.info('no medium motor connected to port [%s]' % port)
+            logger.exception("HW Config error")
             m = None
         return m
 
@@ -554,11 +552,11 @@ class Hal(object):
     # tacho-motor position
     def resetMotorTacho(self, actorPort):
         m = self.cfg['actors'][actorPort]
-        m.last_position = m.position
+        m.position = 0
 
     def getMotorTachoValue(self, actorPort, mode):
         m = self.cfg['actors'][actorPort]
-        tachoCount = m.position - m.last_position
+        tachoCount = m.position
 
         if mode == 'degree':
             return tachoCount * 360.0 / float(m.count_per_rot)
