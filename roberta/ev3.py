@@ -338,12 +338,12 @@ class Hal(object):
 
     def stopMotor(self, port, mode='float'):
         # mode: float, nonfloat
-        # stop_commands: ['brake', 'coast', 'hold']
+        # stop_actions: ['brake', 'coast', 'hold']
         m = self.cfg['actors'][port]
         if mode is 'float':
-            m.stop_command = 'coast'
+            m.stop_action = 'coast'
         elif mode is 'nonfloat':
-            m.stop_command = 'brake'
+            m.stop_action = 'brake'
         m.stop()
 
     def stopMotors(self, left_port, right_port):
@@ -378,10 +378,10 @@ class Hal(object):
         if direction is 'backward':
             dc = -dc
         # set all attributes
-        ml.stop_command = 'brake'
+        ml.stop_action = 'brake'
         ml.position_sp = int(dc * ml.count_per_rot)
         ml.speed_sp = self.scaleSpeed(ml, speed_pct)
-        mr.stop_command = 'brake'
+        mr.stop_action = 'brake'
         mr.position_sp = int(dc * mr.count_per_rot)
         mr.speed_sp = self.scaleSpeed(mr, speed_pct)
         # start motors
@@ -416,9 +416,9 @@ class Hal(object):
         dc = distance / circ
         logger.debug("doing %lf rotations" % dc)
         # set all attributes
-        ml.stop_command = 'brake'
+        ml.stop_action = 'brake'
         ml.speed_sp = self.scaleSpeed(ml, speed_pct)
-        mr.stop_command = 'brake'
+        mr.stop_action = 'brake'
         mr.speed_sp = self.scaleSpeed(mr, speed_pct)
         if direction is 'left':
             mr.position_sp = int(dc * mr.count_per_rot)
@@ -446,9 +446,9 @@ class Hal(object):
             left_dc = dc * left_speed_pct / speed_pct
             right_dc = dc * right_speed_pct / speed_pct
             # set all attributes
-            ml.stop_command = 'brake'
+            ml.stop_action = 'brake'
             ml.speed_sp = int(left_speed_pct)
-            mr.stop_command = 'brake'
+            mr.stop_action = 'brake'
             mr.speed_sp = int(right_speed_pct)
             if direction is 'backwards':
                 ml.position_sp = int(-left_dc * ml.count_per_rot)
