@@ -258,22 +258,15 @@ class Hal(object):
             self.playTone(100, 500)
 
     def setVolume(self, volume):
-        # FIXME: https://github.com/rhempel/ev3dev-lang-python/issues/258
-        # will be in python-ev3dev-0.9.0
-        try:
-            self.sound.set_volume(volume)
-        except AttributeError:
-            pass
-        self.sound.volume = volume
+        self.sound.set_volume(volume)
 
     def getVolume(self):
-        # FIXME: https://github.com/rhempel/ev3dev-lang-python/issues/258
-        # will be in python-ev3dev-0.9.0
-        try:
-            return self.sound.get_volume()
-        except AttributeError:
-            pass
-        return self.sound.volume
+        return self.sound.get_volume()
+
+    def sayText(self, text, lang='de'):
+        # FIXME: or should lang be in brickconf?
+        opts = '-a 200 -s 130 -v %s' % lang
+        self.sound.speak(text, espeak_opts=opts)
 
     # actors
     # http://www.ev3dev.org/docs/drivers/tacho-motor-class/
