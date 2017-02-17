@@ -291,7 +291,7 @@ class Hal(object):
         elif mode is 'rotations':
             value *= m.count_per_rot
             m.run_to_rel_pos(position_sp=int(value), speed_sp=speed)
-            while (m.state  and 'stalled' not in m.state):
+            while (m.state and 'stalled' not in m.state):
                 self.busyWait()
 
     def rotateUnregulatedMotor(self, port, speed_pct, mode, value):
