@@ -286,12 +286,12 @@ class Hal(object):
         speed = self.scaleSpeed(m, clamp(speed_pct, -100, 100))
         if mode is 'degree':
             m.run_to_rel_pos(position_sp=value, speed_sp=speed)
-            while (m.state):
+            while (m.state and 'stalled' not in m.state):
                 self.busyWait()
         elif mode is 'rotations':
             value *= m.count_per_rot
             m.run_to_rel_pos(position_sp=int(value), speed_sp=speed)
-            while (m.state):
+            while (m.state  and 'stalled' not in m.state):
                 self.busyWait()
 
     def rotateUnregulatedMotor(self, port, speed_pct, mode, value):
@@ -302,12 +302,12 @@ class Hal(object):
         if speed_pct >= 0:
             value = m.position + value
             m.run_direct(duty_cycle_sp=int(speed_pct))
-            while (m.position < value):
+            while (m.position < value and 'stalled' not in m.state):
                 self.busyWait()
         else:
             value = m.position - value
             m.run_direct(duty_cycle_sp=int(speed_pct))
-            while (m.position > value):
+            while (m.position > value and 'stalled' not in m.state):
                 self.busyWait()
         m.stop()
 
