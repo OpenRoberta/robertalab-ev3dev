@@ -7,6 +7,7 @@ import glob
 import logging
 import math
 import os
+import signal
 import time
 
 from ev3dev import auto as ev3dev
@@ -19,6 +20,9 @@ def clamp(v, mi, ma):
 
 
 class Hal(object):
+    # popen objects, classmethod globale, so that the front-end can cleanup
+    # commands on forced termination
+    cmds = []
 
     # usedSensors is unused, the code-generator for lab.openroberta > 1.4 wont
     # pass it anymore
@@ -138,6 +142,19 @@ class Hal(object):
             s = None
         return s
 
+    # state
+    def resetState(self):
+        self.clearDisplay()
+        self.stopAllMotors()
+        self.resetLED()
+        logger.debug("terminate %d commands", len(Hal.cmds))
+        for cmd in Hal.cmds:
+            if cmd:
+                logger.debug("terminate command: %s", str(cmd))
+                cmd.terminate()
+                cmd.wait()  # avoid zombie processes
+        self.cmds = []
+
     # control
     def waitFor(self, ms):
         time.sleep(ms / 1000.0)
@@ -239,7 +256,12 @@ class Hal(object):
     def playTone(self, frequency, duration):
         # this is already handled by the sound api (via beep cmd)
         # frequency = frequency if frequency >= 100 else 0
-        self.sound.tone(frequency, duration).wait()
+        cmd = self.sound.tone(frequency, duration)
+        Hal.cmds.append(cmd)
+        # we're not using cmd.wait() since that is not interruptable
+        while not cmd.poll():
+            self.busyWait()
+        Hal.cmds.remove(cmd)
 
     def playFile(self, systemSound):
         # systemSound is a enum for preset beeps:

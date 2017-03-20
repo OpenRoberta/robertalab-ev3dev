@@ -364,7 +364,7 @@ class Connector(threading.Thread):
                     # TODO: url is not part of reply :/
                     # TODO: we should receive a digest for the download (md5sum) so that
                     #   we can verify the download
-                    logger.debug('download code: %s/download' % self.address)
+                    logger.debug('download code: %s/download', self.address)
                     response = self._request("download", headers, timeout)
                     hdr = response.getheader('Content-Disposition')
                     # save to $HOME/
@@ -375,9 +375,7 @@ class Connector(threading.Thread):
                     abort_handler = AbortHandler(self.service, self)
                     abort_handler.daemon = True
                     self.params['nepoexitvalue'] = self._exec_code(filename, code, abort_handler)
-                    self.service.hal.clearDisplay()
-                    self.service.hal.stopAllMotors()
-                    self.service.hal.resetLED()
+                    self.service.hal.resetState()
                     # if the user did wait for a key press, wait for the key for be released
                     # before handing control back (to e.g. brickman)
                     while self.service.hal.isKeyPressed('any'):
