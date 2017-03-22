@@ -500,12 +500,14 @@ class Hal(object):
     # ultrasonic sensor
     def getUltraSonicSensorDistance(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'US-DIST-CM'
+        if s.mode != 'US-DIST-CM':
+            s.mode = 'US-DIST-CM'
         return self.scaledValue(s)
 
     def getUltraSonicSensorPresence(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'US-SI-CM'
+        if s.mode != 'US-SI-CM':
+            s.mode = 'US-SI-CM'
         return self.scaledValue(s)
 
     # gyro
@@ -526,35 +528,41 @@ class Hal(object):
     # http://www.ev3dev.org/docs/sensors/lego-ev3-color-sensor/
     def getColorSensorAmbient(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'COL-AMBIENT'
+        if s.mode != 'COL-AMBIENT':
+            s.mode = 'COL-AMBIENT'
         return self.scaledValue(s)
 
     def getColorSensorColour(self, port):
         colors = ['none', 'black', 'blue', 'green', 'yellow', 'red', 'white', 'brown']
         s = self.cfg['sensors'][port]
-        s.mode = 'COL-COLOR'
+        if s.mode != 'COL-COLOR':
+            s.mode = 'COL-COLOR'
         return colors[int(self.scaledValue(s))]
 
     def getColorSensorRed(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'COL-REFLECT'
+        if s.mode != 'COL-REFLECT':
+            s.mode = 'COL-REFLECT'
         return self.scaledValue(s)
 
     def getColorSensorRgb(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'RGB-RAW'
+        if s.mode != 'RGB-RAW':
+            s.mode = 'RGB-RAW'
         return (s.value(0), s.value(1), s.value(2))
 
     # infrared
     # http://www.ev3dev.org/docs/sensors/lego-ev3-infrared-sensor/
     def getInfraredSensorSeek(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'IR-SEEK'
+        if s.mode != 'IR-SEEK':
+            s.mode = 'IR-SEEK'
         return self.scaledValue(s)
 
     def getInfraredSensorDistance(self, port):
         s = self.cfg['sensors'][port]
-        s.mode = 'IR-PROX'
+        if s.mode != 'IR-PROX':
+            s.mode = 'IR-PROX'
         return self.scaledValue(s)
 
     # timer
