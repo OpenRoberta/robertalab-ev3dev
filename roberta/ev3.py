@@ -24,6 +24,11 @@ class Hal(object):
     # commands on forced termination
     cmds = []
 
+    GYRO_MODES = {
+        'angle': 'GYRO-ANG',
+        'rate': 'GYRO-RATE',
+    }
+
     # usedSensors is unused, the code-generator for lab.openroberta > 1.4 wont
     # pass it anymore
     def __init__(self, brickConfiguration, usedSensors=None):
@@ -507,16 +512,14 @@ class Hal(object):
     # http://www.ev3dev.org/docs/sensors/lego-ev3-gyro-sensor/
     def resetGyroSensor(self, port):
         # change mode to reset for GYRO-ANG and GYRO-G&A
-        self.cfg['sensors'][port].mode = 'GYRO-RATE'
-        self.cfg['sensors'][port].mode = 'GYRO-ANG'
+        s = self.cfg['sensors'][port]
+        s.mode = 'GYRO-RATE'
+        s.mode = 'GYRO-ANG'
 
     def getGyroSensorValue(self, port, mode):
-        # mode = rate, angle
         s = self.cfg['sensors'][port]
-        if mode is 'angle':
-            s.mode = 'GYRO-ANG'
-        elif mode is 'rate':
-            s.mode = 'GYRO-RATE'
+        if s.mode != Hal.GYRO_MODES[mode]:
+            s.mode = Hal.GYRO_MODES[mode]
         return self.scaledValue(s)
 
     # color
