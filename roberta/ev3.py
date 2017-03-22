@@ -7,7 +7,6 @@ import glob
 import logging
 import math
 import os
-import signal
 import time
 
 from ev3dev import auto as ev3dev
