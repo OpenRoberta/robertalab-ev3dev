@@ -130,6 +130,9 @@ class Service(dbus.service.Object):
         logger.debug('connect(%s)' % address)
         if self.thread:
             logger.debug('disconnect() old thread')
+            # make sure we don't change to disconnected when the thread
+            # eventually terminates after the http timeout
+            self.thread.service = None
             self.thread.running = False
         # start thread, connecting to address
         self.thread = Connector(address, self)
@@ -350,7 +353,8 @@ class Connector(threading.Thread):
                     self.registered = True
                     self.params['nepoexitvalue'] = 0
                 elif cmd == 'abort':
-                    if not self.registered:
+                    # if service is None, the user canceled
+                    if not self.registered and self.service:
                         logger.info('token collision, retrying')
                         self.params['token'] = generateToken()
                         # make sure we don't DOS the server
@@ -432,6 +436,6 @@ class Connector(threading.Thread):
         logger.info('network thread stopped')
         if self.service:
             self.service.status('disconnected')
-        # don't play if we we just canceled a registration
-        if self.registered:
-            self.service.hal.playFile(3)
+            # don't play if we we just canceled a registration
+            if self.registered:
+                self.service.hal.playFile(3)
