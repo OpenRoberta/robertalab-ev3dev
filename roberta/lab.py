@@ -281,7 +281,10 @@ class Connector(threading.Thread):
                 exec(compiled_code, scope)
                 result = scope['result']
             logger.info('execution finished: result = %d', result)
-        except (SystemExit, KeyboardInterrupt):
+        except KeyboardInterrupt:
+            logger.info("reraise hard kill")
+            raise
+        except SystemExit:
             result = 143
             logger.info("soft kill")
         except:

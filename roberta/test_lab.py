@@ -121,6 +121,7 @@ class TestConnector(unittest.TestCase):
     )
     INFINITE_LOOP = (
         'import time\n'
+        'result=0\n'
         'while True:\n'
         '  time.sleep(0.1)\n'
         '  result += 1\n'
@@ -196,8 +197,9 @@ class TestConnector(unittest.TestCase):
 
     def test_exec_code_with_infinite_loop(self):
         connector = Connector(URL, None)
-        res = connector._exec_code("test.py", TestConnector.INFINITE_LOOP, DummyAbortHandler(to_sleep=0.3))
-        self.assertEqual(res, 143)
+        with self.assertRaises(KeyboardInterrupt):
+            connector._exec_code("test.py", TestConnector.INFINITE_LOOP, DummyAbortHandler(to_sleep=0.3))
+
 """
 class TestCleanup(unittest.TestCase):
     def test_cleanup(self):
