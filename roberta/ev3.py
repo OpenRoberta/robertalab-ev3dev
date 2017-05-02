@@ -167,6 +167,14 @@ class Hal(object):
         '''Used as interrupptible busy wait.'''
         time.sleep(0.0)
 
+    def waitCmd(self, cmd):
+        '''Wait for a command to finish.'''
+        Hal.cmds.append(cmd)
+        # we're not using cmd.wait() since that is not interruptable
+        while cmd.poll() is None:
+            self.busyWait()
+        Hal.cmds.remove(cmd)
+
     # lcd
     def drawText(self, msg, x, y, font=None):
         font = font or self.font_s
@@ -260,12 +268,7 @@ class Hal(object):
     def playTone(self, frequency, duration):
         # this is already handled by the sound api (via beep cmd)
         # frequency = frequency if frequency >= 100 else 0
-        cmd = self.sound.tone(frequency, duration)
-        Hal.cmds.append(cmd)
-        # we're not using cmd.wait() since that is not interruptable
-        while not cmd.poll():
-            self.busyWait()
-        Hal.cmds.remove(cmd)
+        self.waitCmd(self.sound.tone(frequency, duration))
 
     def playFile(self, systemSound):
         # systemSound is a enum for preset beeps:
@@ -292,7 +295,7 @@ class Hal(object):
     def sayText(self, text, lang='de'):
         # FIXME: or should lang be in brickconf?
         opts = '-a 200 -s 130 -v %s' % lang
-        self.sound.speak(text, espeak_opts=opts)
+        self.waitCmd(self.sound.speak(text, espeak_opts=opts))
 
     # actors
     # http://www.ev3dev.org/docs/drivers/tacho-motor-class/
