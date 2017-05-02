@@ -164,8 +164,8 @@ class Service(dbus.service.Object):
 
 class AbortHandler(threading.Thread):
     """ Key press handler to abort running programms.
-        Tests for a center+down press to soft-kill the programm or a 1s back
-        key press and terminate the daemon"""
+        Tests for a center+down press to soft-kill the programm or a 1 sec back
+        key press and terminate the whole process"""
 
     def __init__(self, service, runner):
         threading.Thread.__init__(self)
