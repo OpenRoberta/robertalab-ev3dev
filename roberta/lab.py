@@ -224,7 +224,7 @@ class AbortHandler(threading.Thread):
             # So it is better to clean up the mess.
             ctypes.pythonapi.PyThreadState_SetAsyncExc(target_tid, 0)
             raise SystemError("PyThreadState_SetAsyncExc failed")
-        logger.debug("Successfully set asynchronized exception for", target_tid)
+        logger.debug("Successfully set asynchronized exception for %d", target_tid)
 
 
 class Connector(threading.Thread):
