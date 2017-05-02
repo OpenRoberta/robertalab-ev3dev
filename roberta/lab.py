@@ -37,7 +37,7 @@ TOKEN_PER_SESSION = True
 def getHwAddr(ifname):
     # SIOCGIFHWADDR = 0x8927
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        info = ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
+        info = ioctl(s.fileno(), 0x8927, struct.pack('256s', ifname[:15]))
     return ':'.join(['%02x' % char for char in info[18:24]])
 
 
@@ -76,7 +76,7 @@ class Service(dbus.service.Object):
     """
 
     def __init__(self, path):
-        logger.info('python path: %s\n' % (':'.join(sys.path)))
+        logger.info('python path: %s\n', (':'.join(sys.path)))
         # passing None for path is only for testing
         if path:
             # needs /etc/dbus-1/system.d/openroberta.conf
@@ -95,7 +95,7 @@ class Service(dbus.service.Object):
         self.updateConfiguration()
 
     def switchToGfxMode(self):
-        logger.info('running on tty: %s' % os.ttyname(sys.stdin.fileno()))
+        logger.info('running on tty: %s', os.ttyname(sys.stdin.fileno()))
         with open(os.ttyname(sys.stdin.fileno()), 'r') as tty:
             # KDSETMODE = 0x4B3A, GRAPHICS = 0x01
             ioctl(tty, 0x4B3A, 0x01)
@@ -127,7 +127,7 @@ class Service(dbus.service.Object):
 
     @dbus.service.method('org.openroberta.lab', in_signature='s', out_signature='s')
     def connect(self, address):
-        logger.debug('connect(%s)' % address)
+        logger.debug('connect(%s)', address)
         if self.thread:
             logger.debug('disconnect() old thread')
             # make sure we don't change to disconnected when the thread
@@ -159,7 +159,7 @@ class Service(dbus.service.Object):
 
     @dbus.service.signal('org.openroberta.lab', signature='s')
     def status(self, status):
-        logger.info('status changed: %s' % status)
+        logger.info('status changed: %s', status)
 
 
 class AbortHandler(threading.Thread):
@@ -298,18 +298,18 @@ class Connector(threading.Thread):
         url = '%s/%s' % (self.address, cmd)
         while True:
             try:
-                logger.debug('sending request to: %s' % url)
+                logger.debug('sending request to: %s', url)
                 req = urllib.request.Request(url, headers=headers)
                 data = json.dumps(self.params).encode('utf8')
-                logger.debug('  with params: %s' % data)
+                logger.debug('  with params: %s', data)
                 return urllib.request.urlopen(req, data, timeout=timeout)
             except urllib.error.HTTPError as e:
                 if e.code == 404 and '/rest/' not in url:
-                    logger.warning("HTTPError(%s): %s, retrying with '/rest'" % (e.code, e.reason))
+                    logger.warning("HTTPError(%s): %s, retrying with '/rest'", e.code, e.reason)
                     # upstream changed the server path
                     url = '%s/rest/%s' % (self.address, cmd)
                 elif e.code == 405 and not url.startswith('https://'):
-                    logger.warning("HTTPError(%s): %s, retrying with 'https://'" % (e.code, e.reason))
+                    logger.warning("HTTPError(%s): %s, retrying with 'https://'", e.code, e.reason)
                     self.address = "https" + self.address[4:]
                     url = "https" + url[4:]
                 else:
@@ -327,7 +327,7 @@ class Connector(threading.Thread):
         }
         timeout = 15  # seconds
 
-        logger.debug('target: %s' % self.address)
+        logger.debug('target: %s', self.address)
         while self.running:
             if self.registered:
                 self.params['cmd'] = 'push'
@@ -347,7 +347,7 @@ class Connector(threading.Thread):
                 # https://github.com/jcgregorio/httplib2
                 response = self._request("pushcmd", headers, timeout)
                 reply = json.loads(response.read().decode('utf8'))
-                logger.debug('response: %s' % json.dumps(reply))
+                logger.debug('response: %s', json.dumps(reply))
                 cmd = reply['cmd']
                 if cmd == 'repeat':
                     if not self.registered:
@@ -377,7 +377,7 @@ class Connector(threading.Thread):
                     # save to $HOME/
                     filename = '%s/%s' % (self.home, hdr.split('=')[1] if hdr else 'unknown')
                     code = self._store_code(filename, response.read().decode('utf-8'))
-                    logger.info('code downloaded to: %s' % filename)
+                    logger.info('code downloaded to: %s', filename)
                     # use a long-press of backspace to terminate
                     abort_handler = AbortHandler(self.service, self)
                     abort_handler.daemon = True
@@ -397,10 +397,10 @@ class Connector(threading.Thread):
                     # check if we need to close files (logger?)
                     pass
                 else:
-                    logger.warning('unhandled command: %s' % cmd)
+                    logger.warning('unhandled command: %s', cmd)
             except urllib.error.HTTPError as e:
                 # e.g. [Errno 404]
-                logger.error("HTTPError(%s): %s" % (e.code, e.reason))
+                logger.error("HTTPError(%s): %s", e.code, e.reason)
                 break
             except urllib.error.URLError as e:
                 # e.g. [Errno 111] Connection refused
@@ -427,10 +427,10 @@ class Connector(threading.Thread):
                     retry = True
 
                 if not retry:
-                    logger.error("URLError: %s: %s" % (self.address, e.reason))
-                    logger.debug("URLError: %s" % repr(e))
+                    logger.error("URLError: %s: %s", self.address, e.reason)
+                    logger.debug("URLError: %s", repr(e))
                     if nested_e:
-                        logger.debug("Nested Exception: %s" % repr(nested_e))
+                        logger.debug("Nested Exception: %s", repr(nested_e))
                     break
             except (socket.timeout, socket.gaierror, socket.herror, socket.error):
                 pass
