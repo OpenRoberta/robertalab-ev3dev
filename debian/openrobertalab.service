@@ -1,4 +1,4 @@
-# /lib/systemd/system/openroberta.service
+# /lib/systemd/system/openrobertalab.service
 
 [Unit]
 Description=OpenRoberta Lab connector
@@ -6,8 +6,9 @@ Conflicts=getty@tty2.service
 After=systemd-user-sessions.service getty@tty2.service
 
 [Service]
-ExecStartPre=/bin/chown robot: /dev/tty2 
+ExecStartPre=/bin/chown robot: /dev/tty2
 ExecStart=/usr/bin/openrobertalab
+#ExecStopPost=/bin/chvt 1
 Restart=always
 User=robot
 StandardInput=tty
