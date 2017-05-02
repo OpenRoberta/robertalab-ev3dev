@@ -182,8 +182,11 @@ class AbortHandler(threading.Thread):
                 # if pressed for one sec, hard exit
                 if self.long_press > 10:
                     logger.info('--- hard abort ---')
-                    _thread.interrupt_main()
+                    _thread.interrupt_main()  # throws KeyboardInterrupt
                     self.running = False
+                    # something is eating the KeyboardInterrupt, this is a bit
+                    # brute force, but works
+                    os._exit(1)
                 else:
                     self.long_press += 1
             elif hal.isKeyPressed('enter') and hal.isKeyPressed('down'):
@@ -200,7 +203,11 @@ class AbortHandler(threading.Thread):
     def __exit__(self, type, value, traceback):
         self.running = False
         if type is not None:  # an exception has occurred
+            logger.debug('Reraising exception: %s', str(type))
             return False      # reraise the exception
+        else:
+            logger.debug('No exception')
+            return True
 
     def ctype_async_raise(self, exception):
         # adapted from https://gist.github.com/liuw/2407154
