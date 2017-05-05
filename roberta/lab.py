@@ -94,19 +94,6 @@ class Service(dbus.service.Object):
         }
         self.updateConfiguration()
 
-    def switchToGfxMode(self):
-        logger.info('running on tty: %s', os.ttyname(sys.stdin.fileno()))
-        with open(os.ttyname(sys.stdin.fileno()), 'r') as tty:
-            # KDSETMODE = 0x4B3A, GRAPHICS = 0x01
-            ioctl(tty, 0x4B3A, 0x01)
-
-    def switchToTxtMode(self):
-        with open(os.ttyname(sys.stdin.fileno()), 'w') as tty:
-            # KDSETMODE = 0x4B3A, TEXT = 0x00
-            ioctl(tty, 0x4B3A, 0x00)
-            # send Ctrl-L to tty to clear
-            tty.write('\033c')
-
     def updateConfiguration(self):
         # or /etc/os-release
         with open('/proc/version', 'r') as ver:
@@ -160,6 +147,25 @@ class Service(dbus.service.Object):
     @dbus.service.signal('org.openroberta.lab', signature='s')
     def status(self, status):
         logger.info('status changed: %s', status)
+
+
+class GfxMode(object):
+
+    def __init__(self):
+        self.tty_name = os.ttyname(sys.stdin.fileno())
+
+    def __enter__(self):
+        logger.info('running on tty: %s', self.tty_name)
+        with open(self.tty_name, 'r') as tty:
+            # KDSETMODE = 0x4B3A, GRAPHICS = 0x01
+            ioctl(tty, 0x4B3A, 0x01)
+
+    def __exit__(self, type, value, traceback):
+        with open(self.tty_name, 'w') as tty:
+            # KDSETMODE = 0x4B3A, TEXT = 0x00
+            ioctl(tty, 0x4B3A, 0x00)
+            # send Ctrl-L to tty to clear
+            tty.write('\033c')
 
 
 class AbortHandler(threading.Thread):
@@ -372,9 +378,6 @@ class Connector(threading.Thread):
                     else:
                         break
                 elif cmd == 'download':
-                    self.service.switchToGfxMode()
-                    self.service.hal.clearDisplay()
-                    self.service.status('executing')
                     # TODO: url is not part of reply :/
                     # TODO: we should receive a digest for the download (md5sum) so that
                     #   we can verify the download
@@ -388,14 +391,17 @@ class Connector(threading.Thread):
                     # use a long-press of backspace to terminate
                     abort_handler = AbortHandler(self.service, self)
                     abort_handler.daemon = True
-                    self.params['nepoexitvalue'] = self._exec_code(filename, code, abort_handler)
-                    self.service.hal.resetState()
-                    # if the user did wait for a key press, wait for the key for be released
-                    # before handing control back (to e.g. brickman)
-                    while self.service.hal.isKeyPressed('any'):
-                        time.sleep(0.1)
+                    # This will make brickman switch vt
+                    self.service.status('executing')
+                    with GfxMode():
+                        self.service.hal.clearDisplay()
+                        self.params['nepoexitvalue'] = self._exec_code(filename, code, abort_handler)
+                        # if the user did wait for a key press, wait for the key for be released
+                        # before handing control back (to e.g. brickman)
+                        while self.service.hal.isKeyPressed('any'):
+                            time.sleep(0.1)
+                        self.service.hal.resetState()
                     self.service.status('registered')
-                    self.service.switchToTxtMode()
                 elif cmd == 'update':
                     # FIXME:
                     # fetch new files (menu/hal)
