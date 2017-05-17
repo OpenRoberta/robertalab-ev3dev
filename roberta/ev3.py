@@ -34,7 +34,6 @@ class Hal(object):
         self.cfg = brickConfiguration
         dir = os.path.dirname(__file__)
         self.font_s = ImageFont.load(os.path.join(dir, 'ter-u12n_unicode.pil'))
-        self.font_x = ImageFont.load(os.path.join(dir, 'ter-u18n_unicode.pil'))
         self.lcd = ev3dev.Screen()
         self.led = ev3dev.Leds
         self.keys = ev3dev.Button()
