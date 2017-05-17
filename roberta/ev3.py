@@ -35,13 +35,15 @@ class Hal(object):
         dir = os.path.dirname(__file__)
         # char size: 6 x 12 -> num-chars: 29.666667 x 10.666667
         self.font_s = ImageFont.load(os.path.join(dir, 'ter-u12n_unicode.pil'))
+        # char size: 10 x 18 -> num-chars: 17.800000 x 7.111111
+        # self.font_s = ImageFont.load(os.path.join(dir, 'ter-u18n_unicode.pil'))
         self.lcd = ev3dev.Screen()
         self.led = ev3dev.Leds
         self.keys = ev3dev.Button()
         self.sound = ev3dev.Sound
         (self.font_w, self.font_h) = self.lcd.draw.textsize('X', font=self.font_s)
-        #logger.info('char size: %d x %d -> num-chars: %f x %f',
-        #    self.font_w, self.font_h, 178 / self.font_w, 128 / self.font_h)
+        # logger.info('char size: %d x %d -> num-chars: %f x %f',
+        #     self.font_w, self.font_h, 178 / self.font_w, 128 / self.font_h)
         self.timers = {}
         self.sys_bus = None
         self.bt_server = None
