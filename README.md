@@ -43,8 +43,9 @@ automatically, but one needs to reconnect to the Open Roberta server again.
 
 # build status #
 
-* master [![master](https://travis-ci.org/OpenRoberta/robertalab-ev3dev.svg?branch=master)](https://travis-ci.org/OpenRoberta/robertalab-ev3dev/builds)
-* develop [![develop](https://travis-ci.org/OpenRoberta/robertalab-ev3dev.svg?branch=develop)](https://travis-ci.org/OpenRoberta/robertalab-ev3dev/builds)
+[![Build Status](https://travis-ci.org/OpenRoberta/robertalab-ev3dev.svg?branch=develop)](https://travis-ci.org/OpenRoberta/robertalab-ev3dev/builds)
+[![Test Coverage](https://codecov.io/gh/OpenRoberta/robertalab-ev3dev/branch/develop/graph/badge.svg)](https://codecov.io/gh/OpenRoberta/robertalab-ev3dev)
+
 
 # development #
 ## prerequisites ##
