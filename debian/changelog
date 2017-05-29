@@ -1,3 +1,13 @@
+openrobertalab (1.7.2+1.0.0) stable; urgency=medium
+
+  * fix state handling when canceling the pin-code
+  * improve hard/sort resets
+  * only set gyro mode when the value changed (to avoid resets)
+  * make sound commands interruptible
+  * stop motors when stalled
+
+ -- Stefan Sauer <ensonic@google.com>  Mon, 29 May 2017 11:02:24 +0200
+
 openrobertalab (1.7.1+1.0.0) stable; urgency=medium
 
   * log the python path
