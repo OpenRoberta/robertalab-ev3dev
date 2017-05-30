@@ -7,6 +7,7 @@ import glob
 import logging
 import math
 import os
+import threading
 import time
 
 from ev3dev import auto as ev3dev
@@ -19,14 +20,26 @@ def clamp(v, mi, ma):
 
 
 class Hal(object):
-    # popen objects, classmethod globale, so that the front-end can cleanup
-    # commands on forced termination
+    # class global, so that the front-end can cleanup on forced termination
+    # popen objects
     cmds = []
+    # led blinker
+    led_blink_thread = None
+    led_blink_running = False
 
     GYRO_MODES = {
         'angle': 'GYRO-ANG',
         'rate': 'GYRO-RATE',
     }
+
+    LED_COLORS = {
+        'green': ev3dev.Leds.GREEN + ev3dev.Leds.GREEN,
+        'red': ev3dev.Leds.RED + ev3dev.Leds.RED,
+        'orange': ev3dev.Leds.ORANGE + ev3dev.Leds.ORANGE,
+        'black': ev3dev.Leds.BLACK + ev3dev.Leds.BLACK,
+    }
+
+    LED_ALL = ev3dev.Leds.LEFT + ev3dev.Leds.RIGHT
 
     # usedSensors is unused, the code-generator for lab.openroberta > 1.4 wont
     # pass it anymore
@@ -161,7 +174,7 @@ class Hal(object):
                 logger.debug("terminate command: %s", str(cmd))
                 cmd.terminate()
                 cmd.wait()  # avoid zombie processes
-        self.cmds = []
+        Hal.cmds = []
 
     # control
     def waitFor(self, ms):
@@ -212,41 +225,43 @@ class Hal(object):
         self.lcd.update()
 
     # led
+
+    def ledStopAnim(self):
+        if Hal.led_blink_running:
+            Hal.led_blink_running = False
+            Hal.led_blink_thread.join()
+            Hal.led_blink_thread = None
+
     def ledOn(self, color, mode):
+        def ledAnim(anim):
+            while Hal.led_blink_running:
+                for step in anim:
+                    self.led.set_color(Hal.LED_ALL, step[1])
+                    time.sleep(step[0])
+                    if not Hal.led_blink_running:
+                        break
+
+        self.ledStopAnim()
         # color: green, red, orange - LED.COLOR.{RED,GREEN,AMBER}
         # mode: on, flash, double_flash
-        if mode is 'on':
-            if color is 'green':
-                self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.GREEN)
-                self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.GREEN)
-            elif color is 'red':
-                self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.RED)
-                self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.RED)
-            elif color is 'orange':
-                self.led.set_color(ev3dev.Leds.LEFT, ev3dev.Leds.ORANGE)
-                self.led.set_color(ev3dev.Leds.RIGHT, ev3dev.Leds.ORANGE)
-        elif mode in ['flash', 'double_flash']:
-            # FIXME: timer mode does not support double flash
-            group = []
-            if color in ['green', 'orange']:
-                group.append(self.led.green_left)
-                group.append(self.led.green_right)
-            if color in ['red', 'orange']:
-                group.append(self.led.red_left)
-                group.append(self.led.red_right)
-            self.led.set(group, trigger='timer')
-            # when the trigger attribute is set other attributes appear
-            # dynamically :/ - but this still does not help :/
-            for i in range(5):
-                try:
-                    self.led.set(group, delay_on=200, delay_off=800)
-                    break
-                except IOError as e:
-                    logger.info('failed to set blink timing [%s]', e.message)
-                time.sleep(0.1)
+        on = Hal.LED_COLORS[color]
+        off = Hal.LED_COLORS['black']
+        if mode == 'on':
+            self.led.set_color(Hal.LED_ALL, on)
+        elif mode == 'flash':
+            Hal.led_blink_thread = threading.Thread(
+                target=ledAnim, args=([(0.5, on), (0.5, off)],))
+            Hal.led_blink_running = True
+            Hal.led_blink_thread.start()
+        elif mode == 'double_flash':
+            Hal.led_blink_thread = threading.Thread(
+                target=ledAnim, args=([(0.15, on), (0.15, off), (0.15, on), (0.55, off)],))
+            Hal.led_blink_running = True
+            Hal.led_blink_thread.start()
 
     def ledOff(self):
         self.led.all_off()
+        self.ledStopAnim()
 
     def resetLED(self):
         self.ledOff()
