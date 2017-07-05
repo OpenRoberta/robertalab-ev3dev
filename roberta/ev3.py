@@ -592,9 +592,10 @@ class Hal(object):
             return time.clock() - self.timers[timer]
         else:
             self.timers[timer] = time.clock()
+            return 0
 
     def resetTimer(self, timer):
-        del self.timers[timer]
+        self.timers[timer] = time.clock()
 
     # tacho-motor position
     def resetMotorTacho(self, actorPort):
