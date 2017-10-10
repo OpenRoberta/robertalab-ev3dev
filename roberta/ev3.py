@@ -61,6 +61,7 @@ class Hal(object):
         self.sys_bus = None
         self.bt_server = None
         self.bt_connections = []
+        self.lang = 'de'
 
     # factory methods
     @staticmethod
@@ -311,9 +312,12 @@ class Hal(object):
     def getVolume(self):
         return self.sound.get_volume()
 
-    def sayText(self, text, lang='de'):
-        # FIXME: or should lang be in brickconf?
-        opts = '-a 200 -s 130 -v %s' % lang
+    def setLanguage(self, lang):
+        # lang: 2digit ISO_639-1 code
+        self.lang = lang
+
+    def sayText(self, text):
+        opts = '-a 200 -s 130 -v %s' % self.lang
         self.waitCmd(self.sound.speak(text, espeak_opts=opts))
 
     # actors
