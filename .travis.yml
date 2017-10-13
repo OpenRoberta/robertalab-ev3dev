@@ -1,6 +1,6 @@
 language: python
 python:
-- 3.2
+- 3.4
 
 before_install:
 - sudo apt-get update -qq
@@ -12,7 +12,7 @@ before_install:
 # coverage<4: https://github.com/travis-ci/travis-ci/issues/4866
 install: pip3 install httpretty pep8 pyflakes codecov 'coverage<4'
 
-# this only works with 2.7 and 3.2
+# this only works with 2.7 and 3.2 on precise and 2.7 and 3.4 on trusty
 # we must use this though, since python3-dbus won't work in a virtualenv
 virtualenv:
   system_site_packages: true
