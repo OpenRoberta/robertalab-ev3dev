@@ -670,7 +670,7 @@ class Hal(object):
                 # here is the lejos counter part
                 # https://github.com/OpenRoberta/robertalab-ev3lejos/blob/master/
                 # EV3Runtime/src/main/java/de/fhg/iais/roberta/runtime/ev3/BluetoothComImpl.java#L40..L59
-                message = self.bt_connections[con_ix].recv(128)
+                message = self.bt_connections[con_ix].recv(128).decode('utf-8', errors='replace')
                 logger.debug('received msg [%s]' % message)
             except bluetooth.btcommon.BluetoothError:
                 logger.exception("Bluetooth error")
