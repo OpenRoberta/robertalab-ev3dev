@@ -60,7 +60,7 @@ def getBatteryVoltage():
 class Service(dbus.service.Object):
     """OpenRobertab-Lab dbus service
 
-    The status state machines is a follows:
+    The status state machine is as follows:
 
     +-> disconnected
     |   |
