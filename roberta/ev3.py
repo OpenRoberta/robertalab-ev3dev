@@ -658,31 +658,44 @@ class Hal(object):
             self.bt_server.listen(1)
 
         (con, info) = self.bt_server.accept()
+        con.settimeout(0.5)  # half second to make IO interruptible
         self.bt_connections.append(con)
         return len(self.bt_connections) - 1
 
     def readMessage(self, con_ix):
         message = "NO MESSAGE"
         if con_ix < len(self.bt_connections) and self.bt_connections[con_ix]:
-            try:
-                logger.debug('reading msg')
+            con = self.bt_connections[con_ix]
+            logger.debug('reading msg')
+            while True:
                 # TODO(ensonic): how much do we actually expect
                 # here is the lejos counter part
                 # https://github.com/OpenRoberta/robertalab-ev3lejos/blob/master/
                 # EV3Runtime/src/main/java/de/fhg/iais/roberta/runtime/ev3/BluetoothComImpl.java#L40..L59
-                message = self.bt_connections[con_ix].recv(128).decode('utf-8', errors='replace')
-                logger.debug('received msg [%s]' % message)
-            except bluetooth.btcommon.BluetoothError:
-                logger.exception("Bluetooth error")
-                self.bt_connections[con_ix] = None
+                try:
+                    message = con.recv(128).decode('utf-8', errors='replace')
+                    logger.debug('received msg [%s]' % message)
+                    break
+                except bluetooth.btcommon.BluetoothError as e:
+                    # BluetoothError seems to be an IOError, which is an OSError
+                    # but all they do is: raise BluetoothError (str (e))
+                    if not str(e) == "timed out":
+                        logger.error("unhandled Bluetooth error: %s", repr(e))
+                        self.bt_connections[con_ix] = None
+                        break
         return message
 
     def sendMessage(self, con_ix, message):
         if con_ix < len(self.bt_connections) and self.bt_connections[con_ix]:
-            try:
-                logger.debug('sending msg [%s]' % message)
-                self.bt_connections[con_ix].send(message)
-                logger.debug('sent msg')
-            except bluetooth.btcommon.BluetoothError:
-                logger.exception("Bluetooth error")
-                self.bt_connections[con_ix] = None
+            logger.debug('sending msg [%s]' % message)
+            con = self.bt_connections[con_ix]
+            while True:
+                try:
+                    con.send(message)
+                    logger.debug('sent msg')
+                    break
+                except bluetooth.btcommon.BluetoothError as e:
+                    if not str(e) == "timed out":
+                        logger.error("unhandled Bluetooth error: %s", repr(e))
+                        self.bt_connections[con_ix] = None
+                        break
