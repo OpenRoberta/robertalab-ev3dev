@@ -95,14 +95,14 @@ class BlocklyMethods:
     def findFirst(_list, item):
         try:
             return _list.index(item)
-        except:
+        except IndexError:
             return -1
 
     @staticmethod
     def findLast(_list, item):
         try:
             return (len(_list) - 1) - _list[::-1].index(item)
-        except:
+        except IndexError:
             return -1
 
     @staticmethod
