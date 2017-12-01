@@ -623,6 +623,11 @@ class Hal(object):
             raise ValueError('incorrect MotorTachoMode: %s' % mode)
 
     # communication
+    def _isTimeOut(self, e):
+        # BluetoothError seems to be an IOError, which is an OSError
+        # but all they do is: raise BluetoothError (str (e))
+        return str(e) == "timed out"
+
     def establishConnectionTo(self, host):
         # host can also be a name, resolving it is slow though and requires the
         # device to be visible
@@ -634,9 +639,16 @@ class Hal(object):
                     break
         if bluetooth.is_valid_address(host):
             con = BluetoothSocket(bluetooth.RFCOMM)
-            con.connect((host, 1))  # 0 is channel
-            self.bt_connections.append(con)
-            return len(self.bt_connections) - 1
+            con.settimeout(0.5)  # half second to make IO interruptible
+            while True:
+                try:
+                    con.connect((host, 1))  # 0 is channel
+                    self.bt_connections.append(con)
+                    return len(self.bt_connections) - 1
+                except bluetooth.btcommon.BluetoothError as e:
+                    if not self._isTimeOut(e):
+                        logger.error("unhandled Bluetooth error: %s", repr(e))
+                        break
         else:
             return -1
 
@@ -654,13 +666,21 @@ class Hal(object):
 
         if not self.bt_server:
             self.bt_server = BluetoothSocket(bluetooth.RFCOMM)
+            self.bt_server.settimeout(0.5)  # half second to make IO interruptible
             self.bt_server.bind(("", bluetooth.PORT_ANY))
             self.bt_server.listen(1)
 
-        (con, info) = self.bt_server.accept()
-        con.settimeout(0.5)  # half second to make IO interruptible
-        self.bt_connections.append(con)
-        return len(self.bt_connections) - 1
+        while True:
+            try:
+                (con, info) = self.bt_server.accept()
+                con.settimeout(0.5)  # half second to make IO interruptible
+                self.bt_connections.append(con)
+                return len(self.bt_connections) - 1
+            except bluetooth.btcommon.BluetoothError as e:
+                if not self._isTimeOut(e):
+                    logger.error("unhandled Bluetooth error: %s", repr(e))
+                    break
+        return -1
 
     def readMessage(self, con_ix):
         message = "NO MESSAGE"
@@ -677,9 +697,7 @@ class Hal(object):
                     logger.debug('received msg [%s]' % message)
                     break
                 except bluetooth.btcommon.BluetoothError as e:
-                    # BluetoothError seems to be an IOError, which is an OSError
-                    # but all they do is: raise BluetoothError (str (e))
-                    if not str(e) == "timed out":
+                    if not self._isTimeOut(e):
                         logger.error("unhandled Bluetooth error: %s", repr(e))
                         self.bt_connections[con_ix] = None
                         break
@@ -695,7 +713,7 @@ class Hal(object):
                     logger.debug('sent msg')
                     break
                 except bluetooth.btcommon.BluetoothError as e:
-                    if not str(e) == "timed out":
+                    if not self._isTimeOut(e):
                         logger.error("unhandled Bluetooth error: %s", repr(e))
                         self.bt_connections[con_ix] = None
                         break
