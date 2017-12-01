@@ -67,7 +67,7 @@ class BlocklyMethods:
 
     @staticmethod
     def textJoin(*args):
-        return "".join(args)
+        return ''.join(str(arg) for arg in args)
 
     @staticmethod
     def length(_list):
@@ -129,7 +129,7 @@ class BlocklyMethods:
 
     @staticmethod
     def averageOnList(_list):
-        return float(sum(_list))/len(_list)
+        return float(sum(_list)) / len(_list)
 
     @staticmethod
     def medianOnList(_list):
