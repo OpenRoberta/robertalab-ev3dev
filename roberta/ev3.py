@@ -622,6 +622,12 @@ class Hal(object):
         else:
             raise ValueError('incorrect MotorTachoMode: %s' % mode)
 
+    def getSoundLevel(self, port):
+        s = self.cfg['sensors'][port]
+        if s.mode != 'DB':
+            s.mode = 'DB'
+        return self.scaledValue(s)
+
     # communication
     def _isTimeOut(self, e):
         # BluetoothError seems to be an IOError, which is an OSError
