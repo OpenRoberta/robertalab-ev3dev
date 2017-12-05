@@ -131,6 +131,8 @@ class Hal(object):
     @staticmethod
     def makeLightSensor(port):
         try:
+            p = ev3dev.LegoPort(port)
+            p.set_device = 'lego-nxt-light'
             s = ev3dev.LightSensor(port)
         except (AttributeError, OSError):
             logger.info('no light sensor connected to port [%s]', port)
@@ -140,6 +142,8 @@ class Hal(object):
     @staticmethod
     def makeSoundSensor(port):
         try:
+            p = ev3dev.LegoPort(port)
+            p.set_device = 'lego-nxt-sound'
             s = ev3dev.SoundSensor(port)
         except (AttributeError, OSError):
             logger.info('no sound sensor connected to port [%s]', port)
