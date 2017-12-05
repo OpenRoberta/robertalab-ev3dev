@@ -1,3 +1,14 @@
+openrobertalab (1.7.3+1.0.0) oldstable; urgency=medium
+
+  * support the nxt sound sensor
+  * fix joining text with numbers
+  * make bluetooth communication interruptible
+  * add setLanguage for upcomin say blocks
+  * fix timers
+  * use a blink thread instead of the broken timer feature
+
+ -- Stefan Sauer <ensonic@google.com>  Fri, 01 Dec 2017 11:53:10 +0100
+
 openrobertalab (1.7.2+1.0.0) stable; urgency=medium
 
   * fix state handling when canceling the pin-code
