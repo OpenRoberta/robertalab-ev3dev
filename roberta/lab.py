@@ -19,7 +19,7 @@ import sys
 try:
     from ev3dev import auto as ev3dev
     from .ev3 import Hal
-except:
+except ImportError:
     from .test import Hal
 from .__version__ import version
 

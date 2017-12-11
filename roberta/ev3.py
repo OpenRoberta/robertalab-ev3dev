@@ -1,7 +1,5 @@
 
 from PIL import Image, ImageFont
-import bluetooth
-from bluetooth import BluetoothSocket
 import dbus
 import glob
 import logging
@@ -10,7 +8,19 @@ import os
 import threading
 import time
 
-from ev3dev import auto as ev3dev
+# ignore failure to make this testable outside of the target platform
+try:
+    # this has not be release to debian
+    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=787850
+    import bluetooth
+    from bluetooth import BluetoothSocket
+except ImportError:
+    pass
+
+try:
+    from ev3dev import auto as ev3dev
+except ImportError:
+    from .test import Ev3dev as ev3dev
 
 logger = logging.getLogger('roberta.ev3')
 
