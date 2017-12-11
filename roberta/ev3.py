@@ -330,8 +330,14 @@ class Hal(object):
         # lang: 2digit ISO_639-1 code
         self.lang = lang
 
-    def sayText(self, text):
-        opts = '-a 200 -s 130 -v %s' % self.lang
+    def sayText(self, text, pitch=50, speed=175):
+        # a: amplitude, 0..200, def=100
+        # p: pitch, 0..99, def=50
+        # s: speed, 80..450, def=175
+        opts = '-a 200 -p %d -s %d -v %s' % (
+            clamp(int(pitch), 0, 99),
+            clamp(int(speed), 80, 450),
+            self.lang)
         self.waitCmd(self.sound.speak(text, espeak_opts=opts))
 
     # actors
