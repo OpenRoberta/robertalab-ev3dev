@@ -10,7 +10,7 @@ before_install:
 # pip cannot install python-dbus: https://bugs.freedesktop.org/show_bug.cgi?id=55439
 # pip cannot install PyGObject: "Building PyGObject using distutils is only supported on windows."
 # coverage<4: https://github.com/travis-ci/travis-ci/issues/4866
-install: pip3 install httpretty pep8 pyflakes codecov 'coverage<4'
+install: pip3 install httpretty pep8 pyflakes codecov 'coverage<4' Pillow
 
 # this only works with 2.7 and 3.2 on precise and 2.7 and 3.4 on trusty
 # we must use this though, since python3-dbus won't work in a virtualenv
