@@ -75,7 +75,7 @@ class Hal(object):
 
     # factory methods
     @staticmethod
-    def makeLargeMotor(port, regulated, direction, side):
+    def makeLargeMotor(port, regulated, direction, side=None):
         try:
             m = ev3dev.LargeMotor(port)
             if direction is 'backward':
@@ -89,7 +89,7 @@ class Hal(object):
         return m
 
     @staticmethod
-    def makeMediumMotor(port, regulated, direction, side):
+    def makeMediumMotor(port, regulated, direction, side=None):
         try:
             m = ev3dev.MediumMotor(port)
             if direction is 'backward':
