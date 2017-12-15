@@ -50,9 +50,22 @@ class Ev3dev(object):
 
         def __init__(self, port):
             self.port = port
+            self.position = 0
             self.state = False
             self.max_speed = 100
             self.count_per_rot = 360
 
         def run_to_rel_pos(self, **kwargs):
             self.args = kwargs
+
+        def run_direct(self, **kwargs):
+            self.args = kwargs
+            # TODO: the calling code waits for the positions to be reached, we
+            # only know the directions :/
+            if kwargs['duty_cycle_sp'] >= 0:
+                self.position = 10000
+            else:
+                self.position = -10000
+
+        def stop(self):
+            pass
