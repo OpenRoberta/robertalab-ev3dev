@@ -52,17 +52,17 @@ class TestHal(unittest.TestCase):
     def test_rotateRegulatedMotor_Degree(self):
         hal = self._getStdHal()
         hal.rotateRegulatedMotor('B', 100, 'degree', 90.0)
-        self.assertEqual(hal.cfg['actors']['B'].args['speed_sp'], 100)
+        self.assertEqual(hal.cfg['actors']['B'].speed_sp, 100)
 
     def test_rotateRegulatedMotor_Rotations(self):
         hal = self._getStdHal()
         hal.rotateRegulatedMotor('B', 100, 'rotations', 2)
-        self.assertEqual(hal.cfg['actors']['B'].args['position_sp'], 720)
+        self.assertEqual(hal.cfg['actors']['B'].position_sp, 720)
 
     def test_rotateRegulatedMotor_SpeedIsClipped(self):
         hal = self._getStdHal()
         hal.rotateRegulatedMotor('B', 500, 'degree', 90.0)
-        self.assertEqual(hal.cfg['actors']['B'].args['speed_sp'], 100)
+        self.assertEqual(hal.cfg['actors']['B'].speed_sp, 100)
 
     # rotateUnregulatedMotor
     def test_rotateUnregulatedMotor_Forward(self):
@@ -74,3 +74,20 @@ class TestHal(unittest.TestCase):
         hal = self._getStdHal()
         hal.rotateUnregulatedMotor('B', -100, 'power', 100)
         self.assertLess(hal.cfg['actors']['B'].position, 0)
+
+    def test_rotateUnregulatedMotor_SpeedIsClipped(self):
+        hal = self._getStdHal()
+        hal.rotateUnregulatedMotor('B', 500, 'power', 100)
+        self.assertEqual(hal.cfg['actors']['B'].duty_cycle_sp, 100)
+
+    # turnOnRegulatedMotor
+    def test_turnOnRegulatedMotor_SpeedIsClipped(self):
+        hal = self._getStdHal()
+        hal.turnOnRegulatedMotor('B', 500)
+        self.assertEqual(hal.cfg['actors']['B'].speed_sp, 100)
+
+    # turnOnUnregulatedMotor
+    def test_turnOnUnregulatedMotor_SpeedIsClipped(self):
+        hal = self._getStdHal()
+        hal.turnOnUnregulatedMotor('B', 500)
+        self.assertEqual(hal.cfg['actors']['B'].duty_cycle_sp, 100)
