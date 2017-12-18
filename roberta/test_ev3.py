@@ -104,3 +104,40 @@ class TestHal(unittest.TestCase):
         hal.stopMotors('B', 'C')
         self.assertEqual(hal.cfg['actors']['B'].stop_action, 'coast')
         self.assertEqual(hal.cfg['actors']['C'].stop_action, 'coast')
+
+    # regulatedDrive
+    def test_regulatedDrive(self):
+        hal = self._getStdHal()
+        hal.regulatedDrive('B', 'C', False, 'forward', 100)
+        actors = hal.cfg['actors']
+        self.assertEqual(actors['B'].speed_sp, actors['C'].speed_sp)
+
+    # driveDistance
+    def test_driveDistance(self):
+        hal = self._getStdHal()
+        hal.driveDistance('B', 'C', False, 'forward', 100, 10)
+        actors = hal.cfg['actors']
+        self.assertEqual(actors['B'].speed_sp, actors['C'].speed_sp)
+        self.assertEqual(actors['B'].position_sp, actors['C'].position_sp)
+
+    # rotateDirectionRegulated
+    def test_rotateDirectionRegulated(self):
+        hal = self._getStdHal()
+        hal.rotateDirectionRegulated('B', 'C', False, 'right', 100)
+        actors = hal.cfg['actors']
+        self.assertEqual(actors['B'].speed_sp, -actors['C'].speed_sp)
+
+    # rotateDirectionAngle
+    def test_rotateDirectionAngle(self):
+        hal = self._getStdHal()
+        hal.rotateDirectionAngle('B', 'C', False, 'right', 100, 90.0)
+        actors = hal.cfg['actors']
+        self.assertEqual(actors['B'].speed_sp, actors['C'].speed_sp)
+        self.assertEqual(actors['B'].position_sp, -actors['C'].position_sp)
+
+    # driveInCurve
+    def test_driveInCurve_noDist(self):
+        hal = self._getStdHal()
+        hal.driveInCurve('forward', 'B', 10, 'C', 20)
+        actors = hal.cfg['actors']
+        self.assertEqual(actors['B'].speed_sp * 2, actors['C'].speed_sp)
