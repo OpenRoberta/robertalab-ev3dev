@@ -91,3 +91,16 @@ class TestHal(unittest.TestCase):
         hal = self._getStdHal()
         hal.turnOnUnregulatedMotor('B', 500)
         self.assertEqual(hal.cfg['actors']['B'].duty_cycle_sp, 100)
+
+    # stopMotor
+    def test_stopMotor_defaultMode(self):
+        hal = self._getStdHal()
+        hal.stopMotor('B')
+        self.assertEqual(hal.cfg['actors']['B'].stop_action, 'coast')
+
+    # stopMotors
+    def test_stopMotors(self):
+        hal = self._getStdHal()
+        hal.stopMotors('B', 'C')
+        self.assertEqual(hal.cfg['actors']['B'].stop_action, 'coast')
+        self.assertEqual(hal.cfg['actors']['C'].stop_action, 'coast')

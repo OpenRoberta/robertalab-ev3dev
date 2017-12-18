@@ -643,6 +643,8 @@ class Hal(object):
             raise ValueError('incorrect MotorTachoMode: %s' % mode)
 
     def getSoundLevel(self, port):
+        # 100 for silent,
+        # 0 for loud
         s = self.cfg['sensors'][port]
         if s.mode != 'DB':
             s.mode = 'DB'
