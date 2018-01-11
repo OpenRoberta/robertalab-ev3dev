@@ -39,6 +39,9 @@ class Ev3dev(object):
     def Button():
         return None
 
+    class PowerSupply(object):
+        measured_volts = 0.0
+
     class Screen(object):
         draw = None
 

@@ -20,6 +20,7 @@ try:
     from ev3dev import auto as ev3dev
     from .ev3 import Hal
 except ImportError:
+    from .test import Ev3dev as ev3dev
     from .test import Hal
 from .__version__ import version
 
