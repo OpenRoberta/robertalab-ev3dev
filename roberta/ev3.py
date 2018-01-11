@@ -330,14 +330,14 @@ class Hal(object):
         # lang: 2digit ISO_639-1 code
         self.lang = lang
 
-    def sayText(self, text, pitch=50, speed=175):
+    def sayText(self, text, speed=30, pitch=50):
         # a: amplitude, 0..200, def=100
         # p: pitch, 0..99, def=50
         # s: speed, 80..450, def=175
         opts = '-a 200 -p %d -s %d -v %s' % (
-            clamp(int(pitch), 0, 99),
-            clamp(int(speed), 80, 450),
-            self.lang)
+            int(clamp(pitch, 0, 100) * 0.99), # use range 0 - 99
+            int(clamp(speed, 0, 100) * 2.5 + 100), # use range 100 - 350
+            self.lang + "+f1") # female voice
         self.waitCmd(self.sound.speak(text, espeak_opts=opts))
 
     # actors
@@ -648,7 +648,7 @@ class Hal(object):
         s = self.cfg['sensors'][port]
         if s.mode != 'DB':
             s.mode = 'DB'
-        return self.scaledValue(s)
+        return round(-self.scaledValue(s) + 100, 2) # map to 0 silent 100 loud
 
     # communication
     def _isTimeOut(self, e):
