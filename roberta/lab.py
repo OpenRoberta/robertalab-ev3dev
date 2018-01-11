@@ -51,10 +51,7 @@ def generateToken():
 
 
 def getBatteryVoltage():
-    try:
-        return "{0:.3f}".format(ev3dev.PowerSupply().measured_volts)
-    except:
-        return '0.0'
+    return "{0:.3f}".format(ev3dev.PowerSupply().measured_volts)
 
 
 class Service(dbus.service.Object):
@@ -300,7 +297,7 @@ class Connector(threading.Thread):
         except SystemExit:
             result = 143
             logger.info("soft kill")
-        except:
+        except:  # noqa: E722
             result = 1
             # TODO: return exception details as a string and put into a
             # 'nepoexitdetails' field, so that we can show this in the UI
@@ -447,7 +444,7 @@ class Connector(threading.Thread):
                     break
             except (socket.timeout, socket.gaierror, socket.herror, socket.error):
                 pass
-            except:
+            except:  # noqa: E722
                 logger.exception("Ooops:")
         logger.info('network thread stopped')
         if self.service:
