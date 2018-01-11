@@ -131,5 +131,6 @@ class TestBlocklyMethods(unittest.TestCase):
         res = BlocklyMethods.modeOnList(items)
         self.assertEqual(['a'], res)
 
+
 if __name__ == '__main__':
     unittest.main()

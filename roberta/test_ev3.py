@@ -141,3 +141,11 @@ class TestHal(unittest.TestCase):
         hal.driveInCurve('forward', 'B', 10, 'C', 20)
         actors = hal.cfg['actors']
         self.assertEqual(actors['B'].speed_sp * 2, actors['C'].speed_sp)
+
+    def test_driveInCurve_Dist(self):
+        hal = self._getStdHal()
+        hal.driveInCurve('forward', 'B', 10, 'C', 20, 100)
+        actors = hal.cfg['actors']
+        self.assertEqual(actors['B'].speed_sp * 2, actors['C'].speed_sp)
+        self.assertGreater(actors['B'].position_sp, 0)
+        self.assertGreater(actors['C'].position_sp, 0)

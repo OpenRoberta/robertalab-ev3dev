@@ -79,6 +79,7 @@ class TestService(unittest.TestCase):
         service.updateConfiguration()
         self.assertNotEqual(token, service.params['token'])
 
+
 """
     def test_connect(self):
         # service = Service(path)
@@ -199,6 +200,7 @@ class TestConnector(unittest.TestCase):
         connector = Connector(URL, None)
         with self.assertRaises(KeyboardInterrupt):
             connector._exec_code("test.py", TestConnector.INFINITE_LOOP, DummyAbortHandler(to_sleep=0.3))
+
 
 """
 class TestCleanup(unittest.TestCase):
