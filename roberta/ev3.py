@@ -505,11 +505,13 @@ class Hal(object):
         left_speed_pct = self.scaleSpeed(ml, clamp(left_speed_pct, -100, 100))
         right_speed_pct = self.scaleSpeed(mr, clamp(right_speed_pct, -100, 100))
         if distance:
+            left_dc = right_dc = 0.0
             speed_pct = (left_speed_pct + right_speed_pct) / 2.0
-            circ = math.pi * self.cfg['wheel-diameter']
-            dc = distance / circ
-            left_dc = dc * left_speed_pct / speed_pct
-            right_dc = dc * right_speed_pct / speed_pct
+            if speed_pct:
+                circ = math.pi * self.cfg['wheel-diameter']
+                dc = distance / circ
+                left_dc = dc * left_speed_pct / speed_pct
+                right_dc = dc * right_speed_pct / speed_pct
             # set all attributes
             ml.stop_action = 'brake'
             ml.speed_sp = int(left_speed_pct)

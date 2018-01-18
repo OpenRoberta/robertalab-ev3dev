@@ -149,3 +149,17 @@ class TestHal(unittest.TestCase):
         self.assertEqual(actors['B'].speed_sp * 2, actors['C'].speed_sp)
         self.assertGreater(actors['B'].position_sp, 0)
         self.assertGreater(actors['C'].position_sp, 0)
+
+    def test_driveInCurve_ZeroSpeed(self):
+        hal = self._getStdHal()
+        actors = hal.cfg['actors']
+        hal.driveInCurve('forward', 'B', 0, 'C', 0, 100)
+        self.assertEqual(actors['B'].speed_sp, 0)
+        self.assertEqual(actors['C'].speed_sp, 0)
+
+    def test_driveInCurve_OppositeSpeeds(self):
+        hal = self._getStdHal()
+        actors = hal.cfg['actors']
+        hal.driveInCurve('forward', 'B', 10, 'C', -10, 100)
+        self.assertEqual(actors['B'].speed_sp, 10)
+        self.assertEqual(actors['C'].speed_sp, -10)
