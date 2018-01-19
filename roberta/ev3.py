@@ -526,7 +526,7 @@ class Hal(object):
             # start motors
             ml.run_to_rel_pos()
             mr.run_to_rel_pos()
-            while (ml.state or mr.state):
+            while ((ml.state and left_speed_pct) or (mr.state and right_speed_pct)):
                 self.busyWait()
         else:
             if direction is 'backwards':
