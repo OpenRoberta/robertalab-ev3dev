@@ -18,6 +18,8 @@ import sys
 # ignore failure to make this testable outside of the target platform
 try:
     from ev3dev import auto as ev3dev
+    # TODO: prefer the module updated from the server
+    # sys.path.prepend(os.path.expanduser('~/.local/python/roberta')
     from .ev3 import Hal
 except ImportError:
     from .test import Ev3dev as ev3dev
@@ -401,8 +403,10 @@ class Connector(threading.Thread):
                         self.service.hal.resetState()
                     self.service.status('registered')
                 elif cmd == 'update':
-                    # FIXME:
-                    # fetch new files (menu/hal)
+                    # FIXME: implement
+                    # ensure local module dir
+                    # os.mkdirs('os.path.expanduser('~/.local/python/roberta/'))
+                    # fetch ev3.py and store to ~/.local/python/roberta/
                     # then restart:
                     # os.execv(__file__, sys.argv)
                     # check if we need to close files (logger?)
