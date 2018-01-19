@@ -1,3 +1,11 @@
+openrobertalab (1.7.4+1.0.0) oldstable; urgency=medium
+
+  * avoid div/0 for the curve block
+  * add more parameters to the say block
+  * expand test coverage
+
+ -- Stefan Sauer <ensonic@google.com>  Fri, 19 Jan 2018 10:01:07 +0100
+
 openrobertalab (1.7.3+1.0.0) oldstable; urgency=medium
 
   * support the nxt sound sensor
