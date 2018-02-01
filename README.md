@@ -2,16 +2,25 @@
 A connector to use a LEGO Mindstorm ev3 running the ev3dev firmware
 (http://www.ev3dev.org) from the Open Roberta lab (http://lab.open-roberta.org).
 This is now included by default with ev3dev images (Thanks @dlech), but it is
-prevented from running by default, so you do have to enable it once:
+enabled by default (to save memory), so you do have to enable it once:
 
-    sudo systemctl unmask openrobertalab.service
-    sudo systemctl start openrobertalab.service
+1. Connect to the LEGO brick using SSH: (Read this for the [default password](http://www.ev3dev.org/docs/tutorials/connecting-to-ev3dev-with-ssh/))
+```bash
+ssh robot@ev3dev.local
+```
+2. On the brick run:
+```bash
+sudo systemctl unmask openrobertalab
+sudo systemctl start openrobertalab
+```
 
 After running the commands above, it will start automatically after a reboot.
 You can turn it back off by running:
 
-    sudo systemctl stop openrobertalab.service
-    sudo systemctl mask openrobertalab.service
+```bash
+sudo systemctl stop openrobertalab.service
+sudo systemctl mask openrobertalab.service
+```
 
 If the ``openrobertalab`` package is installed and the service is running, the
 ``Open Roberta Lab`` menu item in brickman will allow you to connect to an Open
