@@ -667,7 +667,7 @@ class Hal(object):
             s.mode = 'COMPASS'  # ev3dev currently only supports the compass mode
         value = self.scaledValue(s)
         if mode == 'angle':
-            return ((value + 180) % 360) - 180  # simulate the angle [-180, 180] mode from ev3lejos
+            return -(((value + 180) % 360) - 180)  # simulate the angle [-180, 180] mode from ev3lejos
         else:
             return value
 
