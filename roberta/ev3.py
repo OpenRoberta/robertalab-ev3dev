@@ -181,7 +181,7 @@ class Hal(object):
     @staticmethod
     def makeCompassSensor(port):
         try:
-            s = ev3dev.Sensor(address = port, driver_name = 'ht-nxt-compass')
+            s = ev3dev.Sensor(address=port, driver_name='ht-nxt-compass')
         except (AttributeError, OSError):
             logger.info('no compass sensor connected to port [%s]', port)
             s = None
