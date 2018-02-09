@@ -178,6 +178,15 @@ class Hal(object):
             s = None
         return s
 
+    @staticmethod
+    def makeCompassSensor(port):
+        try:
+            s = ev3dev.Sensor(address = port, driver_name = 'ht-nxt-compass')
+        except (AttributeError, OSError):
+            logger.info('no compass sensor connected to port [%s]', port)
+            s = None
+        return s
+
     # state
     def resetState(self):
         self.clearDisplay()
@@ -651,6 +660,16 @@ class Hal(object):
         if s.mode != 'DB':
             s.mode = 'DB'
         return round(-self.scaledValue(s) + 100, 2)  # map to 0 silent 100 loud
+
+    def getHiTecCompassSensorValue(self, port, mode):
+        s = self.cfg['sensors'][port]
+        if s.mode != 'COMPASS':
+            s.mode = 'COMPASS'  # ev3dev currently only supports the compass mode
+        value = self.scaledValue(s)
+        if mode == 'angle':
+            return ((value + 180) % 360) - 180  # simulate the angle [-180, 180] mode from ev3lejos
+        else:
+            return value
 
     # communication
     def _isTimeOut(self, e):
