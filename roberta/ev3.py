@@ -613,7 +613,7 @@ class Hal(object):
         s = self.cfg['sensors'][port]
         if s.mode != 'IR-SEEK':
             s.mode = 'IR-SEEK'
-        return self.scaledValue(s)
+        return (s.value(0), s.value(1), s.value(2), s.value(3), s.value(4), s.value(5), s.value(6), s.value(7))
 
     def getInfraredSensorDistance(self, port):
         s = self.cfg['sensors'][port]
