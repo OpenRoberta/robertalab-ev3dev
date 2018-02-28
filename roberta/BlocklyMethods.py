@@ -52,7 +52,7 @@ class BlocklyMethods:
     # note: we don't use the random module since it is large
     @staticmethod
     def randInt(min_val, max_val):
-        val = int(os.urandom(4).encode('hex'), 16)
+        val = int.from_bytes(os.urandom(4), byteorder='big')
         if min_val < max_val:
             return min_val + (val % ((max_val - min_val) + 1))
         else:
@@ -60,7 +60,7 @@ class BlocklyMethods:
 
     @staticmethod
     def randDouble():
-        return 1.0*int(os.urandom(4).encode('hex'), 16) / 0xffffffff
+        return 1.0*int.from_bytes(os.urandom(4), byteorder='big') / 0xffffffff
 
     @staticmethod
     def textJoin(*args):
