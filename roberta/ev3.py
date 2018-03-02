@@ -549,6 +549,12 @@ class Hal(object):
     def scaledValue(self, sensor):
         return sensor.value() / (10.0 ** sensor.decimals)
 
+    def scaledValues(self, sensor):
+        vals = []
+        for i in range(sensor.num_values):
+            vals.append(sensor.value(i) / (10.0 ** sensor.decimals))
+        return tuple(vals)
+
     # touch sensor
     def isPressed(self, port):
         return self.scaledValue(self.cfg['sensors'][port])
@@ -605,7 +611,7 @@ class Hal(object):
         s = self.cfg['sensors'][port]
         if s.mode != 'RGB-RAW':
             s.mode = 'RGB-RAW'
-        return (s.value(0), s.value(1), s.value(2))
+        return self.scaledValues(s)
 
     # infrared
     # http://www.ev3dev.org/docs/sensors/lego-ev3-infrared-sensor/
@@ -613,7 +619,7 @@ class Hal(object):
         s = self.cfg['sensors'][port]
         if s.mode != 'IR-SEEK':
             s.mode = 'IR-SEEK'
-        return (s.value(0), s.value(1), s.value(2), s.value(3), s.value(4), s.value(5), s.value(6), s.value(7))
+        return self.scaledValues(s)
 
     def getInfraredSensorDistance(self, port):
         s = self.cfg['sensors'][port]
