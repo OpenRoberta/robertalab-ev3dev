@@ -382,10 +382,10 @@ class Connector(threading.Thread):
                     # TODO: we should receive a digest for the download (md5sum) so that
                     #   we can verify the download
                     logger.debug('download code: %s/download', self.address)
-                    response = self._request("download", headers, timeout)
+                    response = self._request('download', headers, timeout)
                     hdr = response.getheader('Content-Disposition')
                     # save to $HOME/
-                    filename = '%s/%s' % (self.home, hdr.split('=')[1] if hdr else 'unknown')
+                    filename = os.path.join(self.home, hdr.split('=')[1] if hdr else 'unknown')
                     code = self._store_code(filename, response.read().decode('utf-8'))
                     logger.info('code downloaded to: %s', filename)
                     # use a long-press of backspace to terminate
