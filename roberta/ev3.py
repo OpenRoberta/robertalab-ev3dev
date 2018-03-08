@@ -550,10 +550,8 @@ class Hal(object):
         return sensor.value() / (10.0 ** sensor.decimals)
 
     def scaledValues(self, sensor):
-        vals = []
-        for i in range(sensor.num_values):
-            vals.append(sensor.value(i) / (10.0 ** sensor.decimals))
-        return tuple(vals)
+        scale = 10.0 ** sensor.decimals
+        return tuple([sensor.value(i) / scale for i in range(sensor.num_values)])
 
     # touch sensor
     def isPressed(self, port):
