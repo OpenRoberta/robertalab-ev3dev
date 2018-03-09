@@ -526,7 +526,7 @@ class Hal(object):
             ml.speed_sp = int(left_speed_pct)
             mr.stop_action = 'brake'
             mr.speed_sp = int(right_speed_pct)
-            if direction is 'backwards':
+            if direction is 'backward':
                 ml.position_sp = int(-left_dc * ml.count_per_rot)
                 mr.position_sp = int(-right_dc * mr.count_per_rot)
             else:
@@ -538,7 +538,7 @@ class Hal(object):
             while ((ml.state and left_speed_pct) or (mr.state and right_speed_pct)):
                 self.busyWait()
         else:
-            if direction is 'backwards':
+            if direction is 'backward':
                 ml.run_forever(speed_sp=int(-left_speed_pct))
                 mr.run_forever(speed_sp=int(-right_speed_pct))
             else:
