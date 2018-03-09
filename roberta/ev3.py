@@ -547,10 +547,10 @@ class Hal(object):
 
     # sensors
     def scaledValue(self, sensor):
-        return sensor.value() / (10.0 ** sensor.decimals)
+        return sensor.value() / float(10.0 ** sensor.decimals)
 
     def scaledValues(self, sensor):
-        scale = 10.0 ** sensor.decimals
+        scale = float(10.0 ** sensor.decimals)
         return tuple([sensor.value(i) / scale for i in range(sensor.num_values)])
 
     # touch sensor
