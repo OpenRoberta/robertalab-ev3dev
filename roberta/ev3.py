@@ -187,6 +187,15 @@ class Hal(object):
             s = None
         return s
 
+    @staticmethod
+    def makeIRSeekerSensor(port):
+        try:
+            s = ev3dev.Sensor(address=port, driver_name='ht-nxt-ir-seek-v2')
+        except (AttributeError, OSError):
+            logger.info('no ir seeker v2 sensor connected to port [%s]', port)
+            s = None
+        return s
+
     # state
     def resetState(self):
         self.clearDisplay()
@@ -674,6 +683,14 @@ class Hal(object):
             return -(((value + 180) % 360) - 180)  # simulate the angle [-180, 180] mode from ev3lejos
         else:
             return value
+
+    def getHiTecIRSeekerSensorValue(self, port, mode):
+        s = self.cfg['sensors'][port]
+        if s.mode != mode:
+            s.mode = mode
+        value = self.scaledValue(s)
+        # remap from [1 - 9] default 0 to [120, -120] default NaN like ev3lejos
+        return float('nan') if value == 0 else (value - 5) * -30
 
     # communication
     def _isTimeOut(self, e):
