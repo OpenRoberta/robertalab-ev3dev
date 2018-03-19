@@ -103,6 +103,21 @@ class Hal(object):
         return m
 
     @staticmethod
+    def makeOtherConsumer(port, regulated, direction, side=None):
+        try:
+            lp = ev3dev.LegoPort(port)
+            lp.mode = 'dc-motor'
+            # https://github.com/ev3dev/ev3dev-lang-python/issues/234
+            # some time is needed to set the permissions for the new attributes
+            time.sleep(0.5)
+            m = ev3dev.DcMotor(address=port)
+        except (AttributeError, OSError):
+            logger.info('no other consumer connected to port [%s]', port)
+            logger.exception("HW Config error")
+            m = None
+        return m
+
+    @staticmethod
     def makeColorSensor(port):
         try:
             s = ev3dev.ColorSensor(port)
@@ -200,6 +215,7 @@ class Hal(object):
     def resetState(self):
         self.clearDisplay()
         self.stopAllMotors()
+        self.resetAllOutputs()
         self.resetLED()
         logger.debug("terminate %d commands", len(Hal.cmds))
         for cmd in Hal.cmds:
@@ -438,6 +454,14 @@ class Hal(object):
         for file in glob.glob('/sys/class/tacho-motor/motor*/command'):
             with open(file, 'w') as f:
                 f.write('stop')
+        for file in glob.glob('/sys/class/dc-motor/motor*/command'):
+            with open(file, 'w') as f:
+                f.write('stop')
+
+    def resetAllOutputs(self):
+        for port in (ev3dev.OUTPUT_A, ev3dev.OUTPUT_B, ev3dev.OUTPUT_C, ev3dev.OUTPUT_D):
+            lp = ev3dev.LegoPort(port)
+            lp.mode = 'auto'
 
     def regulatedDrive(self, left_port, right_port, reverse, direction, speed_pct):
         # direction: forward, backward
