@@ -57,6 +57,16 @@ automatically, but one needs to reconnect to the Open Roberta server again.
 
 
 # development #
+
+The package consist of two parts:
+
+1. [roberta/lab.py](https://github.com/OpenRoberta/robertalab-ev3dev/blob/develop/roberta/lab.py): the connector to the open roberta lab
+    * this is started as a systemd service at startup
+    * it provides a dbus interface
+    * the [brickman ui](https://github.com/ev3dev/brickman) uses dbus for the `Open Roberta` menu
+2. [roberta/ev3.py](https://github.com/OpenRoberta/robertalab-ev3dev/blob/develop/roberta/ev3.py): a hardware abstraction library
+    * provides the implementation for the NEPO blocks in the program
+
 ## prerequisites ##
 python3-ev3dev
 python3-bluez
