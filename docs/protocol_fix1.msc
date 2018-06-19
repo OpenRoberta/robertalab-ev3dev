@@ -1,0 +1,19 @@
+# communication flow between ui and service
+#
+# mscgen -T png -F sans -i protocol_fix1.msc
+msc {
+  hscale = "2";
+
+  ui [label="brickmann ui"],
+  srv [label="robertalab service"],
+  srvt [label="connector thread"];
+  
+  ui rbox ui [label="press connect"];
+  ui => srv [label="dbus::connect(url)"];
+  srv rbox srv [label="generate code"];
+  srv => srvt [label="new Connector(url)"];
+  srvt rbox srvt [label="connect to server"];
+  srvt => srv [label="signal connected"];  
+  srv => ui [label="return code"];
+  ui rbox ui [label="show code"];
+}
