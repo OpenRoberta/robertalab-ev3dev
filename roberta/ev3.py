@@ -75,6 +75,9 @@ class Hal(object):
 
     # factory methods
     @staticmethod
+    # TODO(ensonic): remove 'side' param, server will stop using it >=3.3.0
+    # TODO(ensonic): 'regulated' is unused, it is passed to the motor-functions
+    # direcly, consider making all params after port 'kwargs'
     def makeLargeMotor(port, regulated, direction, side=None):
         try:
             m = ev3dev.LargeMotor(port)
