@@ -2,14 +2,13 @@
 import atexit
 import logging
 
-from gi.repository import GObject
+from gi.repository import GLib
 from dbus.mainloop.glib import DBusGMainLoop
 from roberta.lab import Service
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('roberta')
 
-GObject.threads_init()
 service = None
 
 
@@ -32,7 +31,7 @@ def main():
     atexit.register(cleanup)
 
     DBusGMainLoop(set_as_default=True)
-    loop = GObject.MainLoop()
+    loop = GLib.MainLoop()
     service = Service('/org/openroberta/Lab1')
     logger.debug('loop running')
     loop.run()
