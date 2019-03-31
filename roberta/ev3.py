@@ -81,7 +81,7 @@ class Hal(object):
     def makeLargeMotor(port, regulated, direction, side=None):
         try:
             m = ev3dev.LargeMotor(port)
-            if direction is 'backward':
+            if direction == 'backward':
                 m.polarity = 'inversed'
             else:
                 m.polarity = 'normal'
@@ -95,7 +95,7 @@ class Hal(object):
     def makeMediumMotor(port, regulated, direction, side=None):
         try:
             m = ev3dev.MediumMotor(port)
-            if direction is 'backward':
+            if direction == 'backward':
                 m.polarity = 'inversed'
             else:
                 m.polarity = 'normal'
@@ -386,11 +386,11 @@ class Hal(object):
         # mode: degree, rotations, distance
         m = self.cfg['actors'][port]
         speed = self.scaleSpeed(m, clamp(speed_pct, -100, 100))
-        if mode is 'degree':
+        if mode == 'degree':
             m.run_to_rel_pos(position_sp=value, speed_sp=speed)
             while (m.state and 'stalled' not in m.state):
                 self.busyWait()
-        elif mode is 'rotations':
+        elif mode == 'rotations':
             value *= m.count_per_rot
             m.run_to_rel_pos(position_sp=int(value), speed_sp=speed)
             while (m.state and 'stalled' not in m.state):
@@ -399,7 +399,7 @@ class Hal(object):
     def rotateUnregulatedMotor(self, port, speed_pct, mode, value):
         speed_pct = clamp(speed_pct, -100, 100)
         m = self.cfg['actors'][port]
-        if mode is 'rotations':
+        if mode == 'rotations':
             value *= m.count_per_rot
         if speed_pct >= 0:
             value = m.position + value
@@ -442,9 +442,9 @@ class Hal(object):
         # mode: float, nonfloat
         # stop_actions: ['brake', 'coast', 'hold']
         m = self.cfg['actors'][port]
-        if mode is 'float':
+        if mode == 'float':
             m.stop_action = 'coast'
-        elif mode is 'nonfloat':
+        elif mode == 'nonfloat':
             m.stop_action = 'brake'
         m.stop()
 
@@ -472,7 +472,7 @@ class Hal(object):
         speed_pct = clamp(speed_pct, -100, 100)
         ml = self.cfg['actors'][left_port]
         mr = self.cfg['actors'][right_port]
-        if direction is 'backward':
+        if direction == 'backward':
             speed_pct = -speed_pct
         ml.run_forever(speed_sp=self.scaleSpeed(ml, speed_pct))
         mr.run_forever(speed_sp=self.scaleSpeed(mr, speed_pct))
@@ -485,7 +485,7 @@ class Hal(object):
         mr = self.cfg['actors'][right_port]
         circ = math.pi * self.cfg['wheel-diameter']
         dc = distance / circ
-        if direction is 'backward':
+        if direction == 'backward':
             dc = -dc
         # set all attributes
         ml.stop_action = 'brake'
@@ -507,7 +507,7 @@ class Hal(object):
         speed_pct = clamp(speed_pct, -100, 100)
         ml = self.cfg['actors'][left_port]
         mr = self.cfg['actors'][right_port]
-        if direction is 'left':
+        if direction == 'left':
             mr.run_forever(speed_sp=self.scaleSpeed(mr, speed_pct))
             ml.run_forever(speed_sp=self.scaleSpeed(ml, -speed_pct))
         else:
@@ -530,7 +530,7 @@ class Hal(object):
         ml.speed_sp = self.scaleSpeed(ml, speed_pct)
         mr.stop_action = 'brake'
         mr.speed_sp = self.scaleSpeed(mr, speed_pct)
-        if direction is 'left':
+        if direction == 'left':
             mr.position_sp = int(dc * mr.count_per_rot)
             ml.position_sp = int(-dc * ml.count_per_rot)
         else:
@@ -562,7 +562,7 @@ class Hal(object):
             ml.speed_sp = int(left_speed_pct)
             mr.stop_action = 'brake'
             mr.speed_sp = int(right_speed_pct)
-            if direction is 'backward':
+            if direction == 'backward':
                 ml.position_sp = int(-left_dc * ml.count_per_rot)
                 mr.position_sp = int(-right_dc * mr.count_per_rot)
             else:
@@ -574,7 +574,7 @@ class Hal(object):
             while ((ml.state and left_speed_pct) or (mr.state and right_speed_pct)):
                 self.busyWait()
         else:
-            if direction is 'backward':
+            if direction == 'backward':
                 ml.run_forever(speed_sp=int(-left_speed_pct))
                 mr.run_forever(speed_sp=int(-right_speed_pct))
             else:
