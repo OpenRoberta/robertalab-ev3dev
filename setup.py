@@ -22,9 +22,9 @@ exec(open(version_file).read())
 # TODO: convert README.md to long_desc
 # https://gist.github.com/aubricus/9184003#file-setup_snippet-py
 
-HERE =  pathlib.Path(__file__).parent
+HERE = pathlib.Path(__file__).parent
 
-#The text of the README file
+# The text of the README file
 README = (HERE / "README.md").read_text()
 
 setup(name='openrobertalab',
