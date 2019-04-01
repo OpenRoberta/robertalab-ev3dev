@@ -13,7 +13,7 @@ from .__version__ import version
 
 logging.basicConfig(level=logging.DEBUG)
 
-URL = 'http://lab.open-roberta.org'
+URL = 'https://lab.open-roberta.org'
 JSON = 'application/json'
 CMD_REPEAT = '{"cmd": "repeat"}'
 

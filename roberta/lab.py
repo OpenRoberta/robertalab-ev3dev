@@ -245,7 +245,7 @@ class Connector(threading.Thread):
 
     def __init__(self, address, service):
         threading.Thread.__init__(self)
-        self.address = address
+        self.address = address.split('://', 1)[-1]  # stip protocol part
         self.service = service
         self.home = os.path.expanduser("~")
         if service:
@@ -308,7 +308,8 @@ class Connector(threading.Thread):
         return result
 
     def _request(self, cmd, headers, timeout):
-        url = '%s/%s' % (self.address, cmd)
+        protocol = 'https'
+        url = '%s://%s/%s' % (protocol, self.address, cmd)
         while True:
             try:
                 logger.debug('sending request to: %s', url)
@@ -320,11 +321,11 @@ class Connector(threading.Thread):
                 if e.code == 404 and '/rest/' not in url:
                     logger.warning("HTTPError(%s): %s, retrying with '/rest'", e.code, e.reason)
                     # upstream changed the server path
-                    url = '%s/rest/%s' % (self.address, cmd)
-                elif e.code == 405 and not url.startswith('https://'):
-                    logger.warning("HTTPError(%s): %s, retrying with 'https://'", e.code, e.reason)
-                    self.address = "https" + self.address[4:]
-                    url = "https" + url[4:]
+                    url = '%s://%s/rest/%s' % (protocol, self.address, cmd)
+                elif e.code == 405 and protocol == 'https':
+                    logger.warning("HTTPError(%s): %s, retrying with 'http://'", e.code, e.reason)
+                    protocol = 'http'
+                    url = "http" + url[5:]
                 else:
                     raise e
         return None
