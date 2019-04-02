@@ -25,7 +25,10 @@ exec(open(version_file).read())
 HERE = pathlib.Path(__file__).parent
 
 # The text of the README file
-README = (HERE / "README.md").read_text()
+path = HERE/"README.md"
+
+with path.open(mode='r') as fid:
+    README = fid.read()
 
 setup(name='openrobertalab',
       version=version,
