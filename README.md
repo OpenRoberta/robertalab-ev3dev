@@ -103,4 +103,4 @@ The test require ``python3-httpretty``, but run without ``python3-ev3dev``.
 ## Logging ##
 The service writes status to the system journal.
 
-    sudo journalctl -f -u openrobertalab
+    sudo journalctl -f -b0 -u openrobertalab
