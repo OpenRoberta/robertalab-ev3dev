@@ -353,7 +353,6 @@ class Connector(threading.Thread):
             self.params['battery'] = getBatteryVoltage()
 
             try:
-                # TODO: what about /api/v1/pushcmd
                 # TODO: according to https://tools.ietf.org/html/rfc6202
                 # we should use keep alive
                 # http://stackoverflow.com/questions/1037406/python-urllib2-with-keep-alive
