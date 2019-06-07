@@ -1,14 +1,18 @@
 # intro #
-A connector to use a LEGO Mindstorm ev3 running the ev3dev firmware
+A connector to use a LEGO Mindstorms EV3 running the ev3dev firmware
 (http://www.ev3dev.org) from the Open Roberta lab (http://lab.open-roberta.org).
-This is now included by default with ev3dev images (Thanks @dlech). 
+This is now included by default with ev3dev images (Thanks @dlech).
 
-Step-by-step instruction to help you get ev3dev up and running can be found here (https://www.ev3dev.org/docs/getting-started/). 
+Step-by-step instruction to help you get ev3dev up and running can be found here
+(https://www.ev3dev.org/docs/getting-started/). 
 
-Important note for Step 1 of the manual: You have to download the EV3dev operating system for your EV3 robot via the following link: [EV3dev - Github releases](https://github.com/ev3dev/ev3dev/releases/tag/ev3dev-jessie-2017-09-14).
+Important note for Step 1 of the manual: You have to download the ev3dev
+operating system for your EV3 robot via the following link:
+[ev3dev - Github releases](https://github.com/ev3dev/ev3dev/releases/tag/ev3dev-jessie-2017-09-14).
 Select there the file ev3dev-jessie-ev3-generic-2017-09-14.zip.
 
-As soon as everything is installed, the connector is not enabled by default (to save memory), so you do have to enable it once:
+As soon as everything is installed, the connector is not enabled by default
+(to save memory), so you do have to enable it once:
 
 1. Connect to the LEGO brick using SSH: (Read this for the [default password](http://www.ev3dev.org/docs/tutorials/connecting-to-ev3dev-with-ssh/))
 ```bash
@@ -45,7 +49,7 @@ local server. When clicking connect, the screen will show a pairing code:
 ![Pairing Code](/docs/RobertaLabConnecting.png?raw=true "Pairing Code").
 
 This code will have to be entered on the web-ui to establish the link. Once that
-has been done a beep-sequence on the ev3 confirms the link and this screen is
+has been done a beep-sequence on the EV3 confirms the link and this screen is
 shown:
 
 ![Connected](/docs/RobertaLabConnected.png?raw=true "Connected").
@@ -100,7 +104,7 @@ Alternatively after changing single files you can do:
 ## configuration ##
 The brickman ui will store configuration data under /etc/openroberta.conf. All
 configuration can be edited from the UI. If there is a need to manually change
-the config, it is advised to stop brickman.
+the configuration, it is advised to stop brickman.
 
 ## Testing ##
 ``python3 -m unittest discover roberta`` or ``nosetests``.
