@@ -415,8 +415,17 @@ class Connector(threading.Thread):
                     logger.warning('unhandled command: %s', cmd)
             except urllib.error.HTTPError as e:
                 # e.g. [Errno 404]
-                logger.error("HTTPError(%s): %s", e.code, e.reason)
-                break
+                retry = False
+
+                # various server errors where we should just retry
+                if 500 <= e.code <= 510:
+                    retry = True
+
+                if not retry:
+                    logger.error("HTTPError(%s): %s", e.code, e.reason)
+                    break
+                else:
+                    logger.error("HTTPError(%s): %s (retrying)", e.code, e.reason)
             except urllib.error.URLError as e:
                 # e.g. [Errno 111] Connection refused
                 #                  The handshake operation timed out
@@ -447,6 +456,8 @@ class Connector(threading.Thread):
                     if nested_e:
                         logger.debug("Nested Exception: %s", repr(nested_e))
                     break
+                else:
+                    logger.info("URLError: %s: %s (retrying)", self.address, e.reason)
             except (socket.timeout, socket.gaierror, socket.herror, socket.error):
                 pass
             except:  # noqa: E722

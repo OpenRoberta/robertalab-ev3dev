@@ -140,6 +140,20 @@ class TestConnector(unittest.TestCase):
         connector = Connector(URL, None)
         connector.run()  # catch error and return
 
+    # TODO: error_code is not set and the history of requests is only exposed in
+    # newer version
+    # @httpretty.activate
+    # def test_retry_on_internal_server_error(self):
+    #     httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
+    #                            body=CMD_REPEAT, status=500, content_type=JSON)
+    #     httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
+    #                            body=CMD_REPEAT, status=403, content_type=JSON)
+    #
+    #     connector = Connector(URL, None)
+    #     connector.run()  # catch error and return
+    #     req = httpretty.last_request()
+    #     self.assertEqual(req.error_code, 403)
+
     @httpretty.activate
     def test_retires_rest_prefix(self):
         httpretty.register_uri(httpretty.POST, "%s/pushcmd" % URL,
