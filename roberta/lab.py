@@ -256,7 +256,7 @@ class Connector(threading.Thread):
             self.params['token'] = generateToken()
 
         self.registered = False
-        self.running = True
+        self.running = True   # Used to cancel this through self.thread.running
         logger.debug('thread created')
 
     def _store_code(self, filename, code):
@@ -335,7 +335,7 @@ class Connector(threading.Thread):
         # network related locals
         # TODO: change the user agent:
         # https://docs.python.org/2/library/urllib2.html#urllib2.Request
-        # default is "Python-urllib/2.7"
+        # default is "Python-urllib/<version>"
         headers = {
             'Content-Type': 'application/json'
         }
