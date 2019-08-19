@@ -214,6 +214,15 @@ class Hal(object):
             s = None
         return s
 
+    @staticmethod
+    def makeHTColorSensorV2(port):
+        try:
+            s = ev3dev.Sensor(address=port, driver_name='ht-nxt-color-v2')
+        except (AttributeError, OSError):
+            logger.info('no hitechnic color sensor v2 connected to port [%s]', port)
+            s = None
+        return s
+
     # state
     def resetState(self):
         self.clearDisplay()
@@ -718,6 +727,24 @@ class Hal(object):
         value = self.scaledValue(s)
         # remap from [1 - 9] default 0 to [120, -120] default NaN like ev3lejos
         return float('nan') if value == 0 else (value - 5) * -30
+
+    def getHiTecColorSensorV2(self, port):
+        s = self.cfg['sensors'][port]
+        if s.mode != 'COLOR':
+            s.mode = 'COLOR'
+        value = s.value()
+        return value
+
+    def getHiTecColorSensorV2RGBA(self, port, mode):
+        s = self.cfg['sensors'][port]
+        if s.mode != mode:
+            s.mode = mode
+        value = self.scaledValues(s)
+        return value
+
+    def setHiTecColorSensorV2PowerMainsFrequency(self, port, frequency):
+        s = self.cfg['sensors'][port]
+        s.command = frequency
 
     # communication
     def _isTimeOut(self, e):
