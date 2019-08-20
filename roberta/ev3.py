@@ -728,17 +728,56 @@ class Hal(object):
         # remap from [1 - 9] default 0 to [120, -120] default NaN like ev3lejos
         return float('nan') if value == 0 else (value - 5) * -30
 
-    def getHiTecColorSensorV2(self, port):
+    def getHiTecColorSensorV2Colour(self, port):
         s = self.cfg['sensors'][port]
         if s.mode != 'COLOR':
             s.mode = 'COLOR'
         value = s.value()
+        return self.mapHiTecColorIdToColor(int(value))
+
+    def mapHiTecColorIdToColor(id):
+        if id < 0 or id > 17:
+            return 'none'
+        colors = {
+            0: 'black',
+            1: 'red',
+            2: 'red',
+            3: 'blue',
+            4: 'green',
+            5: 'yellow',
+            6: 'yellow',
+            7: 'yellow',
+            8: 'red',
+            9: 'red',
+            10: 'red',
+            11: 'red',
+            12: 'yellow',
+            13: 'yellow',
+            14: 'red',
+            15: 'red',
+            16: 'red',
+            17: 'white',
+        }
+        return colors[id]
+
+    def getHiTecColorSensorV2Ambient(self, port):
+        s = self.cfg['sensors'][port]
+        if s.mode != 'PASSIVE':
+            s.mode = 'PASSIVE'
+        value = self.scaledValues(s)
         return value
 
-    def getHiTecColorSensorV2RGBA(self, port, mode):
+    def getHiTecColorSensorV2Light(self, port):
         s = self.cfg['sensors'][port]
-        if s.mode != mode:
-            s.mode = mode
+        if s.mode != 'RGB':
+            s.mode = 'RGB'
+        value = self.scaledValues(s)[3]
+        return value
+
+    def getHiTecColorSensorV2Rgb(self, port):
+        s = self.cfg['sensors'][port]
+        if s.mode != 'RGB':
+            s.mode = 'RGB'
         value = self.scaledValues(s)
         return value
 
