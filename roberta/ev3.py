@@ -735,12 +735,12 @@ class Hal(object):
         value = s.value()
         return self.mapHiTecColorIdToColor(int(value))
 
-    def mapHiTecColorIdToColor(id):
+    def mapHiTecColorIdToColor(self, id):
         if id < 0 or id > 17:
             return 'none'
         colors = {
             0: 'black',
-            1: 'blue',
+            1: 'red',
             2: 'blue',
             3: 'blue',
             4: 'green',
@@ -764,22 +764,23 @@ class Hal(object):
         s = self.cfg['sensors'][port]
         if s.mode != 'PASSIVE':
             s.mode = 'PASSIVE'
-        value = ((s.value(3) * 100.0) / 38200.0)
+        value = abs(s.value(0)) / 380
         return min(value, 100)
 
     def getHiTecColorSensorV2Light(self, port):
         s = self.cfg['sensors'][port]
-        if s.mode != 'RGB':
-            s.mode = 'RGB'
-        value = self.scaledValues(s)[3]
+        if s.mode != 'NORM':
+            s.mode = 'NORM'
+        value = self.scaledValues(s)[3] / 2.55
         return value
 
     def getHiTecColorSensorV2Rgb(self, port):
         s = self.cfg['sensors'][port]
-        if s.mode != 'RGB':
-            s.mode = 'RGB'
+        if s.mode != 'NORM':
+            s.mode = 'NORM'
         value = self.scaledValues(s)
-        del value[3]
+        value = list(value)
+        del value[0]
         return value
 
     def setHiTecColorSensorV2PowerMainsFrequency(self, port, frequency):
