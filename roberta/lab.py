@@ -323,11 +323,18 @@ class Connector(threading.Thread):
                     # upstream changed the server path
                     url = '%s://%s/rest/%s' % (protocol, self.address, cmd)
                 elif e.code == 405 and protocol == 'https':
+                    # TODO(ensonic): this only works for http->https
                     logger.warning("HTTPError(%s): %s, retrying with 'http://'", e.code, e.reason)
                     protocol = 'http'
                     url = "http" + url[5:]
                 else:
+                    logger.warning("HTTPError(%s): %s, unhandled!'", e.code, e.reason)
                     raise e
+            except urllib.error.URLError as e:
+                # [SSL: UNKNOWN_PROTOCOL] unknown protocol
+                logger.warning("URLError(%s): %s, retrying with 'http://'", e.errno, e.reason)
+                protocol = 'http'
+                url = "http" + url[5:]
         return None
 
     def run(self):
