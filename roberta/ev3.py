@@ -611,9 +611,9 @@ class Hal(object):
 
     def getUltraSonicSensorPresence(self, port):
         s = self.cfg['sensors'][port]
-        if s.mode != 'US-SI-CM':
-            s.mode = 'US-SI-CM'
-        return self.scaledValue(s)
+        if s.mode != 'US-LISTEN':
+            s.mode = 'US-LISTEN'
+        return self.scaledValue(s) != 0.0
 
     # gyro
     # http://www.ev3dev.org/docs/sensors/lego-ev3-gyro-sensor/
