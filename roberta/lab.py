@@ -1,3 +1,4 @@
+from .__version__ import version
 import ctypes
 import dbus
 import dbus.service
@@ -15,16 +16,15 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import sys
+
+local_pkg_path = os.path.expanduser('~/.local/lib/python')
 # ignore failure to make this testable outside of the target platform
 try:
     from ev3dev import auto as ev3dev
-    # TODO: prefer the module updated from the server
-    # sys.path.prepend(os.path.expanduser('~/.local/python/roberta')
     from .ev3 import Hal
 except ImportError:
     from .test import Ev3dev as ev3dev
     from .test import Hal
-from .__version__ import version
 
 logger = logging.getLogger('roberta.lab')
 
@@ -76,7 +76,8 @@ class Service(dbus.service.Object):
     """
 
     def __init__(self, path):
-        logger.info('python path: %s\n', (':'.join(sys.path)))
+        logger.info('version: %s', version)
+        logger.info('python path: %s', (':'.join(sys.path)))
         # passing None for path is only for testing
         if path:
             # needs /etc/dbus-1/system.d/openroberta.conf
@@ -410,13 +411,21 @@ class Connector(threading.Thread):
                         self.service.hal.resetState()
                     self.service.status('registered')
                 elif cmd == 'update':
-                    # FIXME: implement
-                    # ensure local module dir
-                    # os.mkdirs('os.path.expanduser('~/.local/python/roberta/'))
-                    # fetch ev3.py and store to ~/.local/python/roberta/
-                    # then restart:
+                    logger.debug('download update: %s/update/ev3dev/roberta.zip', self.address)
+                    # FIXME: test
+                    # import zipfile
+                    # from io import BytesIO
+                    #
+                    # # fetch roberta.zip
+                    # response = self._request('update/ev3dev/roberta.zip', headers, timeout)
+                    # zip_buf = io.BytesIO(response.read())
+                    # ... maybe remove the 'roberta' dir first and then recreate to make
+                    #     sure we don't accumulate files
+                    # with zipfile.ZipFile(zip_buf, 'r') as zip_ref:
+                    #     zip_ref.extractall(os.path.join(local_pkg_path + 'roberta')
+                    # ... then restart:
                     # os.execv(__file__, sys.argv)
-                    # check if we need to close files (logger?)
+                    # ...  check if we need to close files (logger?)
                     pass
                 else:
                     logger.warning('unhandled command: %s', cmd)
