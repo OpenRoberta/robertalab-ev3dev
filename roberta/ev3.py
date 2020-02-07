@@ -263,21 +263,9 @@ class Hal(object):
         # logger.info('len(picture) = %d', len(picture))
         size = (178, 128)
         # One image is supposed to be 178*128/8 = 2848 bytes
-        if len(picture) < 20:
-            # deprecated server API
-            # TODO(ensonic): remove after ora-2.1.4 is online
-            from roberta.StaticData import IMAGES
-            if not hasattr(self, 'images'):
-                self.images = {}
-            if picture not in self.images:
-                self.images[picture] = Image.frombytes('1', size,
-                                                       IMAGES[picture],
-                                                       'raw', '1;IR', 0, 1)
-            pixels = self.images[picture]
-        else:
-            # string data is in utf-16 format and padding with extra 0 bytes
-            data = bytes(picture, 'utf-16')[::2]
-            pixels = Image.frombytes('1', size, data, 'raw', '1;IR', 0, 1)
+        # string data is in utf-16 format and padding with extra 0 bytes
+        data = bytes(picture, 'utf-16')[::2]
+        pixels = Image.frombytes('1', size, data, 'raw', '1;IR', 0, 1)
         self.lcd.image.paste(pixels, (x, y))
         self.lcd.update()
 
