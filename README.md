@@ -90,6 +90,11 @@ python3-gi
 Now you can also build a debian package using ``debuild`` or
 ``debuild -us -us``. The new package will be in the parent folder.
 
+To build a release for the openroberta server run
+
+    rm roberta/*~
+    zip -r roberta.zip roberta -x roberta/test*.py -x *__pycache__*
+
 ## upload to ev3 ##
 The easiest is to upload the debian package and install it.
 
@@ -100,6 +105,12 @@ Alternatively after changing single files you can do:
 
     scp roberta/ev3.py robot@ev3dev.local:
     ssh -t robot@ev3dev.local "sudo mv ev3.py /usr/lib/python3/dist-packages/roberta/; sudo systemctl restart openrobertalab"
+
+Finally you can also upload through a local open roberta server (assuming
+your git checkout of the openroberta-lab is at the same parent dir):
+
+   mkdir -p ../openroberta-lab/RobotEV3/updateResources/
+   cp roberta.zip ../openroberta-lab/RobotEV3/updateResources/ev3dev/
 
 ## configuration ##
 The brickman ui will store configuration data under /etc/openroberta.conf. All
