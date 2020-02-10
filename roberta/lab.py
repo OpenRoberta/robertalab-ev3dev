@@ -3,6 +3,7 @@ import ctypes
 import dbus
 import dbus.service
 from fcntl import ioctl
+from io import BytesIO
 import json
 import logging
 import os
@@ -15,7 +16,9 @@ import threading
 import urllib.request
 import urllib.error
 import urllib.parse
+import shutil
 import sys
+import zipfile
 
 local_pkg_path = os.path.expanduser('~/.local/lib/python')
 # ignore failure to make this testable outside of the target platform
@@ -308,15 +311,17 @@ class Connector(threading.Thread):
             logger.exception("Ooops:")
         return result
 
-    def _request(self, cmd, headers, timeout):
+    def _request(self, cmd, headers, timeout, send_params=True):
         protocol = 'https'
         url = '%s://%s/%s' % (protocol, self.address, cmd)
         while True:
             try:
                 logger.debug('sending request to: %s', url)
                 req = urllib.request.Request(url, headers=headers)
-                data = json.dumps(self.params).encode('utf8')
-                logger.debug('  with params: %s', data)
+                data = None
+                if send_params:
+                    data = json.dumps(self.params).encode('utf8')
+                    logger.debug('  with params: %s', data)
                 return urllib.request.urlopen(req, data, timeout=timeout)
             except urllib.error.HTTPError as e:
                 if e.code == 404 and '/rest/' not in url:
@@ -411,22 +416,19 @@ class Connector(threading.Thread):
                         self.service.hal.resetState()
                     self.service.status('registered')
                 elif cmd == 'update':
-                    logger.debug('download update: %s/update/ev3dev/roberta.zip', self.address)
-                    # FIXME: test
-                    # import zipfile
-                    # from io import BytesIO
-                    #
-                    # # fetch roberta.zip
-                    # response = self._request('update/ev3dev/roberta.zip', headers, timeout)
-                    # zip_buf = io.BytesIO(response.read())
-                    # ... maybe remove the 'roberta' dir first and then recreate to make
-                    #     sure we don't accumulate files
-                    # with zipfile.ZipFile(zip_buf, 'r') as zip_ref:
-                    #     zip_ref.extractall(os.path.join(local_pkg_path + 'roberta')
-                    # ... then restart:
-                    # os.execv(__file__, sys.argv)
-                    # ...  check if we need to close files (logger?)
-                    pass
+                    logger.info('download update: %s/update/ev3dev/runtime', self.address)
+                    # fetch roberta.zip
+                    response = self._request('update/ev3dev/runtime', headers, timeout, send_params=False)
+                    zip_buf = BytesIO(response.read())
+                    # remove the 'roberta' dir first and then recreate to make sure we don't accumulate files
+                    shutil.rmtree(os.path.join(local_pkg_path, 'roberta'), ignore_errors=True)
+                    # and unpack update
+                    with zipfile.ZipFile(zip_buf, 'r') as zip_ref:
+                        zip_ref.extractall(local_pkg_path)
+                    logger.info('firmware updated')
+                    # then restart:
+                    # TODO: maybe we can reuse the token (pass as arg)?
+                    os.execl(sys.executable, sys.executable, *sys.argv)
                 else:
                     logger.warning('unhandled command: %s', cmd)
             except urllib.error.HTTPError as e:
