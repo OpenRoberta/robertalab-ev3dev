@@ -11,10 +11,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 # the regular place where pip3 would install then would be
 # ~/.local/lib/python3.7/site-packages
 local_pkg_path = os.path.expanduser('~/.local/lib/python')
-try:
-    os.makedirs(local_pkg_path)
-except FileExistsError:
-    pass
+os.makedirs(local_pkg_path, exist_ok=True)
 sys.path.insert(0, local_pkg_path)
 from roberta.lab import Service
 
