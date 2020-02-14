@@ -51,9 +51,7 @@ class Hal(object):
 
     LED_ALL = ev3dev.Leds.LEFT + ev3dev.Leds.RIGHT
 
-    # usedSensors is unused, the code-generator for lab.openroberta > 1.4 wont
-    # pass it anymore
-    def __init__(self, brickConfiguration, usedSensors=None):
+    def __init__(self, brickConfiguration):
         self.cfg = brickConfiguration
         dir = os.path.dirname(__file__)
         # char size: 6 x 12 -> num-chars: 29.666667 x 10.666667
@@ -75,10 +73,9 @@ class Hal(object):
 
     # factory methods
     @staticmethod
-    # TODO(ensonic): remove 'side' param, server will stop using it >=3.3.0
     # TODO(ensonic): 'regulated' is unused, it is passed to the motor-functions
     # direcly, consider making all params after port 'kwargs'
-    def makeLargeMotor(port, regulated, direction, side=None):
+    def makeLargeMotor(port, regulated, direction):
         try:
             m = ev3dev.LargeMotor(port)
             if direction == 'backward':
@@ -92,7 +89,7 @@ class Hal(object):
         return m
 
     @staticmethod
-    def makeMediumMotor(port, regulated, direction, side=None):
+    def makeMediumMotor(port, regulated, direction):
         try:
             m = ev3dev.MediumMotor(port)
             if direction == 'backward':
@@ -106,7 +103,7 @@ class Hal(object):
         return m
 
     @staticmethod
-    def makeOtherConsumer(port, regulated, direction, side=None):
+    def makeOtherConsumer(port, regulated, direction):
         try:
             lp = ev3dev.LegoPort(port)
             lp.mode = 'dc-motor'
