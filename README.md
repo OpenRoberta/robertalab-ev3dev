@@ -87,6 +87,8 @@ python3-gi
 
     VERSION="1.3.2" python setup.py sdist
 
+Resulting file is under ./dist/openrobertalab-${VERSION}.tar.gz
+
 Now you can also build a debian package using ``debuild`` or
 ``debuild -us -us``. The new package will be in the parent folder.
 
