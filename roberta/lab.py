@@ -3,7 +3,6 @@ import ctypes
 import dbus
 import dbus.service
 from fcntl import ioctl
-from io import BytesIO
 import json
 import logging
 import os
@@ -16,9 +15,7 @@ import threading
 import urllib.request
 import urllib.error
 import urllib.parse
-import shutil
 import sys
-import zipfile
 
 local_pkg_path = os.path.expanduser('~/.local/lib/python')
 # ignore failure to make this testable outside of the target platform
@@ -88,7 +85,7 @@ class Service(dbus.service.Object):
             dbus.service.Object.__init__(self, bus_name, path)
             logger.debug('object registered')
             self.status('disconnected')
-        self.hal = Hal(None, None)
+        self.hal = Hal(None)
         self.hal.clearDisplay()
         self.thread = None
         self.params = {
@@ -416,6 +413,11 @@ class Connector(threading.Thread):
                         self.service.hal.resetState()
                     self.service.status('registered')
                 elif cmd == 'update':
+                    # import them here, since we don't use them otherwise
+                    from io import BytesIO
+                    import shutil
+                    import zipfile
+
                     logger.info('download update: %s/update/ev3dev/runtime', self.address)
                     # fetch roberta.zip
                     response = self._request('update/ev3dev/runtime', headers, timeout, send_params=False)

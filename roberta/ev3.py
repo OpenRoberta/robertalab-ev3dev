@@ -1,11 +1,11 @@
 
 from PIL import Image, ImageFont
-import dbus
-import glob
+import dbus    # only for waitForConnection() bluetooth
+import glob    # only for stopAllMotors()
 import logging
 import math
 import os
-import threading
+import threading  # only for ledOn() animations
 import time
 
 # ignore failure to make this testable outside of the target platform
