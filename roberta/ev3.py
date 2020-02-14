@@ -74,7 +74,7 @@ class Hal(object):
     # factory methods
     @staticmethod
     # TODO(ensonic): 'regulated' is unused, it is passed to the motor-functions
-    # direcly, consider making all params after port 'kwargs'
+    # directly, consider making all params after port 'kwargs'
     def makeLargeMotor(port, regulated, direction):
         try:
             m = ev3dev.LargeMotor(port)
@@ -239,11 +239,11 @@ class Hal(object):
         time.sleep(ms / 1000.0)
 
     def busyWait(self):
-        '''Used as interrupptible busy wait.'''
+        """Used as interruptable busy wait."""
         time.sleep(0.0)
 
     def waitCmd(self, cmd):
-        '''Wait for a command to finish.'''
+        """Wait for a command to finish."""
         Hal.cmds.append(cmd)
         # we're not using cmd.wait() since that is not interruptable
         while cmd.poll() is None:
@@ -382,12 +382,12 @@ class Hal(object):
         speed = self.scaleSpeed(m, clamp(speed_pct, -100, 100))
         if mode == 'degree':
             m.run_to_rel_pos(position_sp=value, speed_sp=speed)
-            while (m.state and 'stalled' not in m.state):
+            while m.state and 'stalled' not in m.state:
                 self.busyWait()
         elif mode == 'rotations':
             value *= m.count_per_rot
             m.run_to_rel_pos(position_sp=int(value), speed_sp=speed)
-            while (m.state and 'stalled' not in m.state):
+            while m.state and 'stalled' not in m.state:
                 self.busyWait()
 
     def rotateUnregulatedMotor(self, port, speed_pct, mode, value):
@@ -398,12 +398,12 @@ class Hal(object):
         if speed_pct >= 0:
             value = m.position + value
             m.run_direct(duty_cycle_sp=int(speed_pct))
-            while (m.position < value and 'stalled' not in m.state):
+            while m.position < value and 'stalled' not in m.state:
                 self.busyWait()
         else:
             value = m.position - value
             m.run_direct(duty_cycle_sp=int(speed_pct))
-            while (m.position > value and 'stalled' not in m.state):
+            while m.position > value and 'stalled' not in m.state:
                 self.busyWait()
         m.stop()
 
@@ -492,7 +492,7 @@ class Hal(object):
         ml.run_to_rel_pos()
         mr.run_to_rel_pos()
         # logger.debug("driving: %s, %s" % (ml.state, mr.state))
-        while (ml.state or mr.state):
+        while ml.state or mr.state:
             self.busyWait()
 
     def rotateDirectionRegulated(self, left_port, right_port, reverse, direction, speed_pct):
@@ -534,7 +534,7 @@ class Hal(object):
         ml.run_to_rel_pos()
         mr.run_to_rel_pos()
         logger.debug("turning: %s, %s" % (ml.state, mr.state))
-        while (ml.state or mr.state):
+        while ml.state or mr.state:
             self.busyWait()
 
     def driveInCurve(self, direction, left_port, left_speed_pct, right_port, right_speed_pct, distance=None):
@@ -565,7 +565,7 @@ class Hal(object):
             # start motors
             ml.run_to_rel_pos()
             mr.run_to_rel_pos()
-            while ((ml.state and left_speed_pct) or (mr.state and right_speed_pct)):
+            while (ml.state and left_speed_pct) or (mr.state and right_speed_pct):
                 self.busyWait()
         else:
             if direction == 'backward':
@@ -673,12 +673,12 @@ class Hal(object):
 
     def getMotorTachoValue(self, actorPort, mode):
         m = self.cfg['actors'][actorPort]
-        tachoCount = m.position
+        tacho_count = m.position
 
         if mode == 'degree':
-            return tachoCount * 360.0 / float(m.count_per_rot)
+            return tacho_count * 360.0 / float(m.count_per_rot)
         elif mode in ['rotation', 'distance']:
-            rotations = float(tachoCount) / float(m.count_per_rot)
+            rotations = float(tacho_count) / float(m.count_per_rot)
             if mode == 'rotation':
                 return rotations
             else:
