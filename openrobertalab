@@ -27,7 +27,6 @@ def cleanup():
     if service:
         service.hal.clearDisplay()
         service.hal.stopAllMotors()
-        service.switchToTxtMode()
     logger.info('--- done ---')
     logging.shutdown()
 
