@@ -181,13 +181,13 @@ class AbortHandler(threading.Thread):
         self.runner = runner
 
     def run(self):
-        self.long_press = 0
+        long_press = 0
         hal = self.service.hal
         while self.running:
             if hal.isKeyPressed('back'):
-                logger.debug('back: %d', self.long_press)
+                logger.debug('back: %d', long_press)
                 # if pressed for one sec, hard exit
-                if self.long_press > 10:
+                if long_press > 10:
                     logger.info('--- hard abort ---')
                     _thread.interrupt_main()  # throws KeyboardInterrupt
                     self.running = False
@@ -195,13 +195,13 @@ class AbortHandler(threading.Thread):
                     # brute force, but works
                     os._exit(1)
                 else:
-                    self.long_press += 1
+                    long_press += 1
             elif hal.isKeyPressed('enter') and hal.isKeyPressed('down'):
                 logger.debug('--- soft-abort ---')
                 self.running = False
                 self.ctype_async_raise(SystemExit)
             else:
-                self.long_press = 0
+                long_press = 0
             time.sleep(0.1)
 
     def __enter__(self):
