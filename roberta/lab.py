@@ -33,7 +33,8 @@ logger = logging.getLogger('roberta.lab')
 # TRUE: use a new token per reconnect
 # FALSE: try keep using the token for as long as possible
 #        (needs robertalab > 1.4 or develop branch)
-TOKEN_PER_SESSION = True
+#TOKEN_PER_SESSION = True
+TOKEN_PER_SESSION = False
 
 
 # helpers
@@ -153,20 +154,31 @@ class Service(dbus.service.Object):
 class GfxMode(object):
 
     def __init__(self):
-        self.tty_name = os.ttyname(sys.stdin.fileno())
+        self.previous_tty_num = 3
+        self.previous_tty_name = "/dev/tty" + str(self.previous_tty_num)
+        self.tty_num = 5
+        self.tty_name = "/dev/tty" + str(self.tty_num)
+        try:
+            self.bus = dbus.SystemBus()
+            self.devobj = self.bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1/seat/seat0')
+            self.devprop = dbus.Interface(self.devobj, "org.freedesktop.DBus.Properties")
+            self.dev = dbus.Interface(self.devobj, 'org.freedesktop.login1.Seat')
+        except:
+            logger.exception('cannot open dbus interface for org.freedesktop.login1.Seat')
 
     def __enter__(self):
-        logger.info('running on tty: %s', self.tty_name)
-        with open(self.tty_name, 'r') as tty:
-            # KDSETMODE = 0x4B3A, GRAPHICS = 0x01
-            ioctl(tty, 0x4B3A, 0x01)
+        try:
+            self.dev.SwitchTo(self.tty_num)
+            logger.info('running on tty: %s', self.tty_name)
+        except:
+            logger.exception('cannot switch to: %s', self.tty_name)
 
     def __exit__(self, type, value, traceback):
-        with open(self.tty_name, 'w') as tty:
-            # KDSETMODE = 0x4B3A, TEXT = 0x00
-            ioctl(tty, 0x4B3A, 0x00)
-            # send Ctrl-L to tty to clear
-            tty.write('\033c')
+        try:
+            self.dev.SwitchTo(self.previous_tty_num)
+            logger.info('running on tty: %s', self.previous_tty_name)
+        except:
+            logger.exception('cannot switch back to: %s', self.previous_tty_name)
 
 
 class AbortHandler(threading.Thread):
