@@ -157,13 +157,17 @@ class GfxMode(object):
         self.tty_name = os.ttyname(sys.stdin.fileno())
         # get digit from string
         self.tty_num = int(list(filter(str.isdigit, self.tty_name))[0])
-        # TODO: get tty number from calling program as parameter
-        self.previous_tty_num = 3
+        try:
+            stream = os.popen('fgconsole')
+            self.previous_tty_num = int(stream.readline())
+            logger.info('current vt number is: %d', self.previous_tty_num)
+        except:
+            logger.exception('cannot read current vt number from fgconsole command, setting 3 by default')
+            self.previous_tty_num = 3            
         self.previous_tty_name = '/dev/tty' + str(self.previous_tty_num)
         try:
             bus = dbus.SystemBus()
             seat_obj = bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1/seat/seat0')
-            seat_props = dbus.Interface(seat_obj, 'org.freedesktop.DBus.Properties')
             self.seat_methods = dbus.Interface(seat_obj, 'org.freedesktop.login1.Seat')
         except:
             logger.exception('cannot open dbus interface for org.freedesktop.login1.Seat')
