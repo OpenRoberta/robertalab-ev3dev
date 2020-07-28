@@ -185,6 +185,8 @@ class GfxMode(object):
                 self.seat_methods.SwitchTo(self.tty_num)
             except:
                 logger.exception('cannot switch to: %s', self.tty_name)
+        else:
+            logger.info('running on tty: %s', self.tty_name)        
 
     def __exit__(self, type, value, traceback):
         # really useful ? Can block if permission is not set correctly on /dev/ttyx
