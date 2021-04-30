@@ -77,6 +77,10 @@ The package consist of two parts:
 2. [roberta/ev3.py](https://github.com/OpenRoberta/robertalab-ev3dev/blob/develop/roberta/ev3.py): a hardware abstraction library
     * provides the implementation for the NEPO blocks in the program
 
+The connector talks with two main components, the server and the local brickman UI:
+
+![Architecture](/docs/architecture.png?raw=true "Architecture").
+
 ## prerequisites ##
 python3-ev3dev
 python3-bluez
