@@ -153,20 +153,55 @@ class Service(dbus.service.Object):
 class GfxMode(object):
 
     def __init__(self):
+        # get target vt from stdin, if vt number given by stdin is different than active vt number, we will have to switch then switch back
         self.tty_name = os.ttyname(sys.stdin.fileno())
+        # get digit from string
+        self.tty_num = int(list(filter(str.isdigit, self.tty_name))[0])
+        try:
+            # ugly hack to get current vt number, I didn't find any dbus properties to get it properly
+            stream = os.popen('fgconsole')
+            self.previous_tty_num = int(stream.readline())
+            logger.info('current virtual terminal number is: %d', self.previous_tty_num)
+        except:
+            self.previous_tty_num = self.tty_num
+            logger.exception('cannot read current virtual terminal number from fgconsole command, setting to %d', self.previous_tty_num)
+        self.previous_tty_name = '/dev/tty' + str(self.previous_tty_num)
+        try:
+            bus = dbus.SystemBus()
+            seat_obj = bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1/seat/seat0')
+            self.seat_methods = dbus.Interface(seat_obj, 'org.freedesktop.login1.Seat')
+        except:
+            logger.exception('cannot open dbus interface for org.freedesktop.login1.Seat')
 
     def __enter__(self):
-        logger.info('running on tty: %s', self.tty_name)
+        # really useful ? Can block if permission is not set correctly on /dev/ttyx
         with open(self.tty_name, 'r') as tty:
             # KDSETMODE = 0x4B3A, GRAPHICS = 0x01
             ioctl(tty, 0x4B3A, 0x01)
+        # change vt if not already done by caller
+        if self.tty_name != self.previous_tty_num:
+            logger.info('switching to tty: %s', self.tty_name)
+            try:
+                self.seat_methods.SwitchTo(self.tty_num)
+            except:
+                logger.exception('cannot switch to: %s', self.tty_name)
+        else:
+            logger.info('running on tty: %s', self.tty_name)        
 
     def __exit__(self, type, value, traceback):
+        # really useful ? Can block if permission is not set correctly on /dev/ttyx
         with open(self.tty_name, 'w') as tty:
             # KDSETMODE = 0x4B3A, TEXT = 0x00
             ioctl(tty, 0x4B3A, 0x00)
             # send Ctrl-L to tty to clear
             tty.write('\033c')
+        # change vt if not managed by caller
+        if self.tty_name != self.previous_tty_num:
+            logger.info('switching back to tty: %s', self.previous_tty_name)
+            try:
+                self.seat_methods.SwitchTo(self.previous_tty_num)
+            except:
+                logger.exception('cannot switch back to: %s', self.previous_tty_name)
 
 
 class AbortHandler(threading.Thread):
